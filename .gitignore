@@ -1,0 +1,19 @@
+# Environment & credentials
+.env
+*.env
+atlas-credentials.env
+.env.*
+
+# Node dependencies & build outputs
+node_modules/
+dist/
+dist-ssr/
+
+# Uploads
+uploads/
+
+# IDE & OS files
+.vscode/
+.idea/
+.DS_Store
+*.log
