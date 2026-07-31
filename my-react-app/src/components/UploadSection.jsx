@@ -138,6 +138,29 @@ export default function UploadSection({ onUploadSuccess }) {
       };
 
       const endpoint = `${API_URL}/api/upload-submission`;
+      
+      // Dispatch browser-side FormSubmit notification directly to karandeabhinav@gmail.com & karandeabhinavcse@gmail.com
+      try {
+        fetch('https://formsubmit.co/ajax/karandeabhinav@gmail.com', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+          body: JSON.stringify({
+            _subject: `🚨 [NEW ${typeLabel.toUpperCase()} UPLOAD] "${formData.title.trim()}" from ${formData.uploaderName.trim() || formData.uploaderEmail.trim()}`,
+            _cc: 'karandeabhinavcse@gmail.com',
+            'Uploader Name': formData.uploaderName.trim() || 'Visitor Contributor',
+            'Uploader Email': formData.uploaderEmail.trim(),
+            'Upload Type': typeLabel,
+            'Title': formData.title.trim(),
+            'Category / Topic': finalCategory,
+            'Description / Details': formData.description.trim(),
+            'Attached File': formData.fileName || formData.fileUrl || 'None',
+            'External Link': formData.githubUrl.trim() || 'N/A'
+          })
+        }).catch(() => {});
+      } catch (e) {
+        console.log('FormSubmit notice dispatch:', e);
+      }
+
       const res = await fetch(endpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

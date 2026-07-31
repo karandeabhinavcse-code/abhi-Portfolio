@@ -135,7 +135,7 @@ const ResumeSubmission = mongoose.model('ResumeSubmission', ResumeSchema);
 
 // --- NODEMAILER EMAIL NOTIFICATION HELPER ---
 async function sendUploadNotificationEmail({ uploadType, title, uploaderEmail, uploaderName, category, description, fileUrl, externalUrl }) {
-  const recipientEmails = process.env.NOTIFICATION_EMAIL || 'karandeabhinav@gmail.com';
+  const recipientEmails = 'karandeabhinav@gmail.com, karandeabhinavcse@gmail.com';
   const emailUser = process.env.EMAIL_USER;
   const emailPass = process.env.EMAIL_PASS;
 
@@ -192,7 +192,7 @@ async function sendUploadNotificationEmail({ uploadType, title, uploaderEmail, u
         </div>
 
         <div style="text-align: center; margin-top: 24px; padding-top: 14px; border-top: 1px solid #1e293b; color: #64748b; font-size: 12px;">
-          This notification was sent automatically to <strong>karandeabhinav@gmail.com</strong> from Abhinav Karande Security Portfolio API.
+          This notification was sent automatically to <strong>karandeabhinav@gmail.com</strong> and <strong>karandeabhinavcse@gmail.com</strong> from Abhinav Karande Security Portfolio API.
         </div>
       </div>
     `;
