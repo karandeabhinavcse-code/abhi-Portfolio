@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Shield, FileText, Menu, X, Sun, Moon, Upload } from 'lucide-react';
+import { Shield, FileText, Menu, X, Sun, Moon, Upload, KeyRound, ShieldCheck, LogOut, Lock } from 'lucide-react';
 import { resumeData } from '../data/resumeData';
 
-export default function Navbar() {
+export default function Navbar({ onOpenTerminal, isAdminAuthenticated, adminEmail, onOpenLogin, onLogout }) {
   const [scrolled, setScrolled] = useState(false);
   const [activeSection, setActiveSection] = useState('about');
   const [hoveredSection, setHoveredSection] = useState(null);
@@ -269,6 +269,70 @@ export default function Navbar() {
             <Upload size={13} />
             <span>Upload (+)</span>
           </motion.a>
+
+          {/* Owner Admin Login / Status Button */}
+          {isAdminAuthenticated ? (
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <span
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '4px',
+                  borderRadius: '9999px',
+                  padding: '5px 10px',
+                  fontSize: '0.72rem',
+                  fontWeight: 800,
+                  background: 'rgba(16, 185, 129, 0.15)',
+                  color: '#10B981',
+                  border: '1px solid rgba(16, 185, 129, 0.4)',
+                  whiteSpace: 'nowrap'
+                }}
+                title={`Authenticated Owner: ${adminEmail}`}
+              >
+                <ShieldCheck size={13} />
+                <span>Owner</span>
+              </span>
+              <button
+                onClick={onLogout}
+                style={{
+                  background: 'transparent',
+                  border: 'none',
+                  color: 'var(--text-muted)',
+                  cursor: 'pointer',
+                  padding: '4px',
+                  display: 'flex',
+                  alignItems: 'center'
+                }}
+                title="Log Out of Owner Admin"
+              >
+                <LogOut size={13} />
+              </button>
+            </div>
+          ) : (
+            <motion.button
+              onClick={onOpenLogin}
+              whileHover={{ scale: 1.05, y: -1 }}
+              whileTap={{ scale: 0.96 }}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '4px',
+                borderRadius: '9999px',
+                padding: '6px 12px',
+                fontSize: '0.75rem',
+                fontWeight: 700,
+                background: 'var(--bg-secondary)',
+                color: 'var(--text-primary)',
+                border: '1px solid var(--border-light)',
+                cursor: 'pointer',
+                whiteSpace: 'nowrap'
+              }}
+              title="Owner Admin Login to View & Download Submissions"
+            >
+              <KeyRound size={13} style={{ color: 'var(--accent-primary)' }} />
+              <span>Owner Login</span>
+            </motion.button>
+          )}
 
           {/* Download Resume / View PDF */}
           <motion.a

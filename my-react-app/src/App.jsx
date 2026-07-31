@@ -13,11 +13,32 @@ import CertificationsSection from './components/CertificationsSection';
 import ReportModal from './components/ReportModal';
 import ContactSection from './components/ContactSection';
 import Footer from './components/Footer';
+import AdminLoginModal from './components/AdminLoginModal';
 
 export default function App() {
   const [terminalModalOpen, setTerminalModalOpen] = useState(false);
   const [selectedPoCProject, setSelectedPoCProject] = useState(null);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
+
+  const [isAdminAuthenticated, setIsAdminAuthenticated] = useState(() => {
+    return sessionStorage.getItem('admin_authenticated') === 'true';
+  });
+  const [adminEmail, setAdminEmail] = useState(() => {
+    return sessionStorage.getItem('admin_email') || '';
+  });
+  const [loginModalOpen, setLoginModalOpen] = useState(false);
+
+  const handleLoginSuccess = (email) => {
+    setIsAdminAuthenticated(true);
+    setAdminEmail(email);
+  };
+
+  const handleLogout = () => {
+    sessionStorage.removeItem('admin_authenticated');
+    sessionStorage.removeItem('admin_email');
+    setIsAdminAuthenticated(false);
+    setAdminEmail('');
+  };
 
   return (
     <div style={{ position: 'relative', minHeight: '100vh', background: 'var(--bg-primary)' }}>
@@ -27,6 +48,10 @@ export default function App() {
       {/* Glassmorphism Header Navbar */}
       <Navbar
         onOpenTerminal={() => setTerminalModalOpen(true)}
+        isAdminAuthenticated={isAdminAuthenticated}
+        adminEmail={adminEmail}
+        onOpenLogin={() => setLoginModalOpen(true)}
+        onLogout={handleLogout}
       />
 
       {/* Main Content Area */}
@@ -47,7 +72,12 @@ export default function App() {
         <SecurityToolsSection refreshTrigger={refreshTrigger} />
 
         {/* Open Upload Project, Tool & Resume Visitor Hub */}
-        <UploadSection onUploadSuccess={() => setRefreshTrigger(prev => prev + 1)} />
+        <UploadSection
+          onUploadSuccess={() => setRefreshTrigger(prev => prev + 1)}
+          isAdminAuthenticated={isAdminAuthenticated}
+          adminEmail={adminEmail}
+          onOpenLogin={() => setLoginModalOpen(true)}
+        />
 
         {/* CCNA Network Protocol Topology Simulator */}
         <NetworkVisualizer />
@@ -79,6 +109,13 @@ export default function App() {
           onClose={() => setSelectedPoCProject(null)}
         />
       )}
+
+      {/* Owner Admin Sign In Modal */}
+      <AdminLoginModal
+        isOpen={loginModalOpen}
+        onClose={() => setLoginModalOpen(false)}
+        onLoginSuccess={handleLoginSuccess}
+      />
     </div>
   );
 }

@@ -4,7 +4,7 @@ import { Upload, Mail, ShieldAlert, Terminal, FileText, CheckCircle2, AlertCircl
 import confetti from 'canvas-confetti';
 import AdminLoginModal from './AdminLoginModal';
 
-export default function UploadSection({ onUploadSuccess }) {
+export default function UploadSection({ onUploadSuccess, isAdminAuthenticated, adminEmail, onOpenLogin }) {
   const [uploadType, setUploadType] = useState('tool'); // 'tool' | 'project' | 'resume'
   const [formData, setFormData] = useState({
     uploaderEmail: '',
@@ -725,19 +725,21 @@ export default function UploadSection({ onUploadSuccess }) {
           </div>
         </form>
 
-        {/* Uploaded Files & Downloads Registry Section */}
-        <div style={{ marginTop: '40px', paddingTop: '28px', borderTop: '1px solid var(--border-light)' }}>
-          <div style={{ marginBottom: '16px' }}>
-            <h3 style={{ fontSize: '1.2rem', fontWeight: 800, color: 'var(--text-primary)', margin: 0 }}>
-              📦 Uploaded Files & Downloads
-            </h3>
-            <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', margin: '4px 0 0 0' }}>
-              View and download community uploaded tools, audit reports, and candidate resumes.
-            </p>
-          </div>
+        {/* Uploaded Files & Downloads Registry Section (Owner Access Only) */}
+        {isAdminAuthenticated && (
+          <div style={{ marginTop: '40px', paddingTop: '28px', borderTop: '1px solid var(--border-light)' }}>
+            <div style={{ marginBottom: '16px' }}>
+              <h3 style={{ fontSize: '1.2rem', fontWeight: 800, color: 'var(--text-primary)', margin: 0 }}>
+                📦 Uploaded Files & Downloads (Owner Admin Area)
+              </h3>
+              <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', margin: '4px 0 0 0' }}>
+                View and download community uploaded tools, audit reports, and candidate resumes.
+              </p>
+            </div>
 
-          <SubmissionsRegistryViewer refreshTrigger={isSubmitting} />
-        </div>
+            <SubmissionsRegistryViewer refreshTrigger={isSubmitting} isAdminAuthenticated={isAdminAuthenticated} adminEmail={adminEmail} />
+          </div>
+        )}
       </motion.div>
     </section>
   );
