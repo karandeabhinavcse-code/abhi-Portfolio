@@ -896,7 +896,7 @@ function SubmissionsRegistryViewer({ refreshTrigger, isAdminAuthenticated, admin
                     </a>
                   ) : (
                     <button
-                      onClick={() => setLoginModalOpen(true)}
+                      onClick={onOpenLogin}
                       style={{ fontSize: '0.78rem', padding: '6px 12px', borderRadius: '8px', border: '1px solid var(--border-light)', background: 'var(--bg-primary)', color: 'var(--text-muted)', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px' }}
                     >
                       <Lock size={13} style={{ color: '#EF4444' }} /> Login to Download
@@ -930,16 +930,6 @@ function SubmissionsRegistryViewer({ refreshTrigger, isAdminAuthenticated, admin
           ))}
         </div>
       )}
-
-      {/* Admin Login Modal */}
-      <AdminLoginModal
-        isOpen={loginModalOpen}
-        onClose={() => setLoginModalOpen(false)}
-        onLoginSuccess={(email) => {
-          setIsAdminAuthenticated(true);
-          setAdminEmail(email);
-        }}
-      />
     </div>
   );
 }
