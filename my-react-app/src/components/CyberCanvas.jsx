@@ -81,13 +81,15 @@ export default function CyberCanvas() {
     window.addEventListener('mouseleave', handleMouseLeave);
     window.addEventListener('click', handleClick);
 
-    // Colors pool
-    const nodeColors = [
-      'rgba(0, 240, 255, ',   // Neon Cyan
-      'rgba(0, 255, 157, ',   // Neon Emerald
-      'rgba(56, 189, 248, ',  // Sky Cyber Blue
-      'rgba(168, 85, 247, '   // Cyber Purple
-    ];
+    // Helper to extract RGB string from hex color
+    const hexToRgb = (hexStr, fallback = '0, 240, 255') => {
+      if (!hexStr || !hexStr.startsWith('#')) return fallback;
+      let c = hexStr.slice(1);
+      if (c.length === 3) c = c.split('').map(x => x + x).join('');
+      if (c.length !== 6) return fallback;
+      const num = parseInt(c, 16);
+      return `${(num >> 16) & 255}, ${(num >> 8) & 255}, ${num & 255}`;
+    };
 
     for (let i = 0; i < nodeCount; i++) {
       nodes.push({
@@ -96,7 +98,7 @@ export default function CyberCanvas() {
         vx: (Math.random() - 0.5) * 0.5,
         vy: (Math.random() - 0.5) * 0.5,
         radius: Math.random() * 2 + 1.2,
-        baseColor: nodeColors[i % nodeColors.length]
+        colorIndex: i % 2 // 0 for primary/cyan, 1 for secondary/emerald
       });
     }
 
@@ -116,6 +118,14 @@ export default function CyberCanvas() {
     const draw = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
+      // Get current active theme color values
+      const computed = getComputedStyle(document.documentElement);
+      const rawCyan = computed.getPropertyValue('--accent-cyan').trim() || '#00F0FF';
+      const rawEmerald = computed.getPropertyValue('--accent-emerald').trim() || '#00FF9D';
+      
+      const rgbCyan = hexToRgb(rawCyan, '0, 240, 255');
+      const rgbEmerald = hexToRgb(rawEmerald, '0, 255, 157');
+
       const renderMatrix = (bgMode === 'full' || bgMode === 'matrix') && showMatrix;
       const renderNodes = bgMode === 'full' || bgMode === 'nodes';
       const renderTacticalGrid = showGrid && bgMode !== 'stealth';
@@ -124,7 +134,7 @@ export default function CyberCanvas() {
       // 1. DRAW TACTICAL GRID LINES
       if (renderTacticalGrid) {
         const gridSize = 70;
-        ctx.strokeStyle = 'rgba(0, 240, 255, 0.05)';
+        ctx.strokeStyle = `rgba(${rgbCyan}, 0.05)`;
         ctx.lineWidth = 0.5;
 
         for (let x = 0; x < canvas.width; x += gridSize) {
@@ -151,7 +161,7 @@ export default function CyberCanvas() {
 
           if (y > 0 && y < canvas.height) {
             const isHead = Math.random() > 0.88;
-            ctx.fillStyle = isHead ? 'rgba(0, 240, 255, 0.75)' : 'rgba(0, 255, 157, 0.16)';
+            ctx.fillStyle = isHead ? `rgba(${rgbCyan}, 0.75)` : `rgba(${rgbEmerald}, 0.16)`;
             ctx.fillText(char, x, y);
           }
 
@@ -171,7 +181,7 @@ export default function CyberCanvas() {
 
         ctx.beginPath();
         ctx.arc(radarX, radarY, radarR, 0, Math.PI * 2);
-        ctx.strokeStyle = 'rgba(0, 240, 255, 0.1)';
+        ctx.strokeStyle = `rgba(${rgbCyan}, 0.1)`;
         ctx.lineWidth = 1;
         ctx.stroke();
 
@@ -180,8 +190,8 @@ export default function CyberCanvas() {
         ctx.arc(radarX, radarY, radarR, radarAngle, radarAngle + 0.35);
         ctx.closePath();
         const sweepGrad = ctx.createRadialGradient(radarX, radarY, 5, radarX, radarY, radarR);
-        sweepGrad.addColorStop(0, 'rgba(0, 240, 255, 0.18)');
-        sweepGrad.addColorStop(1, 'rgba(0, 240, 255, 0)');
+        sweepGrad.addColorStop(0, `rgba(${rgbCyan}, 0.18)`);
+        sweepGrad.addColorStop(1, `rgba(${rgbCyan}, 0)`);
         ctx.fillStyle = sweepGrad;
         ctx.fill();
       }
@@ -200,13 +210,13 @@ export default function CyberCanvas() {
 
           ctx.beginPath();
           ctx.arc(rip.x, rip.y, rip.radius, 0, Math.PI * 2);
-          ctx.strokeStyle = `rgba(0, 240, 255, ${rip.alpha * 0.6})`;
+          ctx.strokeStyle = `rgba(${rgbCyan}, ${rip.alpha * 0.6})`;
           ctx.lineWidth = 1.2;
           ctx.stroke();
 
           ctx.beginPath();
           ctx.arc(rip.x, rip.y, rip.radius * 0.6, 0, Math.PI * 2);
-          ctx.strokeStyle = `rgba(0, 255, 157, ${rip.alpha * 0.4})`;
+          ctx.strokeStyle = `rgba(${rgbEmerald}, ${rip.alpha * 0.4})`;
           ctx.lineWidth = 0.8;
           ctx.stroke();
         }
@@ -246,7 +256,7 @@ export default function CyberCanvas() {
               ctx.beginPath();
               ctx.moveTo(node.x, node.y);
               ctx.lineTo(other.x, other.y);
-              ctx.strokeStyle = `rgba(0, 240, 255, ${alpha})`;
+              ctx.strokeStyle = `rgba(${rgbCyan}, ${alpha})`;
               ctx.lineWidth = 0.75;
               ctx.stroke();
 
@@ -265,9 +275,10 @@ export default function CyberCanvas() {
           }
 
           // Node Dot render
+          const activeRgb = node.colorIndex === 0 ? rgbCyan : rgbEmerald;
           ctx.beginPath();
           ctx.arc(node.x, node.y, node.radius, 0, Math.PI * 2);
-          ctx.fillStyle = `${node.baseColor} 0.8)`;
+          ctx.fillStyle = `rgba(${activeRgb}, 0.8)`;
           ctx.fill();
         });
 
@@ -286,8 +297,8 @@ export default function CyberCanvas() {
 
           ctx.beginPath();
           ctx.arc(currX, currY, 2.5, 0, Math.PI * 2);
-          ctx.fillStyle = 'rgba(0, 255, 157, 0.95)';
-          ctx.shadowColor = 'rgba(0, 255, 157, 0.8)';
+          ctx.fillStyle = `rgba(${rgbEmerald}, 0.95)`;
+          ctx.shadowColor = `rgba(${rgbEmerald}, 0.8)`;
           ctx.shadowBlur = 8;
           ctx.fill();
           ctx.shadowBlur = 0;
