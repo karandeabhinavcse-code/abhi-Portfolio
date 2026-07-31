@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Upload, Mail, ShieldAlert, Terminal, FileText, CheckCircle2, AlertCircle, FolderArchive, Loader2, Sparkles } from 'lucide-react';
+import { Upload, Mail, ShieldAlert, Terminal, FileText, CheckCircle2, AlertCircle, FolderArchive, Loader2, Sparkles, Lock, Unlock, ShieldCheck, LogOut, KeyRound } from 'lucide-react';
 import confetti from 'canvas-confetti';
+import AdminLoginModal from './AdminLoginModal';
 
 export default function UploadSection({ onUploadSuccess }) {
   const [uploadType, setUploadType] = useState('tool'); // 'tool' | 'project' | 'resume'
@@ -726,6 +727,15 @@ export default function UploadSection({ onUploadSuccess }) {
 
         {/* Uploaded Files & Downloads Registry Section */}
         <div style={{ marginTop: '40px', paddingTop: '28px', borderTop: '1px solid var(--border-light)' }}>
+          <div style={{ marginBottom: '16px' }}>
+            <h3 style={{ fontSize: '1.2rem', fontWeight: 800, color: 'var(--text-primary)', margin: 0 }}>
+              📦 Uploaded Files & Downloads
+            </h3>
+            <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', margin: '4px 0 0 0' }}>
+              View and download community uploaded tools, audit reports, and candidate resumes.
+            </p>
+          </div>
+
           <SubmissionsRegistryViewer refreshTrigger={isSubmitting} />
         </div>
       </motion.div>
@@ -736,12 +746,13 @@ export default function UploadSection({ onUploadSuccess }) {
 function SubmissionsRegistryViewer({ refreshTrigger }) {
   const [activeTab, setActiveTab] = useState('tools'); // 'tools' | 'projects' | 'resumes'
   const [items, setItems] = useState([]);
-  const [isOwnerUnlocked, setIsOwnerUnlocked] = useState(
-    () => localStorage.getItem('is_owner_authenticated') === 'true'
-  );
-  const [showPinInput, setShowPinInput] = useState(false);
-  const [pinText, setPinText] = useState('');
-  const [pinError, setPinError] = useState(false);
+  const [isAdminAuthenticated, setIsAdminAuthenticated] = useState(() => {
+    return sessionStorage.getItem('admin_authenticated') === 'true';
+  });
+  const [adminEmail, setAdminEmail] = useState(() => {
+    return sessionStorage.getItem('admin_email') || '';
+  });
+  const [loginModalOpen, setLoginModalOpen] = useState(false);
 
   const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
@@ -764,130 +775,71 @@ function SubmissionsRegistryViewer({ refreshTrigger }) {
       console.log('Fetching local storage submissions fallback:', e);
     }
 
+    // Fallback local storage lookup
     const key = activeTab === 'tools' ? 'custom_tools' : activeTab === 'projects' ? 'custom_projects' : 'custom_resumes';
     const localData = JSON.parse(localStorage.getItem(key) || '[]');
     setItems(localData);
   };
 
-  const handleUnlockOwner = (e) => {
-    e.preventDefault();
-    const cleanPin = pinText.trim().toLowerCase();
-    // Accept secret PIN 1337 or abhinav or owner email karandeabhinav@gmail.com
-    if (cleanPin === '1337' || cleanPin === 'abhinav' || cleanPin === 'karandeabhinav@gmail.com' || cleanPin === 'karandeabhinavcse@gmail.com') {
-      setIsOwnerUnlocked(true);
-      localStorage.setItem('is_owner_authenticated', 'true');
-      setShowPinInput(false);
-      setPinError(false);
-      setPinText('');
-    } else {
-      setPinError(true);
-    }
-  };
-
-  const handleLockOwner = () => {
-    setIsOwnerUnlocked(false);
-    localStorage.removeItem('is_owner_authenticated');
+  const handleLogout = () => {
+    sessionStorage.removeItem('admin_authenticated');
+    sessionStorage.removeItem('admin_email');
+    setIsAdminAuthenticated(false);
+    setAdminEmail('');
   };
 
   return (
     <div>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px', flexWrap: 'wrap', gap: '12px' }}>
-        <div>
-          <h3 style={{ fontSize: '1.2rem', fontWeight: 800, color: 'var(--text-primary)', margin: 0 }}>
-            📦 Community Submissions Registry
-          </h3>
-          <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)', margin: '4px 0 0 0' }}>
-            Submitted tools, audit reports, and candidate resumes. (Downloads restricted to Site Owner).
-          </p>
-        </div>
-
-        {/* Owner Unlock Control */}
-        <div>
-          {isOwnerUnlocked ? (
+      {/* Admin Status & Authentication Control Bar */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px', flexWrap: 'wrap', gap: '10px' }}>
+        <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+          {[
+            { id: 'tools', label: '🛠️ Uploaded Tools' },
+            { id: 'projects', label: '🛡️ Uploaded Audit Projects' },
+            { id: 'resumes', label: '📄 Uploaded Resumes' }
+          ].map((tab) => (
             <button
-              onClick={handleLockOwner}
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
               style={{
-                padding: '6px 12px',
+                padding: '6px 14px',
                 borderRadius: '8px',
-                fontSize: '0.78rem',
+                fontSize: '0.8rem',
                 fontWeight: 700,
-                background: 'rgba(16, 185, 129, 0.15)',
-                color: '#10B981',
-                border: '1px solid rgba(16, 185, 129, 0.3)',
+                fontFamily: 'var(--font-mono)',
+                border: activeTab === tab.id ? 'none' : '1px solid var(--border-light)',
+                background: activeTab === tab.id ? 'var(--accent-primary)' : 'var(--bg-secondary)',
+                color: activeTab === tab.id ? '#FFFFFF' : 'var(--text-secondary)',
                 cursor: 'pointer'
               }}
             >
-              🔓 Owner Unlocked (Lock)
+              {tab.label}
             </button>
-          ) : (
-            <button
-              onClick={() => setShowPinInput(!showPinInput)}
-              style={{
-                padding: '6px 12px',
-                borderRadius: '8px',
-                fontSize: '0.78rem',
-                fontWeight: 700,
-                background: 'var(--bg-secondary)',
-                color: 'var(--text-secondary)',
-                border: '1px solid var(--border-light)',
-                cursor: 'pointer'
-              }}
-            >
-              🔒 Owner Login
-            </button>
-          )}
+          ))}
         </div>
-      </div>
 
-      {/* Owner Secret PIN Prompt */}
-      {showPinInput && !isOwnerUnlocked && (
-        <form onSubmit={handleUnlockOwner} style={{ marginBottom: '16px', display: 'flex', gap: '8px', alignItems: 'center' }}>
-          <input
-            type="password"
-            placeholder="Enter Owner PIN / Passcode..."
-            value={pinText}
-            onChange={(e) => { setPinText(e.target.value); setPinError(false); }}
-            style={{
-              padding: '8px 12px',
-              borderRadius: '8px',
-              border: pinError ? '1px solid #EF4444' : '1px solid var(--border-light)',
-              background: 'var(--bg-secondary)',
-              color: 'var(--text-primary)',
-              fontSize: '0.82rem'
-            }}
-          />
-          <button type="submit" className="btn-primary" style={{ padding: '8px 14px', fontSize: '0.8rem', borderRadius: '8px' }}>
-            Unlock Downloads
-          </button>
-          {pinError && <span style={{ color: '#EF4444', fontSize: '0.75rem' }}>Incorrect owner passcode.</span>}
-        </form>
-      )}
-
-      {/* Category Submissions Tabs */}
-      <div style={{ display: 'flex', gap: '8px', marginBottom: '16px', flexWrap: 'wrap' }}>
-        {[
-          { id: 'tools', label: '🛠️ Uploaded Tools' },
-          { id: 'projects', label: '🛡️ Uploaded Audit Projects' },
-          { id: 'resumes', label: '📄 Uploaded Resumes' }
-        ].map((tab) => (
+        {/* Owner Authentication Badge / Login Trigger Button */}
+        {isAdminAuthenticated ? (
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <span style={{ fontSize: '0.78rem', color: '#10B981', background: 'rgba(16, 185, 129, 0.12)', padding: '4px 10px', borderRadius: '8px', border: '1px solid rgba(16, 185, 129, 0.3)', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <ShieldCheck size={14} /> Owner Signed In ({adminEmail})
+            </span>
+            <button
+              onClick={handleLogout}
+              style={{ fontSize: '0.75rem', background: 'transparent', border: '1px solid var(--border-light)', color: 'var(--text-muted)', padding: '4px 10px', borderRadius: '6px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}
+            >
+              <LogOut size={12} /> Log Out
+            </button>
+          </div>
+        ) : (
           <button
-            key={tab.id}
-            onClick={() => setActiveTab(tab.id)}
-            style={{
-              padding: '6px 14px',
-              borderRadius: '8px',
-              fontSize: '0.8rem',
-              fontWeight: 700,
-              fontFamily: 'var(--font-mono)',
-              border: activeTab === tab.id ? 'none' : '1px solid var(--border-light)',
-              background: activeTab === tab.id ? 'var(--accent-primary)' : 'var(--bg-secondary)',
-              color: activeTab === tab.id ? '#FFFFFF' : 'var(--text-secondary)',
-              cursor: 'pointer'
-            }}
+            onClick={() => setLoginModalOpen(true)}
+            className="btn-secondary"
+            style={{ fontSize: '0.78rem', padding: '6px 12px', borderRadius: '8px', display: 'flex', alignItems: 'center', gap: '6px' }}
           >
-            {tab.label}
+            <KeyRound size={14} style={{ color: 'var(--accent-primary)' }} /> Owner Admin Login (Download Access)
           </button>
-        ))}
+        )}
       </div>
 
       {items.length === 0 ? (
@@ -910,32 +862,25 @@ function SubmissionsRegistryViewer({ refreshTrigger }) {
                 </div>
               </div>
 
+              {/* Download Option Gated Behind Owner Admin Login */}
               {(item.fileUrl || item.reportUrl) && (
-                isOwnerUnlocked ? (
+                isAdminAuthenticated ? (
                   <a
                     href={item.fileUrl || item.reportUrl}
                     target="_blank"
                     rel="noopener noreferrer"
                     download
                     className="btn-secondary"
-                    style={{ fontSize: '0.8rem', padding: '6px 14px', borderRadius: '8px', textDecoration: 'none' }}
+                    style={{ fontSize: '0.8rem', padding: '6px 14px', borderRadius: '8px', textDecoration: 'none', background: 'rgba(16, 185, 129, 0.15)', color: '#10B981', border: '1px solid rgba(16, 185, 129, 0.4)' }}
                   >
                     <FileText size={14} /> Download File
                   </a>
                 ) : (
                   <button
-                    onClick={() => setShowPinInput(true)}
-                    style={{
-                      fontSize: '0.78rem',
-                      padding: '6px 12px',
-                      borderRadius: '8px',
-                      border: '1px solid var(--border-light)',
-                      background: 'rgba(255,255,255,0.05)',
-                      color: 'var(--text-muted)',
-                      cursor: 'pointer'
-                    }}
+                    onClick={() => setLoginModalOpen(true)}
+                    style={{ fontSize: '0.78rem', padding: '6px 12px', borderRadius: '8px', border: '1px solid var(--border-light)', background: 'var(--bg-primary)', color: 'var(--text-muted)', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px' }}
                   >
-                    🔒 Owner Only
+                    <Lock size={13} style={{ color: '#EF4444' }} /> Owner Login to Download
                   </button>
                 )
               )}
@@ -943,6 +888,16 @@ function SubmissionsRegistryViewer({ refreshTrigger }) {
           ))}
         </div>
       )}
+
+      {/* Owner Admin Login Modal */}
+      <AdminLoginModal
+        isOpen={loginModalOpen}
+        onClose={() => setLoginModalOpen(false)}
+        onLoginSuccess={(email) => {
+          setIsAdminAuthenticated(true);
+          setAdminEmail(email);
+        }}
+      />
     </div>
   );
 }
