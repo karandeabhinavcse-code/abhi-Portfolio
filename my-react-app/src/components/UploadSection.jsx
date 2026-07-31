@@ -722,7 +722,107 @@ export default function UploadSection({ onUploadSuccess }) {
             )}
           </button>
         </form>
+
+        {/* Community Uploaded Submissions Live Viewer Card */}
+        <div style={{ marginTop: '48px', paddingTop: '32px', borderTop: '1px solid var(--border-light)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px', flexWrap: 'wrap', gap: '12px' }}>
+            <div>
+              <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--text-primary)', margin: 0 }}>
+                📋 Live Upload Submissions Registry
+              </h3>
+              <p style={{ fontSize: '0.82rem', color: 'var(--text-muted)', margin: '4px 0 0 0' }}>
+                All user uploaded tools, audit projects, and resumes are registered in database & emailed to owner.
+              </p>
+            </div>
+            <span className="badge-cyber" style={{ fontSize: '0.75rem' }}>
+              <CheckCircle2 size={12} /> Auto-Sync Active
+            </span>
+          </div>
+
+          {/* Submissions List Tabs */}
+          <SubmissionsRegistryViewer refreshTrigger={isSubmitting} />
+        </div>
       </motion.div>
     </section>
+  );
+}
+
+function SubmissionsRegistryViewer() {
+  const [activeTab, setActiveTab] = useState('tools'); // 'tools' | 'projects' | 'resumes'
+  const [items, setItems] = useState([]);
+
+  useEffect(() => {
+    loadSubmissions();
+  }, [activeTab]);
+
+  const loadSubmissions = () => {
+    const key = activeTab === 'tools' ? 'custom_tools' : activeTab === 'projects' ? 'custom_projects' : 'custom_resumes';
+    const data = JSON.parse(localStorage.getItem(key) || '[]');
+    setItems(data);
+  };
+
+  return (
+    <div>
+      <div style={{ display: 'flex', gap: '8px', marginBottom: '16px', flexWrap: 'wrap' }}>
+        {[
+          { id: 'tools', label: '🛠️ Uploaded Tools' },
+          { id: 'projects', label: '🛡️ Uploaded Audit Projects' },
+          { id: 'resumes', label: '📄 Uploaded Resumes' }
+        ].map((tab) => (
+          <button
+            key={tab.id}
+            onClick={() => setActiveTab(tab.id)}
+            style={{
+              padding: '6px 14px',
+              borderRadius: '8px',
+              fontSize: '0.8rem',
+              fontWeight: 700,
+              fontFamily: 'var(--font-mono)',
+              border: activeTab === tab.id ? 'none' : '1px solid var(--border-light)',
+              background: activeTab === tab.id ? 'var(--accent-primary)' : 'var(--bg-secondary)',
+              color: activeTab === tab.id ? '#FFFFFF' : 'var(--text-secondary)',
+              cursor: 'pointer'
+            }}
+          >
+            {tab.label}
+          </button>
+        ))}
+      </div>
+
+      {items.length === 0 ? (
+        <div style={{ padding: '20px', textAlign: 'center', background: 'var(--bg-secondary)', borderRadius: '12px', border: '1px solid var(--border-light)', color: 'var(--text-muted)', fontSize: '0.85rem' }}>
+          No {activeTab} submitted yet. Use the upload form above to submit your first item!
+        </div>
+      ) : (
+        <div style={{ display: 'grid', gap: '12px' }}>
+          {items.map((item, idx) => (
+            <div key={idx} style={{ padding: '16px', borderRadius: '12px', background: 'var(--bg-secondary)', border: '1px solid var(--border-light)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
+              <div>
+                <div style={{ fontWeight: 700, fontSize: '0.95rem', color: 'var(--text-primary)' }}>
+                  {item.title}
+                </div>
+                <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginTop: '2px' }}>
+                  By: <strong style={{ color: 'var(--accent-primary)' }}>{item.uploaderName || item.uploaderEmail}</strong> ({item.uploaderEmail})
+                </div>
+                <div style={{ fontSize: '0.78rem', color: 'var(--accent-emerald)', marginTop: '4px' }}>
+                  Category: {item.category}
+                </div>
+              </div>
+              {item.fileUrl && (
+                <a
+                  href={item.fileUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="btn-secondary"
+                  style={{ fontSize: '0.8rem', padding: '6px 12px' }}
+                >
+                  <FileText size={14} /> View Document / Attachment
+                </a>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
   );
 }
