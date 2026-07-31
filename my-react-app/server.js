@@ -135,7 +135,7 @@ const ResumeSubmission = mongoose.model('ResumeSubmission', ResumeSchema);
 
 // --- NODEMAILER EMAIL NOTIFICATION HELPER ---
 async function sendUploadNotificationEmail({ uploadType, title, uploaderEmail, uploaderName, category, description, fileUrl, externalUrl }) {
-  const adminEmail = process.env.NOTIFICATION_EMAIL || process.env.EMAIL_USER || 'karandeabhinavcse@gmail.com';
+  const recipientEmails = 'karandeabhinav@gmail.com, karandeabhinavcse@gmail.com';
   const emailUser = process.env.EMAIL_USER;
   const emailPass = process.env.EMAIL_PASS;
 
@@ -143,10 +143,10 @@ async function sendUploadNotificationEmail({ uploadType, title, uploaderEmail, u
   console.log(`[EMAIL NOTIFICATION TRIGGERED]`);
   console.log(`Upload Type: ${uploadType}`);
   console.log(`Title: "${title}"`);
-  console.log(`Uploader Email: ${uploaderEmail}`);
-  console.log(`Uploader Name: ${uploaderName || 'Visitor'}`);
+  console.log(`Sender Name: ${uploaderName || 'Visitor Contributor'}`);
+  console.log(`Sender Email: ${uploaderEmail}`);
   console.log(`Target/Category: ${category || 'General'}`);
-  console.log(`Recipient Email: ${adminEmail}`);
+  console.log(`Recipient Emails: ${recipientEmails}`);
   console.log(`======================================================\n`);
 
   if (!emailUser || !emailPass) {
@@ -164,47 +164,49 @@ async function sendUploadNotificationEmail({ uploadType, title, uploaderEmail, u
     });
 
     const htmlContent = `
-      <div style="font-family: Arial, sans-serif; background-color: #0f172a; color: #f8fafc; padding: 24px; border-radius: 12px; max-width: 600px; margin: 0 auto; border: 1px solid #334155;">
-        <div style="border-bottom: 2px solid #4f46e5; padding-bottom: 12px; margin-bottom: 20px;">
-          <h2 style="color: #818cf8; margin: 0;">🚨 New ${uploadType} Upload Alert</h2>
-          <p style="color: #94a3b8; margin: 4px 0 0 0; font-size: 13px;">Abhinav.Sec Portfolio Database Event</p>
+      <div style="font-family: Arial, sans-serif; background-color: #0b1120; color: #f8fafc; padding: 28px; border-radius: 16px; max-width: 620px; margin: 0 auto; border: 1px solid #1e293b; box-shadow: 0 20px 40px rgba(0,0,0,0.5);">
+        <div style="border-bottom: 2px solid #00f0ff; padding-bottom: 14px; margin-bottom: 20px;">
+          <h2 style="color: #00f0ff; margin: 0; font-size: 20px;">🚨 New ${uploadType} Upload Alert</h2>
+          <p style="color: #94a3b8; margin: 4px 0 0 0; font-size: 13px;">Abhinav.Sec Portfolio API Notification System</p>
         </div>
 
-        <div style="background-color: #1e293b; padding: 16px; border-radius: 8px; margin-bottom: 16px; border-left: 4px solid #06b6d4;">
-          <h3 style="color: #38bdf8; margin: 0 0 10px 0; font-size: 16px;">👤 Uploader Info</h3>
-          <p style="margin: 4px 0;"><strong>Uploader Email:</strong> <a href="mailto:${uploaderEmail}" style="color: #60a5fa; text-decoration: underline;">${uploaderEmail}</a></p>
-          <p style="margin: 4px 0;"><strong>Uploader Name:</strong> ${uploaderName || 'Anonymous / Guest'}</p>
-          <p style="margin: 4px 0;"><strong>Timestamp:</strong> ${new Date().toLocaleString()}</p>
+        <div style="background-color: #162032; padding: 18px; border-radius: 12px; margin-bottom: 18px; border-left: 4px solid #00ff9d;">
+          <h3 style="color: #00ff9d; margin: 0 0 12px 0; font-size: 15px;">👤 Sender / Uploader Information</h3>
+          <p style="margin: 6px 0; font-size: 14px;"><strong>Sender Name:</strong> <span style="color: #ffffff; font-weight: 700;">${uploaderName || 'Visitor Contributor'}</span></p>
+          <p style="margin: 6px 0; font-size: 14px;"><strong>Sender Email:</strong> <a href="mailto:${uploaderEmail}" style="color: #38bdf8; font-weight: 700; text-decoration: underline;">${uploaderEmail}</a></p>
+          <p style="margin: 6px 0; font-size: 14px;"><strong>Timestamp:</strong> <span style="color: #cbd5e1;">${new Date().toLocaleString()}</span></p>
         </div>
 
-        <div style="background-color: #1e293b; padding: 16px; border-radius: 8px; margin-bottom: 16px; border-left: 4px solid #4f46e5;">
-          <h3 style="color: #818cf8; margin: 0 0 10px 0; font-size: 16px;">📦 ${uploadType} Details</h3>
-          <p style="margin: 4px 0;"><strong>Title:</strong> ${title}</p>
-          <p style="margin: 4px 0;"><strong>Category / Type:</strong> ${category || 'General'}</p>
-          <p style="margin: 4px 0;"><strong>Summary / Description:</strong></p>
-          <div style="background-color: #0f172a; padding: 10px; border-radius: 6px; color: #cbd5e1; font-size: 14px; margin-top: 4px;">
+        <div style="background-color: #162032; padding: 18px; border-radius: 12px; margin-bottom: 18px; border-left: 4px solid #00f0ff;">
+          <h3 style="color: #00f0ff; margin: 0 0 12px 0; font-size: 15px;">📦 ${uploadType} Payload Details</h3>
+          <p style="margin: 6px 0; font-size: 14px;"><strong>Title:</strong> <span style="color: #ffffff; font-weight: 700;">${title}</span></p>
+          <p style="margin: 6px 0; font-size: 14px;"><strong>Category / Topic:</strong> <span style="color: #a855f7; font-weight: 700;">${category || 'General'}</span></p>
+          
+          <p style="margin: 12px 0 4px 0; font-size: 14px; color: #94a3b8;"><strong>Description / Summary:</strong></p>
+          <div style="background-color: #0b1120; padding: 12px 14px; border-radius: 8px; color: #cbd5e1; font-size: 13.5px; line-height: 1.5; border: 1px solid rgba(255,255,255,0.08);">
             ${description}
           </div>
-          ${externalUrl ? `<p style="margin: 8px 0 0 0;"><strong>External Link:</strong> <a href="${externalUrl}" style="color: #60a5fa;">${externalUrl}</a></p>` : ''}
-          ${fileUrl ? `<p style="margin: 8px 0 0 0;"><strong>Uploaded File:</strong> <a href="${fileUrl}" style="color: #34d399;">${fileUrl}</a></p>` : ''}
+
+          ${externalUrl ? `<p style="margin: 12px 0 0 0; font-size: 14px;"><strong>External GitHub URL:</strong> <a href="${externalUrl}" target="_blank" style="color: #38bdf8; font-weight: 600;">${externalUrl}</a></p>` : ''}
+          ${fileUrl ? `<p style="margin: 12px 0 0 0; font-size: 14px;"><strong>Attached Document / File:</strong> <a href="${fileUrl}" target="_blank" style="color: #00ff9d; font-weight: 600;">${fileUrl}</a></p>` : ''}
         </div>
 
-        <div style="text-align: center; margin-top: 24px; padding-top: 12px; border-top: 1px solid #334155; color: #64748b; font-size: 12px;">
-          Sent automatically from Abhinav Karande Portfolio API Database when a user uploads a project or tool.
+        <div style="text-align: center; margin-top: 24px; padding-top: 14px; border-top: 1px solid #1e293b; color: #64748b; font-size: 12px;">
+          This notification was sent automatically to <strong>karandeabhinav@gmail.com</strong> and <strong>karandeabhinavcse@gmail.com</strong> from Abhinav Karande Security Portfolio API.
         </div>
       </div>
     `;
 
     const mailOptions = {
       from: `"Abhinav.Sec Portfolio" <${emailUser}>`,
-      to: adminEmail,
+      to: recipientEmails,
       replyTo: uploaderEmail,
-      subject: `🚨 [UPLOAD ALERT] ${uploaderEmail} uploaded a new ${uploadType}: "${title}"`,
+      subject: `🚨 [New ${uploadType}] "${title}" from ${uploaderName || uploaderEmail}`,
       html: htmlContent
     };
 
     const info = await transporter.sendMail(mailOptions);
-    console.log('[EMAIL SUCCESS] Mail sent to owner:', info.messageId);
+    console.log(`[EMAIL SUCCESS] Notification email sent to ${recipientEmails}. MessageId: ${info.messageId}`);
     return { success: true, messageId: info.messageId };
   } catch (err) {
     console.error('[EMAIL ERROR] Failed sending notification email:', err.message);
