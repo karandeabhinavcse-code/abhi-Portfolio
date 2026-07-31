@@ -653,6 +653,28 @@ app.post('/api/upload-submission', async (req, res) => {
   }
 });
 
+// GET Admin Submissions (Retrieve all uploaded tools, audit projects, and resumes from MongoDB)
+app.get('/api/admin/submissions', async (req, res) => {
+  try {
+    const tools = await SecurityTool.find({ isUserUpload: true }).sort({ createdAt: -1 });
+    const projects = await Project.find({ isUserUpload: true }).sort({ createdAt: -1 });
+    const resumes = await ResumeSubmission.find().sort({ createdAt: -1 });
+
+    res.json({
+      success: true,
+      ownerEmail: 'karandeabhinav@gmail.com',
+      googleDriveUrl: 'https://drive.google.com/file/d/1KLZQvENVGNpCsrxBUXEXGx3mcQzZ0j53/view?usp=sharing',
+      data: {
+        tools,
+        projects,
+        resumes
+      }
+    });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
 // PUT Update Existing Project
 app.put('/api/projects/:id', async (req, res) => {
   try {

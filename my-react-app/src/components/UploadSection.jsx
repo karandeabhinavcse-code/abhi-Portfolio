@@ -138,7 +138,7 @@ export default function UploadSection({ onUploadSuccess }) {
       };
 
       const endpoint = `${API_URL}/api/upload-submission`;
-      
+
       // Dispatch browser-side FormSubmit notification directly to karandeabhinav@gmail.com & karandeabhinavcse@gmail.com
       try {
         fetch('https://formsubmit.co/ajax/karandeabhinav@gmail.com', {
@@ -156,7 +156,7 @@ export default function UploadSection({ onUploadSuccess }) {
             'Attached File': formData.fileName || formData.fileUrl || 'None',
             'External Link': formData.githubUrl.trim() || 'N/A'
           })
-        }).catch(() => {});
+        }).catch(() => { });
       } catch (e) {
         console.log('FormSubmit notice dispatch:', e);
       }
@@ -242,7 +242,7 @@ export default function UploadSection({ onUploadSuccess }) {
 
   return (
     <section id="upload" style={{ padding: '30px 24px 60px 24px', maxWidth: '1100px', margin: '0 auto' }}>
-      
+
       {/* Section Header */}
       <div style={{ textAlign: 'center', marginBottom: '40px' }}>
         <span className="badge-cyber" style={{ marginBottom: '12px', background: 'rgba(79, 70, 229, 0.12)', color: '#818CF8' }}>
@@ -252,7 +252,7 @@ export default function UploadSection({ onUploadSuccess }) {
           Upload Your <span className="text-gradient">Tool, Project, or Resume</span>
         </h2>
         <p style={{ color: 'var(--text-muted)', maxWidth: '680px', margin: '10px auto 0', fontSize: '1.05rem' }}>
-          Any visitor can share their custom security tool, audit project findings, or uploaded resume/CV. 
+          Any visitor can share their custom security tool, audit project findings, or uploaded resume/CV.
           When submitted, our database sends an instant email alert to the site owner detailing your upload and email address.
         </p>
       </div>
@@ -274,7 +274,7 @@ export default function UploadSection({ onUploadSuccess }) {
 
         {/* 3 Upload Selection Tabs: Tools, Projects, Resume */}
         <div style={{ display: 'flex', gap: '10px', marginBottom: '32px', borderBottom: '1px solid var(--border-light)', paddingBottom: '16px', flexWrap: 'wrap' }}>
-          
+
           {/* Tab 1: Tools */}
           <button
             type="button"
@@ -362,7 +362,7 @@ export default function UploadSection({ onUploadSuccess }) {
 
         {/* Form Container */}
         <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-          
+
           {/* Uploader Email Address (MANDATORY FOR ALL VISITOR UPLOADS) */}
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '16px' }}>
             <div>
@@ -437,8 +437,8 @@ export default function UploadSection({ onUploadSuccess }) {
                   uploadType === 'tool'
                     ? 'e.g. Subdomain Takeover Scanner v2'
                     : uploadType === 'project'
-                    ? 'e.g. Web Security VAPT Audit Findings'
-                    : 'e.g. Cybersecurity Engineer Resume - Alex Rivera'
+                      ? 'e.g. Web Security VAPT Audit Findings'
+                      : 'e.g. Cybersecurity Engineer Resume - Alex Rivera'
                 }
                 required
                 style={{
@@ -545,8 +545,8 @@ export default function UploadSection({ onUploadSuccess }) {
                 uploadType === 'tool'
                   ? 'Explain what your security tool does, syntax, dependencies, and feature highlights...'
                   : uploadType === 'project'
-                  ? 'Summarize the target scope, audit methodology, vulnerabilities discovered, and remediation steps...'
-                  : 'Briefly summarize your key skills, years of experience, certifications, and career highlights...'
+                    ? 'Summarize the target scope, audit methodology, vulnerabilities discovered, and remediation steps...'
+                    : 'Briefly summarize your key skills, years of experience, certifications, and career highlights...'
               }
               required
               style={{
@@ -723,23 +723,29 @@ export default function UploadSection({ onUploadSuccess }) {
           </button>
         </form>
 
-        {/* Community Uploaded Submissions Live Viewer Card */}
+        {/* MongoDB Database & Google Drive Storage Registry Viewer */}
         <div style={{ marginTop: '48px', paddingTop: '32px', borderTop: '1px solid var(--border-light)' }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px', flexWrap: 'wrap', gap: '12px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '18px', flexWrap: 'wrap', gap: '12px' }}>
             <div>
               <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--text-primary)', margin: 0 }}>
-                📋 Live Upload Submissions Registry
+                🗄️ MongoDB Database & Google Drive Registry
               </h3>
               <p style={{ fontSize: '0.82rem', color: 'var(--text-muted)', margin: '4px 0 0 0' }}>
-                All user uploaded tools, audit projects, and resumes are registered in database & emailed to owner.
+                All user uploaded tools, audit projects, and resumes registered under owner account (<strong>karandeabhinav@gmail.com</strong>).
               </p>
             </div>
-            <span className="badge-cyber" style={{ fontSize: '0.75rem' }}>
-              <CheckCircle2 size={12} /> Auto-Sync Active
-            </span>
+
+            <a
+              href="https://drive.google.com/file/d/1KLZQvENVGNpCsrxBUXEXGx3mcQzZ0j53/view?usp=sharing"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn-secondary"
+              style={{ fontSize: '0.8rem', padding: '8px 14px', borderRadius: '10px', textDecoration: 'none' }}
+            >
+              📂 Open Owner Google Drive
+            </a>
           </div>
 
-          {/* Submissions List Tabs */}
           <SubmissionsRegistryViewer refreshTrigger={isSubmitting} />
         </div>
       </motion.div>
@@ -747,18 +753,34 @@ export default function UploadSection({ onUploadSuccess }) {
   );
 }
 
-function SubmissionsRegistryViewer() {
+function SubmissionsRegistryViewer({ refreshTrigger }) {
   const [activeTab, setActiveTab] = useState('tools'); // 'tools' | 'projects' | 'resumes'
   const [items, setItems] = useState([]);
+  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
   useEffect(() => {
-    loadSubmissions();
-  }, [activeTab]);
+    fetchSubmissions();
+  }, [activeTab, refreshTrigger]);
 
-  const loadSubmissions = () => {
+  const fetchSubmissions = async () => {
+    try {
+      const res = await fetch(`${API_URL}/api/admin/submissions`);
+      const data = await res.json();
+      if (data.success && data.data) {
+        const fetchedList = activeTab === 'tools' ? data.data.tools : activeTab === 'projects' ? data.data.projects : data.data.resumes;
+        if (fetchedList && fetchedList.length > 0) {
+          setItems(fetchedList);
+          return;
+        }
+      }
+    } catch (e) {
+      console.log('Fetching local storage submissions fallback:', e);
+    }
+
+    // Fallback local storage lookup
     const key = activeTab === 'tools' ? 'custom_tools' : activeTab === 'projects' ? 'custom_projects' : 'custom_resumes';
-    const data = JSON.parse(localStorage.getItem(key) || '[]');
-    setItems(data);
+    const localData = JSON.parse(localStorage.getItem(key) || '[]');
+    setItems(localData);
   };
 
   return (
@@ -791,7 +813,7 @@ function SubmissionsRegistryViewer() {
 
       {items.length === 0 ? (
         <div style={{ padding: '20px', textAlign: 'center', background: 'var(--bg-secondary)', borderRadius: '12px', border: '1px solid var(--border-light)', color: 'var(--text-muted)', fontSize: '0.85rem' }}>
-          No {activeTab} submitted yet. Use the upload form above to submit your first item!
+          No {activeTab} submitted yet. Use the upload form above to register your first item in MongoDB & Google Drive!
         </div>
       ) : (
         <div style={{ display: 'grid', gap: '12px' }}>
@@ -802,21 +824,21 @@ function SubmissionsRegistryViewer() {
                   {item.title}
                 </div>
                 <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginTop: '2px' }}>
-                  By: <strong style={{ color: 'var(--accent-primary)' }}>{item.uploaderName || item.uploaderEmail}</strong> ({item.uploaderEmail})
+                  Uploader: <strong style={{ color: 'var(--accent-primary)' }}>{item.uploaderName || item.uploaderEmail}</strong> ({item.uploaderEmail})
                 </div>
                 <div style={{ fontSize: '0.78rem', color: 'var(--accent-emerald)', marginTop: '4px' }}>
-                  Category: {item.category}
+                  Category: {item.category || item.type} • Status: Registered in MongoDB
                 </div>
               </div>
-              {item.fileUrl && (
+              {(item.fileUrl || item.reportUrl) && (
                 <a
-                  href={item.fileUrl}
+                  href={item.fileUrl || item.reportUrl}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="btn-secondary"
                   style={{ fontSize: '0.8rem', padding: '6px 12px' }}
                 >
-                  <FileText size={14} /> View Document / Attachment
+                  <FileText size={14} /> Open File / Document
                 </a>
               )}
             </div>
