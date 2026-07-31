@@ -1,5 +1,4 @@
-import { Shield, ArrowUp, FileText, CheckCircle2 } from 'lucide-react';
-import { resumeData } from '../data/resumeData';
+import { Shield, ArrowUp, CheckCircle2 } from 'lucide-react';
 
 export default function Footer() {
   const scrollToTop = () => {
@@ -48,6 +47,8 @@ export default function Footer() {
             <a href="#terminal" style={{ textDecoration: 'none', color: 'inherit' }}>VAPT CLI</a>
             <a href="#skills" style={{ textDecoration: 'none', color: 'inherit' }}>Skills</a>
             <a href="#projects" style={{ textDecoration: 'none', color: 'inherit' }}>Audits</a>
+            <a href="#tools" style={{ textDecoration: 'none', color: 'inherit' }}>Tools</a>
+            <a href="#upload" style={{ textDecoration: 'none', color: 'inherit' }}>Upload Hub</a>
             <a href="#network" style={{ textDecoration: 'none', color: 'inherit' }}>CCNA Visualizer</a>
             <a href="#experience" style={{ textDecoration: 'none', color: 'inherit' }}>Experience</a>
             <a href="#certifications" style={{ textDecoration: 'none', color: 'inherit' }}>Certifications</a>

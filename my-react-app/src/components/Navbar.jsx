@@ -1,27 +1,17 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Shield, FileText, Menu, X, Terminal, Sun, Moon, Palette, Check } from 'lucide-react';
+import { Shield, FileText, Menu, X, Sun, Moon, Upload } from 'lucide-react';
 import { resumeData } from '../data/resumeData';
 
-export default function Navbar({ onOpenTerminal, onOpenAdmin }) {
+export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [activeSection, setActiveSection] = useState('about');
   const [hoveredSection, setHoveredSection] = useState(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [themeMenuOpen, setThemeMenuOpen] = useState(false);
 
   const [theme, setTheme] = useState(() => {
     return localStorage.getItem('theme') || 'dark';
   });
-
-  const themePresets = [
-    { id: 'cyber', name: 'Cyber Neon', color1: '#00F0FF', color2: '#00FF9D', bg: '#030712' },
-    { id: 'violet', name: 'Violet Dusk', color1: '#A855F7', color2: '#EC4899', bg: '#080414' },
-    { id: 'emerald', name: 'Emerald Matrix', color1: '#34D399', color2: '#10B981', bg: '#02120C' },
-    { id: 'ocean', name: 'Ocean Sapphire', color1: '#38BDF8', color2: '#2DD4BF', bg: '#030C1A' },
-    { id: 'sunset', name: 'Sunset Amber', color1: '#FF9E00', color2: '#FF2E63', bg: '#12070B' },
-    { id: 'light', name: 'Pristine Light', color1: '#4F46E5', color2: '#0284C7', bg: '#F8FAFC' }
-  ];
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
@@ -29,14 +19,14 @@ export default function Navbar({ onOpenTerminal, onOpenAdmin }) {
   }, [theme]);
 
   const toggleTheme = () => {
-    setTheme((prev) => (prev === 'light' ? 'cyber' : 'light'));
+    setTheme((prev) => (prev === 'light' ? 'dark' : 'light'));
   };
 
   useEffect(() => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 25);
 
-      const sections = ['about', 'terminal', 'skills', 'projects', 'tools', 'network', 'experience', 'certifications', 'contact'];
+      const sections = ['about', 'terminal', 'skills', 'projects', 'tools', 'upload', 'network', 'experience', 'certifications', 'contact'];
       const scrollPos = window.scrollY + 180;
 
       for (const section of sections) {
@@ -62,6 +52,7 @@ export default function Navbar({ onOpenTerminal, onOpenAdmin }) {
     { id: 'skills', label: 'Skills' },
     { id: 'projects', label: 'Audits' },
     { id: 'tools', label: 'Tools' },
+    { id: 'upload', label: 'Upload' },
     { id: 'network', label: 'CCNA' },
     { id: 'experience', label: 'Experience' },
     { id: 'certifications', label: 'Certs' },
@@ -75,7 +66,7 @@ export default function Navbar({ onOpenTerminal, onOpenAdmin }) {
         top: scrolled ? '6px' : '12px',
         left: '50%',
         transform: 'translateX(-50%)',
-        width: 'min(96%, 1180px)',
+        width: 'min(98%, 1240px)',
         zIndex: 100,
         transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)'
       }}
@@ -101,7 +92,7 @@ export default function Navbar({ onOpenTerminal, onOpenAdmin }) {
           overflow: 'hidden'
         }}
       >
-        
+
         {/* Brand Logo - Single Line Clean Pill */}
         <motion.a
           href="#about"
@@ -227,115 +218,8 @@ export default function Navbar({ onOpenTerminal, onOpenAdmin }) {
 
         {/* Action Buttons Container */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexShrink: 0, whiteSpace: 'nowrap' }}>
-          
-          {/* Aesthetic Color Palette Switcher Trigger */}
-          <div style={{ position: 'relative' }}>
-            <motion.button
-              onClick={() => setThemeMenuOpen(prev => !prev)}
-              whileHover={{ scale: 1.08, y: -1 }}
-              whileTap={{ scale: 0.92 }}
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                width: '32px',
-                height: '32px',
-                borderRadius: '9999px',
-                background: 'rgba(0, 240, 255, 0.12)',
-                color: 'var(--accent-cyan)',
-                border: '1px solid var(--border-light)',
-                cursor: 'pointer',
-                boxShadow: '0 0 12px rgba(0, 240, 255, 0.2)',
-                transition: 'all 0.25s ease'
-              }}
-              title="Select Aesthetic Color Theme"
-            >
-              <Palette size={15} />
-            </motion.button>
 
-            {/* Aesthetic Theme Selection Popover Menu */}
-            <AnimatePresence>
-              {themeMenuOpen && (
-                <motion.div
-                  initial={{ opacity: 0, y: 10, scale: 0.95 }}
-                  animate={{ opacity: 1, y: 0, scale: 1 }}
-                  exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                  transition={{ duration: 0.18 }}
-                  style={{
-                    position: 'absolute',
-                    top: 'calc(100% + 12px)',
-                    right: '-10px',
-                    width: '270px',
-                    background: 'var(--bg-card)',
-                    backdropFilter: 'blur(24px) saturate(180%)',
-                    WebkitBackdropFilter: 'blur(24px) saturate(180%)',
-                    border: '1px solid var(--border-accent)',
-                    borderRadius: '16px',
-                    boxShadow: 'var(--shadow-lg)',
-                    padding: '14px',
-                    zIndex: 200
-                  }}
-                >
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '10px', paddingBottom: '8px', borderBottom: '1px solid var(--border-light)' }}>
-                    <span style={{ fontSize: '0.74rem', fontWeight: 800, fontFamily: 'var(--font-mono)', color: 'var(--accent-cyan)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
-                      Aesthetic Color Themes
-                    </span>
-                    <button
-                      onClick={() => setThemeMenuOpen(false)}
-                      style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', display: 'flex', alignItems: 'center' }}
-                    >
-                      <X size={14} />
-                    </button>
-                  </div>
-
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
-                    {themePresets.map((preset) => {
-                      const isSelected = theme === preset.id || (theme === 'dark' && preset.id === 'cyber');
-                      return (
-                        <button
-                          key={preset.id}
-                          onClick={() => {
-                            setTheme(preset.id);
-                            setThemeMenuOpen(false);
-                          }}
-                          style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '8px',
-                            padding: '8px 10px',
-                            borderRadius: '10px',
-                            background: isSelected ? 'rgba(0, 240, 255, 0.14)' : 'rgba(255, 255, 255, 0.03)',
-                            border: isSelected ? '1px solid var(--accent-cyan)' : '1px solid var(--border-light)',
-                            color: 'var(--text-primary)',
-                            cursor: 'pointer',
-                            fontSize: '0.74rem',
-                            fontWeight: isSelected ? 700 : 500,
-                            transition: 'all 0.2s ease',
-                            textAlign: 'left'
-                          }}
-                        >
-                          <div
-                            style={{
-                              width: '14px',
-                              height: '14px',
-                              borderRadius: '9999px',
-                              background: `linear-gradient(135deg, ${preset.color1} 0%, ${preset.color2} 100%)`,
-                              boxShadow: `0 0 6px ${preset.color1}90`,
-                              flexShrink: 0
-                            }}
-                          />
-                          <span style={{ flex: 1, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{preset.name}</span>
-                          {isSelected && <Check size={12} style={{ color: 'var(--accent-cyan)' }} />}
-                        </button>
-                      );
-                    })}
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
-
-          {/* Light / Dark Quick Switcher */}
+          {/* Light / Dark Mode Theme Switcher */}
           <motion.button
             onClick={toggleTheme}
             whileHover={{ scale: 1.08, y: -1 }}
@@ -347,21 +231,21 @@ export default function Navbar({ onOpenTerminal, onOpenAdmin }) {
               width: '32px',
               height: '32px',
               borderRadius: '9999px',
-              background: theme === 'light' ? 'rgba(245, 158, 11, 0.15)' : 'rgba(99, 102, 241, 0.2)',
-              color: theme === 'light' ? '#D97706' : '#818CF8',
-              border: theme === 'light' ? '1px solid rgba(245, 158, 11, 0.35)' : '1px solid rgba(99, 102, 241, 0.4)',
+              background: theme === 'dark' ? 'rgba(99, 102, 241, 0.2)' : 'rgba(245, 158, 11, 0.15)',
+              color: theme === 'dark' ? '#818CF8' : '#D97706',
+              border: theme === 'dark' ? '1px solid rgba(99, 102, 241, 0.4)' : '1px solid rgba(245, 158, 11, 0.35)',
               cursor: 'pointer',
-              boxShadow: theme === 'light' ? '0 2px 6px rgba(245, 158, 11, 0.2)' : '0 0 10px rgba(99, 102, 241, 0.3)',
+              boxShadow: theme === 'dark' ? '0 0 10px rgba(99, 102, 241, 0.3)' : '0 2px 6px rgba(245, 158, 11, 0.2)',
               transition: 'all 0.25s ease'
             }}
-            title={`Toggle Theme Mode (${theme})`}
+            title={`Switch to ${theme === 'light' ? 'Dark' : 'Light'} Theme`}
           >
             {theme === 'light' ? <Moon size={15} /> : <Sun size={15} />}
           </motion.button>
 
-          {/* Admin Panel Trigger */}
-          <motion.button
-            onClick={onOpenAdmin}
+          {/* Public Visitor Upload Trigger */}
+          <motion.a
+            href="#upload"
             whileHover={{ scale: 1.05, y: -1 }}
             whileTap={{ scale: 0.96 }}
             style={{
@@ -369,21 +253,22 @@ export default function Navbar({ onOpenTerminal, onOpenAdmin }) {
               alignItems: 'center',
               gap: '4px',
               borderRadius: '9999px',
-              padding: '6px 12px',
+              padding: '6px 13px',
               fontSize: '0.75rem',
               fontWeight: 700,
-              background: 'rgba(79, 70, 229, 0.1)',
-              color: '#4F46E5',
-              border: '1px solid rgba(79, 70, 229, 0.25)',
+              background: 'linear-gradient(135deg, rgba(79, 70, 229, 0.15) 0%, rgba(8, 145, 178, 0.15) 100%)',
+              color: 'var(--accent-primary)',
+              border: '1px solid rgba(79, 70, 229, 0.3)',
               cursor: 'pointer',
-              boxShadow: '0 2px 6px rgba(79, 70, 229, 0.12)',
+              boxShadow: '0 2px 8px rgba(79, 70, 229, 0.15)',
+              textDecoration: 'none',
               whiteSpace: 'nowrap'
             }}
-            title="Open Security Admin Gateway"
+            title="Upload Your Tool, Project, or Resume"
           >
-            <Shield size={13} />
-            <span>Admin</span>
-          </motion.button>
+            <Upload size={13} />
+            <span>Upload (+)</span>
+          </motion.a>
 
           {/* Download Resume / View PDF */}
           <motion.a
@@ -407,27 +292,6 @@ export default function Navbar({ onOpenTerminal, onOpenAdmin }) {
             <FileText size={13} />
             <span className="btn-resume-text">Resume</span>
           </motion.a>
-
-          {/* Quick Terminal Trigger - END SIDE BUTTON */}
-          <motion.button
-            onClick={onOpenTerminal}
-            whileHover={{ scale: 1.05, y: -1 }}
-            whileTap={{ scale: 0.96 }}
-            className="btn-cyber"
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '5px',
-              borderRadius: '9999px',
-              padding: '6px 13px',
-              fontSize: '0.75rem',
-              whiteSpace: 'nowrap'
-            }}
-            title="Launch Interactive Security Terminal"
-          >
-            <Terminal size={13} />
-            <span className="btn-terminal-text" style={{ whiteSpace: 'nowrap' }}>Audit CLI</span>
-          </motion.button>
 
           {/* Mobile Hamburger Toggle */}
           <button

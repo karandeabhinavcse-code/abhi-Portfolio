@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Terminal as TerminalIcon, X, Maximize2, Minimize2, Play, CornerDownLeft, Shield, Sparkles, Copy, Check } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { Terminal as TerminalIcon, X, CornerDownLeft, Copy, Check } from 'lucide-react';
 import { resumeData } from '../data/resumeData';
 
 export default function VaptTerminal({ isOpen, onClose, isModal = false }) {
@@ -40,7 +40,7 @@ export default function VaptTerminal({ isOpen, onClose, isModal = false }) {
       return;
     }
 
-    let response = '';
+    let response;
 
     if (trimmed === 'help') {
       response = `AVAILABLE COMMANDS:

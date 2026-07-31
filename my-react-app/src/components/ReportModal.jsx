@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { X, ShieldAlert, Copy, Check, FileText, ExternalLink, Code2, AlertCircle } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { X, Copy, Check, FileText, ExternalLink, AlertCircle } from 'lucide-react';
 
 export default function ReportModal({ project, onClose }) {
   const [copiedIdx, setCopiedIdx] = useState(null);

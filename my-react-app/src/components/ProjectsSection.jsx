@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ShieldAlert, ExternalLink, Code2, AlertTriangle, CheckCircle2, ChevronRight, FileText, Lock, Terminal, Cpu } from 'lucide-react';
+import { ShieldAlert, ExternalLink, CheckCircle2, FileText, Terminal, Cpu } from 'lucide-react';
 import { resumeData } from '../data/resumeData';
 
 export default function ProjectsSection({ onSelectPoC, refreshTrigger }) {
@@ -9,11 +9,7 @@ export default function ProjectsSection({ onSelectPoC, refreshTrigger }) {
 
   const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
-  useEffect(() => {
-    fetchProjects();
-  }, [refreshTrigger]);
-
-  const fetchProjects = async () => {
+  const fetchProjects = useCallback(async () => {
     let baseProjects = resumeData.projects;
     try {
       const res = await fetch(`${API_URL}/api/projects`);
@@ -33,19 +29,24 @@ export default function ProjectsSection({ onSelectPoC, refreshTrigger }) {
       }
     });
     setProjectsList(combined);
-  };
+  }, [API_URL]);
 
-  const categories = ['All', 'Web & API Security', 'Mobile Security', 'Network Infrastructure'];
+  useEffect(() => {
+    fetchProjects();
+  }, [refreshTrigger, fetchProjects]);
+
+  const defaultCategories = ['All', 'Web & API Security', 'Mobile Security', 'Network Infrastructure'];
+  const categories = Array.from(new Set(['All', ...defaultCategories.slice(1), ...projectsList.map(p => p.type || p.category).filter(Boolean)]));
 
   const filteredProjects = selectedCategory === 'All'
     ? projectsList
-    : projectsList.filter(p => p.type === selectedCategory);
+    : projectsList.filter(p => (p.type || p.category) === selectedCategory);
 
   return (
-    <section id="projects" style={{ padding: '90px 24px', maxWidth: '1280px', margin: '0 auto' }}>
+    <section id="projects" style={{ padding: '70px 24px', maxWidth: '1280px', margin: '0 auto' }}>
       
       {/* Section Header */}
-      <div style={{ textAlign: 'center', marginBottom: '48px' }}>
+      <div style={{ textAlign: 'center', marginBottom: '36px' }}>
         <span className="badge-cyber" style={{ marginBottom: '12px' }}>
           <ShieldAlert size={14} /> Penetration Testing Portfolio
         </span>
@@ -58,7 +59,7 @@ export default function ProjectsSection({ onSelectPoC, refreshTrigger }) {
       </div>
 
       {/* Filter Tabs */}
-      <div style={{ display: 'flex', justifyContent: 'center', gap: '10px', flexWrap: 'wrap', marginBottom: '40px' }}>
+      <div style={{ display: 'flex', justifyContent: 'center', gap: '10px', flexWrap: 'wrap', marginBottom: '32px' }}>
         {categories.map((cat) => (
           <button
             key={cat}

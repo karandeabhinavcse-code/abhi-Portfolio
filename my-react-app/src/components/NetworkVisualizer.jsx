@@ -1,6 +1,5 @@
 import { useState } from 'react';
-import { motion } from 'framer-motion';
-import { Network, Server, Router, Shield, Cpu, Activity, Play, CheckCircle2, ArrowRight, Layers, Lock } from 'lucide-react';
+import { Network, Server, Router, Shield, Cpu, Activity, ArrowRight, Layers, Lock } from 'lucide-react';
 
 export default function NetworkVisualizer() {
   const [activeTab, setActiveTab] = useState('ospf');
@@ -42,10 +41,10 @@ export default function NetworkVisualizer() {
   };
 
   return (
-    <section id="network" style={{ padding: '90px 24px', maxWidth: '1280px', margin: '0 auto' }}>
+    <section id="network" style={{ padding: '70px 24px', maxWidth: '1280px', margin: '0 auto' }}>
       
       {/* Header */}
-      <div style={{ textAlign: 'center', marginBottom: '48px' }}>
+      <div style={{ textAlign: 'center', marginBottom: '36px' }}>
         <span className="badge-cyber" style={{ marginBottom: '12px' }}>
           <Network size={14} /> CCNA Architecture Interactive Demo
         </span>

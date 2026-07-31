@@ -56,10 +56,10 @@ export default function ContactSection() {
   };
 
   return (
-    <section id="contact" style={{ padding: '90px 24px', maxWidth: '1280px', margin: '0 auto' }}>
+    <section id="contact" style={{ padding: '70px 24px', maxWidth: '1280px', margin: '0 auto' }}>
       
       {/* Header */}
-      <div style={{ textAlign: 'center', marginBottom: '56px' }}>
+      <div style={{ textAlign: 'center', marginBottom: '36px' }}>
         <span className="badge-cyber" style={{ marginBottom: '12px' }}>
           <Mail size={14} /> Get In Touch
         </span>
@@ -266,8 +266,8 @@ export default function ContactSection() {
                 />
               </div>
 
-              <button type="submit" className="btn-primary" style={{ width: '100%', padding: '14px' }}>
-                <Send size={18} /> Transmit Message
+              <button type="submit" disabled={isSending} className="btn-primary" style={{ width: '100%', padding: '14px', opacity: isSending ? 0.7 : 1 }}>
+                <Send size={18} /> {isSending ? 'Transmitting...' : 'Transmit Message'}
               </button>
             </form>
           )}

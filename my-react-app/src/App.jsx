@@ -6,17 +6,16 @@ import VaptTerminal from './components/VaptTerminal';
 import SkillsSection from './components/SkillsSection';
 import ProjectsSection from './components/ProjectsSection';
 import SecurityToolsSection from './components/SecurityToolsSection';
+import UploadSection from './components/UploadSection';
 import NetworkVisualizer from './components/NetworkVisualizer';
 import ExperienceSection from './components/ExperienceSection';
 import CertificationsSection from './components/CertificationsSection';
 import ReportModal from './components/ReportModal';
-import AdminPanel from './components/AdminPanel';
 import ContactSection from './components/ContactSection';
 import Footer from './components/Footer';
 
 export default function App() {
   const [terminalModalOpen, setTerminalModalOpen] = useState(false);
-  const [adminModalOpen, setAdminModalOpen] = useState(false);
   const [selectedPoCProject, setSelectedPoCProject] = useState(null);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
 
@@ -28,7 +27,6 @@ export default function App() {
       {/* Glassmorphism Header Navbar */}
       <Navbar
         onOpenTerminal={() => setTerminalModalOpen(true)}
-        onOpenAdmin={() => setAdminModalOpen(true)}
       />
 
       {/* Main Content Area */}
@@ -47,6 +45,9 @@ export default function App() {
 
         {/* Custom Hacking & Security Tools Section */}
         <SecurityToolsSection refreshTrigger={refreshTrigger} />
+
+        {/* Open Upload Project, Tool & Resume Visitor Hub */}
+        <UploadSection onUploadSuccess={() => setRefreshTrigger(prev => prev + 1)} />
 
         {/* CCNA Network Protocol Topology Simulator */}
         <NetworkVisualizer />
@@ -69,13 +70,6 @@ export default function App() {
         isModal={true}
         isOpen={terminalModalOpen}
         onClose={() => setTerminalModalOpen(false)}
-      />
-
-      {/* Full-Stack MongoDB Atlas Admin Panel */}
-      <AdminPanel
-        isOpen={adminModalOpen}
-        onClose={() => setAdminModalOpen(false)}
-        onProjectUpdated={() => setRefreshTrigger(prev => prev + 1)}
       />
 
       {/* PoC Payload Inspector Modal */}

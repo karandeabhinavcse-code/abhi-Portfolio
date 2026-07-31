@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Shield, Terminal, ArrowRight, Download, CheckCircle2, Cpu, ExternalLink, Sparkles, Award } from 'lucide-react';
+import { Shield, Terminal, ArrowRight, Download, CheckCircle2, Sparkles } from 'lucide-react';
 import { resumeData } from '../data/resumeData';
 
 export default function Hero({ onOpenTerminal }) {

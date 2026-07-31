@@ -10,7 +10,7 @@ export const resumeData = {
     ],
     email: "karandeabhinav@gmail.com",
     location: "Pune, Kharadi, Maharashtra",
-    reportUrl: "https://drive.google.com/file/d/17uzlAmnafOpMkg_QWuc7ZUYQEQAQVbnY/view",
+    reportUrl: "https://drive.google.com/file/d/1KLZQvENVGNpCsrxBUXEXGx3mcQzZ0j53/view?usp=sharing",
     githubUrl: "https://github.com/",
     linkedinUrl: "https://linkedin.com/",
     status: "Open to Application Security & VAPT Roles",

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Award, ShieldCheck, Copy, Check, ExternalLink, Network, Code, Smartphone, Cpu, Cloud, Lock } from 'lucide-react';
+import { Award, ShieldCheck, Copy, Check, Network, Code, Smartphone, Cpu, Cloud, Lock } from 'lucide-react';
 import { resumeData } from '../data/resumeData';
 
 const iconMap = {
@@ -17,10 +17,10 @@ export default function CertificationsSection() {
   };
 
   return (
-    <section id="certifications" style={{ padding: '90px 24px', maxWidth: '1280px', margin: '0 auto' }}>
+    <section id="certifications" style={{ padding: '70px 24px', maxWidth: '1280px', margin: '0 auto' }}>
       
       {/* Header */}
-      <div style={{ textAlign: 'center', marginBottom: '56px' }}>
+      <div style={{ textAlign: 'center', marginBottom: '36px' }}>
         <span className="badge-cyber" style={{ marginBottom: '12px' }}>
           <Award size={14} /> Verified Credentials & Licenses
         </span>

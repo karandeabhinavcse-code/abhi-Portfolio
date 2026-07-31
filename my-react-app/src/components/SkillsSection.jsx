@@ -25,10 +25,10 @@ export default function SkillsSection() {
     : categories.filter(cat => cat.id === activeTab);
 
   return (
-    <section id="skills" style={{ padding: '90px 24px', maxWidth: '1280px', margin: '0 auto' }}>
+    <section id="skills" style={{ padding: '70px 24px', maxWidth: '1280px', margin: '0 auto' }}>
       
       {/* Header */}
-      <div style={{ textAlign: 'center', marginBottom: '48px' }}>
+      <div style={{ textAlign: 'center', marginBottom: '36px' }}>
         <span className="badge-cyber" style={{ marginBottom: '12px' }}>
           <ShieldAlert size={14} /> Core Expertise & Arsenal
         </span>
@@ -41,7 +41,7 @@ export default function SkillsSection() {
       </div>
 
       {/* Filter Tabs */}
-      <div style={{ display: 'flex', justifyContent: 'center', gap: '8px', flexWrap: 'wrap', marginBottom: '40px' }}>
+      <div style={{ display: 'flex', justifyContent: 'center', gap: '8px', flexWrap: 'wrap', marginBottom: '32px' }}>
         <button
           onClick={() => setActiveTab('all')}
           style={{

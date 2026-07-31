@@ -6,6 +6,7 @@ import multer from 'multer';
 import path from 'path';
 import fs from 'fs';
 import { fileURLToPath } from 'url';
+import nodemailer from 'nodemailer';
 
 dotenv.config();
 
@@ -78,7 +79,7 @@ const ProjectSchema = new mongoose.Schema({
     medium: { type: Number, default: 0 }
   },
   tools: [{ type: String }],
-  reportUrl: { type: String, default: 'https://drive.google.com/file/d/17uzlAmnafOpMkg_QWuc7ZUYQEQAQVbnY/view' },
+  reportUrl: { type: String, default: 'https://drive.google.com/file/d/1KLZQvENVGNpCsrxBUXEXGx3mcQzZ0j53/view?usp=sharing' },
   pocs: [{
     title: String,
     vulnerability: String,
@@ -86,6 +87,9 @@ const ProjectSchema = new mongoose.Schema({
     code: String,
     impact: String
   }],
+  uploaderEmail: { type: String, default: '' },
+  uploaderName: { type: String, default: 'Admin' },
+  isUserUpload: { type: Boolean, default: false },
   createdAt: { type: Date, default: Date.now }
 });
 
@@ -105,10 +109,108 @@ const ToolSchema = new mongoose.Schema({
   documentation: { type: String },
   commandUsage: { type: String },
   tags: [{ type: String }],
+  uploaderEmail: { type: String, default: '' },
+  uploaderName: { type: String, default: 'Admin' },
+  isUserUpload: { type: Boolean, default: false },
   createdAt: { type: Date, default: Date.now }
 });
 
 const SecurityTool = mongoose.model('SecurityTool', ToolSchema);
+
+// Mongoose Schema for User Uploaded Resumes / CVs
+const ResumeSchema = new mongoose.Schema({
+  title: { type: String, required: true },
+  uploaderName: { type: String, required: true },
+  uploaderEmail: { type: String, required: true },
+  category: { type: String, default: 'Software Engineer / Security' },
+  description: { type: String },
+  fileUrl: { type: String },
+  fileName: { type: String },
+  fileSize: { type: String },
+  githubUrl: { type: String },
+  createdAt: { type: Date, default: Date.now }
+});
+
+const ResumeSubmission = mongoose.model('ResumeSubmission', ResumeSchema);
+
+// --- NODEMAILER EMAIL NOTIFICATION HELPER ---
+async function sendUploadNotificationEmail({ uploadType, title, uploaderEmail, uploaderName, category, description, fileUrl, externalUrl }) {
+  const adminEmail = process.env.NOTIFICATION_EMAIL || process.env.EMAIL_USER || 'karandeabhinavcse@gmail.com';
+  const emailUser = process.env.EMAIL_USER;
+  const emailPass = process.env.EMAIL_PASS;
+
+  console.log(`\n======================================================`);
+  console.log(`[EMAIL NOTIFICATION TRIGGERED]`);
+  console.log(`Upload Type: ${uploadType}`);
+  console.log(`Title: "${title}"`);
+  console.log(`Uploader Email: ${uploaderEmail}`);
+  console.log(`Uploader Name: ${uploaderName || 'Visitor'}`);
+  console.log(`Target/Category: ${category || 'General'}`);
+  console.log(`Recipient Email: ${adminEmail}`);
+  console.log(`======================================================\n`);
+
+  if (!emailUser || !emailPass) {
+    console.log(`[EMAIL NOTICE] EMAIL_USER / EMAIL_PASS not set in .env. Logged email details to console above.`);
+    return { success: true, simulated: true };
+  }
+
+  try {
+    const transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: emailUser,
+        pass: emailPass
+      }
+    });
+
+    const htmlContent = `
+      <div style="font-family: Arial, sans-serif; background-color: #0f172a; color: #f8fafc; padding: 24px; border-radius: 12px; max-width: 600px; margin: 0 auto; border: 1px solid #334155;">
+        <div style="border-bottom: 2px solid #4f46e5; padding-bottom: 12px; margin-bottom: 20px;">
+          <h2 style="color: #818cf8; margin: 0;">🚨 New ${uploadType} Upload Alert</h2>
+          <p style="color: #94a3b8; margin: 4px 0 0 0; font-size: 13px;">Abhinav.Sec Portfolio Database Event</p>
+        </div>
+
+        <div style="background-color: #1e293b; padding: 16px; border-radius: 8px; margin-bottom: 16px; border-left: 4px solid #06b6d4;">
+          <h3 style="color: #38bdf8; margin: 0 0 10px 0; font-size: 16px;">👤 Uploader Info</h3>
+          <p style="margin: 4px 0;"><strong>Uploader Email:</strong> <a href="mailto:${uploaderEmail}" style="color: #60a5fa; text-decoration: underline;">${uploaderEmail}</a></p>
+          <p style="margin: 4px 0;"><strong>Uploader Name:</strong> ${uploaderName || 'Anonymous / Guest'}</p>
+          <p style="margin: 4px 0;"><strong>Timestamp:</strong> ${new Date().toLocaleString()}</p>
+        </div>
+
+        <div style="background-color: #1e293b; padding: 16px; border-radius: 8px; margin-bottom: 16px; border-left: 4px solid #4f46e5;">
+          <h3 style="color: #818cf8; margin: 0 0 10px 0; font-size: 16px;">📦 ${uploadType} Details</h3>
+          <p style="margin: 4px 0;"><strong>Title:</strong> ${title}</p>
+          <p style="margin: 4px 0;"><strong>Category / Type:</strong> ${category || 'General'}</p>
+          <p style="margin: 4px 0;"><strong>Summary / Description:</strong></p>
+          <div style="background-color: #0f172a; padding: 10px; border-radius: 6px; color: #cbd5e1; font-size: 14px; margin-top: 4px;">
+            ${description}
+          </div>
+          ${externalUrl ? `<p style="margin: 8px 0 0 0;"><strong>External Link:</strong> <a href="${externalUrl}" style="color: #60a5fa;">${externalUrl}</a></p>` : ''}
+          ${fileUrl ? `<p style="margin: 8px 0 0 0;"><strong>Uploaded File:</strong> <a href="${fileUrl}" style="color: #34d399;">${fileUrl}</a></p>` : ''}
+        </div>
+
+        <div style="text-align: center; margin-top: 24px; padding-top: 12px; border-top: 1px solid #334155; color: #64748b; font-size: 12px;">
+          Sent automatically from Abhinav Karande Portfolio API Database when a user uploads a project or tool.
+        </div>
+      </div>
+    `;
+
+    const mailOptions = {
+      from: `"Abhinav.Sec Portfolio" <${emailUser}>`,
+      to: adminEmail,
+      replyTo: uploaderEmail,
+      subject: `🚨 [UPLOAD ALERT] ${uploaderEmail} uploaded a new ${uploadType}: "${title}"`,
+      html: htmlContent
+    };
+
+    const info = await transporter.sendMail(mailOptions);
+    console.log('[EMAIL SUCCESS] Mail sent to owner:', info.messageId);
+    return { success: true, messageId: info.messageId };
+  } catch (err) {
+    console.error('[EMAIL ERROR] Failed sending notification email:', err.message);
+    return { success: false, error: err.message };
+  }
+}
 
 // Seed Projects
 const defaultSeedProjects = [
@@ -333,8 +435,29 @@ app.post('/api/tools', async (req, res) => {
     const newTool = new SecurityTool(toolData);
     await newTool.save();
 
-    console.log(`[DB] New Tool Published: "${newTool.title}"`);
-    res.status(201).json({ success: true, message: 'Security tool published successfully!', tool: newTool });
+    console.log(`[DB] New Tool Published: "${newTool.title}" by ${newTool.uploaderEmail || 'Admin'}`);
+
+    // Trigger Email Notification if uploader email is provided
+    if (newTool.uploaderEmail) {
+      sendUploadNotificationEmail({
+        uploadType: 'Security Tool',
+        title: newTool.title,
+        uploaderEmail: newTool.uploaderEmail,
+        uploaderName: newTool.uploaderName,
+        category: newTool.category,
+        description: newTool.description,
+        fileUrl: newTool.fileUrl,
+        externalUrl: newTool.githubUrl
+      });
+    }
+
+    res.status(201).json({
+      success: true,
+      message: newTool.uploaderEmail
+        ? `Security tool published successfully! Database triggered an email notification for (${newTool.uploaderEmail}).`
+        : 'Security tool published successfully!',
+      tool: newTool
+    });
   } catch (err) {
     console.error('[Create Tool Error]', err);
     res.status(500).json({ success: false, error: 'Failed to save security tool.' });
@@ -397,11 +520,134 @@ app.post('/api/projects', async (req, res) => {
     const newProject = new Project(projectData);
     await newProject.save();
 
-    console.log(`[DB] New Project Created: "${newProject.title}"`);
-    res.status(201).json({ success: true, message: 'Project added successfully!', project: newProject });
+    console.log(`[DB] New Project Created: "${newProject.title}" by ${newProject.uploaderEmail || 'Admin'}`);
+
+    // Trigger Email Notification if uploader email is provided
+    if (newProject.uploaderEmail) {
+      sendUploadNotificationEmail({
+        uploadType: 'Audit Project',
+        title: newProject.title,
+        uploaderEmail: newProject.uploaderEmail,
+        uploaderName: newProject.uploaderName,
+        category: newProject.type,
+        description: newProject.summary,
+        fileUrl: newProject.reportUrl,
+        externalUrl: newProject.reportUrl
+      });
+    }
+
+    res.status(201).json({
+      success: true,
+      message: newProject.uploaderEmail
+        ? `Project created successfully! Database triggered an email notification for (${newProject.uploaderEmail}).`
+        : 'Project added successfully!',
+      project: newProject
+    });
   } catch (err) {
     console.error('[Create Project Error]', err);
     res.status(500).json({ success: false, error: 'Failed to create project.' });
+  }
+});
+
+// POST Generic Upload Submission Endpoint (Handles Tool, Project & Resume Uploads from Website)
+app.post('/api/upload-submission', async (req, res) => {
+  try {
+    const { uploadType, uploaderEmail, uploaderName, title, category, description, language, version, githubUrl, fileUrl, fileName, fileSize } = req.body;
+
+    if (!uploaderEmail || !title || !description) {
+      return res.status(400).json({ success: false, error: 'Uploader email, Title, and Description are required.' });
+    }
+
+    let result;
+    if (uploadType === 'Resume' || uploadType === 'Resume / CV') {
+      const newResume = new ResumeSubmission({
+        title,
+        uploaderName: uploaderName || 'Visitor',
+        uploaderEmail,
+        category: category || 'Resume / CV',
+        description,
+        fileUrl: fileUrl || githubUrl || '',
+        fileName: fileName || '',
+        fileSize: fileSize || '',
+        githubUrl: githubUrl || ''
+      });
+      await newResume.save();
+      result = { type: 'Resume', data: newResume };
+
+      await sendUploadNotificationEmail({
+        uploadType: 'Resume / CV',
+        title: newResume.title,
+        uploaderEmail,
+        uploaderName: uploaderName || 'Visitor',
+        category: newResume.category,
+        description: newResume.description,
+        fileUrl: newResume.fileUrl,
+        externalUrl: githubUrl
+      });
+    } else if (uploadType === 'Project' || uploadType === 'Audit Project') {
+      const newProject = new Project({
+        title,
+        target: category || 'Web & API Security',
+        type: category || 'Web & API Security',
+        summary: description,
+        reportUrl: fileUrl || githubUrl || 'https://drive.google.com/file/d/1KLZQvENVGNpCsrxBUXEXGx3mcQzZ0j53/view?usp=sharing',
+        uploaderEmail,
+        uploaderName: uploaderName || 'Site Contributor',
+        isUserUpload: true,
+        highlights: ['User uploaded project report submitted via portfolio interface.']
+      });
+      await newProject.save();
+      result = { type: 'Project', data: newProject };
+
+      await sendUploadNotificationEmail({
+        uploadType: 'Audit Project',
+        title: newProject.title,
+        uploaderEmail,
+        uploaderName: uploaderName || 'Site Contributor',
+        category: newProject.type,
+        description: newProject.summary,
+        fileUrl: newProject.reportUrl,
+        externalUrl: githubUrl
+      });
+    } else {
+      const newTool = new SecurityTool({
+        title,
+        category: category || 'VAPT Utility',
+        description,
+        language: language || 'Python / Bash',
+        version: version || '1.0.0',
+        fileUrl: fileUrl || '',
+        fileName: fileName || '',
+        fileSize: fileSize || '',
+        githubUrl: githubUrl || '',
+        uploaderEmail,
+        uploaderName: uploaderName || 'Site Contributor',
+        isUserUpload: true,
+        tags: [category || 'Community Tool', 'User Upload']
+      });
+      await newTool.save();
+      result = { type: 'Security Tool', data: newTool };
+
+      await sendUploadNotificationEmail({
+        uploadType: 'Security Tool',
+        title: newTool.title,
+        uploaderEmail,
+        uploaderName: uploaderName || 'Site Contributor',
+        category: newTool.category,
+        description: newTool.description,
+        fileUrl: newTool.fileUrl,
+        externalUrl: githubUrl
+      });
+    }
+
+    res.status(201).json({
+      success: true,
+      message: `Database upload successful! Notification email triggered to site owner for uploader (${uploaderEmail}).`,
+      data: result
+    });
+  } catch (err) {
+    console.error('[Upload Submission Error]', err);
+    res.status(500).json({ success: false, error: 'Upload submission failed.' });
   }
 });
 

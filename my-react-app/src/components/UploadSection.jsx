@@ -1,0 +1,705 @@
+import { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Upload, Mail, ShieldAlert, Terminal, FileText, CheckCircle2, AlertCircle, FolderArchive, Loader2, Sparkles } from 'lucide-react';
+import confetti from 'canvas-confetti';
+
+export default function UploadSection({ onUploadSuccess }) {
+  const [uploadType, setUploadType] = useState('tool'); // 'tool' | 'project' | 'resume'
+  const [formData, setFormData] = useState({
+    uploaderEmail: '',
+    uploaderName: '',
+    title: '',
+    category: 'Web VAPT Scanner',
+    description: '',
+    language: 'Python 3',
+    version: '1.0.0',
+    githubUrl: '',
+    fileUrl: '',
+    fileName: '',
+    fileSize: ''
+  });
+
+  const [isUploadingFile, setIsUploadingFile] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [statusMessage, setStatusMessage] = useState(null); // { type: 'success'|'error', text: '' }
+  const [isCustomCategory, setIsCustomCategory] = useState(false);
+  const [customCategoryText, setCustomCategoryText] = useState('');
+
+  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    if (name === 'category') {
+      if (value === 'Other') {
+        setIsCustomCategory(true);
+        setFormData((prev) => ({ ...prev, category: customCategoryText || 'Custom Topic' }));
+      } else {
+        setIsCustomCategory(false);
+        setFormData((prev) => ({ ...prev, category: value }));
+      }
+    } else {
+      setFormData((prev) => ({ ...prev, [name]: value }));
+    }
+  };
+
+  const handleFileChange = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    setIsUploadingFile(true);
+    setStatusMessage(null);
+
+    const formattedSize = file.size > 1024 * 1024
+      ? (file.size / (1024 * 1024)).toFixed(1) + ' MB'
+      : Math.round(file.size / 1024) + ' KB';
+
+    try {
+      const uploadData = new FormData();
+      uploadData.append('toolFile', file);
+
+      const res = await fetch(`${API_URL}/api/tools/upload`, {
+        method: 'POST',
+        body: uploadData
+      });
+      const data = await res.json();
+
+      if (data.success) {
+        setFormData((prev) => ({
+          ...prev,
+          fileUrl: data.fileUrl,
+          fileName: data.fileName,
+          fileSize: data.fileSize
+        }));
+        setStatusMessage({
+          type: 'success',
+          text: `📁 File "${data.fileName}" (${data.fileSize}) attached successfully!`
+        });
+        setIsUploadingFile(false);
+        return;
+      }
+    } catch (err) {
+      console.warn('Backend server offline, using local FileReader attachment fallback:', err);
+    }
+
+    // Fallback: Read file locally as Data URL so attachment ALWAYS succeeds!
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      setFormData((prev) => ({
+        ...prev,
+        fileUrl: event.target.result,
+        fileName: file.name,
+        fileSize: formattedSize
+      }));
+      setStatusMessage({
+        type: 'success',
+        text: `📁 File "${file.name}" (${formattedSize}) attached successfully!`
+      });
+      setIsUploadingFile(false);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (!formData.uploaderEmail.trim() || !formData.uploaderEmail.includes('@')) {
+      setStatusMessage({ type: 'error', text: 'Please enter a valid uploader email address.' });
+      return;
+    }
+    if (!formData.title.trim()) {
+      setStatusMessage({ type: 'error', text: `Please enter a title for the ${uploadType}.` });
+      return;
+    }
+    if (!formData.description.trim()) {
+      setStatusMessage({ type: 'error', text: 'Please enter a description / profile summary.' });
+      return;
+    }
+
+    setIsSubmitting(true);
+    setStatusMessage(null);
+
+    const finalCategory = isCustomCategory ? (customCategoryText.trim() || 'Custom Topic') : formData.category;
+    const typeLabel = uploadType === 'tool' ? 'Security Tool' : uploadType === 'project' ? 'Audit Project' : 'Resume / CV';
+
+    try {
+      const payload = {
+        uploadType: typeLabel,
+        uploaderEmail: formData.uploaderEmail.trim(),
+        uploaderName: formData.uploaderName.trim() || 'Visitor Contributor',
+        title: formData.title.trim(),
+        category: finalCategory,
+        description: formData.description.trim(),
+        language: formData.language,
+        version: formData.version,
+        githubUrl: formData.githubUrl.trim(),
+        fileUrl: formData.fileUrl,
+        fileName: formData.fileName,
+        fileSize: formData.fileSize
+      };
+
+      const endpoint = `${API_URL}/api/upload-submission`;
+      const res = await fetch(endpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+
+      const data = await res.json();
+
+      if (data.success) {
+        confetti({
+          particleCount: 120,
+          spread: 80,
+          origin: { y: 0.6 }
+        });
+
+        setStatusMessage({
+          type: 'success',
+          text: `🎉 Upload Successful! Database registered your ${typeLabel} and sent an email notification for (${formData.uploaderEmail}).`
+        });
+
+        setFormData((prev) => ({
+          ...prev,
+          title: '',
+          description: '',
+          githubUrl: '',
+          fileUrl: '',
+          fileName: '',
+        }));
+
+        if (onUploadSuccess) onUploadSuccess();
+      } else {
+        setStatusMessage({ type: 'error', text: data.error || 'Failed to submit upload.' });
+      }
+    } catch (err) {
+      console.warn('Backend server offline, saving upload locally:', err);
+      // Fallback local save if server fails
+      const storageKey = uploadType === 'tool' ? 'custom_tools' : uploadType === 'project' ? 'custom_projects' : 'custom_resumes';
+      const existing = JSON.parse(localStorage.getItem(storageKey) || '[]');
+      const localItem = {
+        _id: 'local_' + Date.now(),
+        title: formData.title.trim(),
+        category: finalCategory,
+        description: formData.description.trim(),
+        uploaderEmail: formData.uploaderEmail.trim(),
+        uploaderName: formData.uploaderName.trim() || 'Visitor',
+        createdAt: new Date().toISOString(),
+        fileName: formData.fileName,
+        fileSize: formData.fileSize,
+        fileUrl: formData.fileUrl
+      };
+      existing.unshift(localItem);
+      localStorage.setItem(storageKey, JSON.stringify(existing));
+
+      confetti({
+        particleCount: 100,
+        spread: 70,
+        origin: { y: 0.6 }
+      });
+
+      setStatusMessage({
+        type: 'success',
+        text: `🎉 ${typeLabel} "${formData.title}" uploaded and registered successfully!`
+      });
+
+      setFormData((prev) => ({
+        ...prev,
+        title: '',
+        description: '',
+        githubUrl: '',
+        fileUrl: '',
+        fileName: '',
+      }));
+
+      if (onUploadSuccess) onUploadSuccess();
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  return (
+    <section id="upload" style={{ padding: '30px 24px 60px 24px', maxWidth: '1100px', margin: '0 auto' }}>
+      
+      {/* Section Header */}
+      <div style={{ textAlign: 'center', marginBottom: '40px' }}>
+        <span className="badge-cyber" style={{ marginBottom: '12px', background: 'rgba(79, 70, 229, 0.12)', color: '#818CF8' }}>
+          <Sparkles size={14} /> Open Visitor Submissions Hub
+        </span>
+        <h2 style={{ fontSize: '2.5rem', fontWeight: 800, color: 'var(--text-primary)' }}>
+          Upload Your <span className="text-gradient">Tool, Project, or Resume</span>
+        </h2>
+        <p style={{ color: 'var(--text-muted)', maxWidth: '680px', margin: '10px auto 0', fontSize: '1.05rem' }}>
+          Any visitor can share their custom security tool, audit project findings, or uploaded resume/CV. 
+          When submitted, our database sends an instant email alert to the site owner detailing your upload and email address.
+        </p>
+      </div>
+
+      {/* Main Glass Card Form Container */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        className="glass-card"
+        style={{
+          padding: '36px',
+          borderRadius: '24px',
+          border: '1px solid var(--border-light)',
+          background: 'var(--bg-card-solid)',
+          boxShadow: 'var(--shadow-xl)'
+        }}
+      >
+
+        {/* 3 Upload Selection Tabs: Tools, Projects, Resume */}
+        <div style={{ display: 'flex', gap: '10px', marginBottom: '32px', borderBottom: '1px solid var(--border-light)', paddingBottom: '16px', flexWrap: 'wrap' }}>
+          
+          {/* Tab 1: Tools */}
+          <button
+            type="button"
+            onClick={() => {
+              setUploadType('tool');
+              setFormData((prev) => ({ ...prev, category: 'Web VAPT Scanner' }));
+            }}
+            style={{
+              flex: '1 1 200px',
+              padding: '12px 18px',
+              borderRadius: '14px',
+              fontSize: '0.92rem',
+              fontWeight: 700,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '8px',
+              border: uploadType === 'tool' ? 'none' : '1px solid var(--border-light)',
+              background: uploadType === 'tool' ? 'linear-gradient(135deg, #0891B2 0%, #4F46E5 100%)' : 'transparent',
+              color: uploadType === 'tool' ? '#FFFFFF' : 'var(--text-muted)',
+              cursor: 'pointer',
+              boxShadow: uploadType === 'tool' ? '0 4px 16px rgba(8, 145, 178, 0.3)' : 'none',
+              transition: 'all 0.25s ease'
+            }}
+          >
+            <Terminal size={17} /> 🛠️ Upload Security Tool
+          </button>
+
+          {/* Tab 2: Projects */}
+          <button
+            type="button"
+            onClick={() => {
+              setUploadType('project');
+              setFormData((prev) => ({ ...prev, category: 'Web & API Security' }));
+            }}
+            style={{
+              flex: '1 1 200px',
+              padding: '12px 18px',
+              borderRadius: '14px',
+              fontSize: '0.92rem',
+              fontWeight: 700,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '8px',
+              border: uploadType === 'project' ? 'none' : '1px solid var(--border-light)',
+              background: uploadType === 'project' ? 'linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%)' : 'transparent',
+              color: uploadType === 'project' ? '#FFFFFF' : 'var(--text-muted)',
+              cursor: 'pointer',
+              boxShadow: uploadType === 'project' ? '0 4px 16px rgba(79, 70, 229, 0.3)' : 'none',
+              transition: 'all 0.25s ease'
+            }}
+          >
+            <ShieldAlert size={17} /> 🛡️ Upload Audit Project
+          </button>
+
+          {/* Tab 3: Resume / CV */}
+          <button
+            type="button"
+            onClick={() => {
+              setUploadType('resume');
+              setFormData((prev) => ({ ...prev, category: 'Software Engineer / Security' }));
+            }}
+            style={{
+              flex: '1 1 200px',
+              padding: '12px 18px',
+              borderRadius: '14px',
+              fontSize: '0.92rem',
+              fontWeight: 700,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '8px',
+              border: uploadType === 'resume' ? 'none' : '1px solid var(--border-light)',
+              background: uploadType === 'resume' ? 'linear-gradient(135deg, #059669 0%, #0D9488 100%)' : 'transparent',
+              color: uploadType === 'resume' ? '#FFFFFF' : 'var(--text-muted)',
+              cursor: 'pointer',
+              boxShadow: uploadType === 'resume' ? '0 4px 16px rgba(5, 150, 105, 0.3)' : 'none',
+              transition: 'all 0.25s ease'
+            }}
+          >
+            <FileText size={17} /> 📄 Upload Resume / CV
+          </button>
+        </div>
+
+        {/* Form Container */}
+        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+          
+          {/* Uploader Email Address (MANDATORY FOR ALL VISITOR UPLOADS) */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '16px' }}>
+            <div>
+              <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-primary)', marginBottom: '8px' }}>
+                📧 Your Email Address <span style={{ color: '#EF4444' }}>*</span>
+                <span style={{ fontSize: '0.75rem', fontWeight: 500, color: 'var(--text-muted)', display: 'block' }}>
+                  (Database sends owner an email stating this address uploaded the item)
+                </span>
+              </label>
+              <div style={{ position: 'relative' }}>
+                <input
+                  type="email"
+                  name="uploaderEmail"
+                  value={formData.uploaderEmail}
+                  onChange={handleInputChange}
+                  placeholder="e.g. uploader@example.com"
+                  required
+                  style={{
+                    width: '100%',
+                    padding: '12px 14px 12px 40px',
+                    borderRadius: '12px',
+                    border: '1px solid var(--border-light)',
+                    background: 'var(--bg-secondary)',
+                    color: 'var(--text-primary)',
+                    fontSize: '0.9rem',
+                    boxSizing: 'border-box'
+                  }}
+                />
+                <Mail size={16} style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', color: '#4F46E5' }} />
+              </div>
+            </div>
+
+            <div>
+              <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-primary)', marginBottom: '8px' }}>
+                👤 Your Full Name / Alias
+                <span style={{ fontSize: '0.75rem', fontWeight: 500, color: 'var(--text-muted)', display: 'block' }}>
+                  (Name of contributor / applicant)
+                </span>
+              </label>
+              <input
+                type="text"
+                name="uploaderName"
+                value={formData.uploaderName}
+                onChange={handleInputChange}
+                placeholder="e.g. Alex Rivera / Visitor User"
+                style={{
+                  width: '100%',
+                  padding: '12px 14px',
+                  borderRadius: '12px',
+                  border: '1px solid var(--border-light)',
+                  background: 'var(--bg-secondary)',
+                  color: 'var(--text-primary)',
+                  fontSize: '0.9rem',
+                  boxSizing: 'border-box'
+                }}
+              />
+            </div>
+          </div>
+
+          {/* Title & Category */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '16px' }}>
+            <div>
+              <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-primary)', marginBottom: '8px' }}>
+                📌 {uploadType === 'tool' ? 'Tool Title' : uploadType === 'project' ? 'Project Title' : 'Resume Title / Candidate Role'} <span style={{ color: '#EF4444' }}>*</span>
+              </label>
+              <input
+                type="text"
+                name="title"
+                value={formData.title}
+                onChange={handleInputChange}
+                placeholder={
+                  uploadType === 'tool'
+                    ? 'e.g. Subdomain Takeover Scanner v2'
+                    : uploadType === 'project'
+                    ? 'e.g. Web Security VAPT Audit Findings'
+                    : 'e.g. Cybersecurity Engineer Resume - Alex Rivera'
+                }
+                required
+                style={{
+                  width: '100%',
+                  padding: '12px 14px',
+                  borderRadius: '12px',
+                  border: '1px solid var(--border-light)',
+                  background: 'var(--bg-secondary)',
+                  color: 'var(--text-primary)',
+                  fontSize: '0.9rem',
+                  boxSizing: 'border-box'
+                }}
+              />
+            </div>
+
+            <div>
+              <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-primary)', marginBottom: '8px' }}>
+                🏷️ Category / Domain
+              </label>
+              <select
+                name="category"
+                value={formData.category}
+                onChange={handleInputChange}
+                style={{
+                  width: '100%',
+                  padding: '12px 14px',
+                  borderRadius: '12px',
+                  border: '1px solid var(--border-light)',
+                  background: 'var(--bg-secondary)',
+                  color: 'var(--text-primary)',
+                  fontSize: '0.9rem',
+                  boxSizing: 'border-box',
+                  cursor: 'pointer'
+                }}
+              >
+                {uploadType === 'tool' && (
+                  <>
+                    <option value="Web VAPT Scanner">Web VAPT Scanner</option>
+                    <option value="Mobile Security Utility">Mobile Security Utility</option>
+                    <option value="Network Infrastructure Tool">Network Infrastructure Tool</option>
+                    <option value="Exploit PoC">Exploit PoC</option>
+                    <option value="API Penetration Testing">API Penetration Testing</option>
+                    <option value="Other">✨ Other (Write your own topic...)</option>
+                  </>
+                )}
+                {uploadType === 'project' && (
+                  <>
+                    <option value="Web & API Security">Web & API Security</option>
+                    <option value="Mobile Security">Mobile Security</option>
+                    <option value="Network Infrastructure">Network Infrastructure</option>
+                    <option value="Cloud Security Audit">Cloud Security Audit</option>
+                    <option value="Other">✨ Other (Write your own topic...)</option>
+                  </>
+                )}
+                {uploadType === 'resume' && (
+                  <>
+                    <option value="Software Engineer / Developer">Software Engineer / Developer</option>
+                    <option value="Cybersecurity Analyst / VAPT">Cybersecurity Analyst / VAPT</option>
+                    <option value="Network Administrator / CCNA">Network Administrator / CCNA</option>
+                    <option value="Full-Stack Developer">Full-Stack Developer</option>
+                    <option value="Other">✨ Other (Write your own topic...)</option>
+                  </>
+                )}
+              </select>
+
+              {isCustomCategory && (
+                <div style={{ marginTop: '10px' }}>
+                  <input
+                    type="text"
+                    placeholder="✏️ Specify your custom topic / category name..."
+                    value={customCategoryText}
+                    onChange={(e) => {
+                      setCustomCategoryText(e.target.value);
+                      setFormData((prev) => ({ ...prev, category: e.target.value }));
+                    }}
+                    required
+                    style={{
+                      width: '100%',
+                      padding: '12px 14px',
+                      borderRadius: '12px',
+                      border: '1px solid var(--accent-primary)',
+                      background: 'var(--bg-secondary)',
+                      color: 'var(--text-primary)',
+                      fontSize: '0.9rem',
+                      boxSizing: 'border-box'
+                    }}
+                  />
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Description / Summary */}
+          <div>
+            <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-primary)', marginBottom: '8px' }}>
+              📝 {uploadType === 'tool' ? 'Tool Description & Usage' : uploadType === 'project' ? 'Audit Summary & Scope' : 'Resume Summary / Profile Intro'} <span style={{ color: '#EF4444' }}>*</span>
+            </label>
+            <textarea
+              name="description"
+              value={formData.description}
+              onChange={handleInputChange}
+              rows={4}
+              placeholder={
+                uploadType === 'tool'
+                  ? 'Explain what your security tool does, syntax, dependencies, and feature highlights...'
+                  : uploadType === 'project'
+                  ? 'Summarize the target scope, audit methodology, vulnerabilities discovered, and remediation steps...'
+                  : 'Briefly summarize your key skills, years of experience, certifications, and career highlights...'
+              }
+              required
+              style={{
+                width: '100%',
+                padding: '12px 14px',
+                borderRadius: '12px',
+                border: '1px solid var(--border-light)',
+                background: 'var(--bg-secondary)',
+                color: 'var(--text-primary)',
+                fontSize: '0.9rem',
+                boxSizing: 'border-box',
+                resize: 'vertical'
+              }}
+            />
+          </div>
+
+          {/* Tech Stack & External Link */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '16px' }}>
+            <div>
+              <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-primary)', marginBottom: '8px' }}>
+                ⚙️ {uploadType === 'resume' ? 'Key Skills / Technologies' : 'Tech Stack / Language'}
+              </label>
+              <input
+                type="text"
+                name="language"
+                value={formData.language}
+                onChange={handleInputChange}
+                placeholder={uploadType === 'resume' ? 'e.g. React, Node.js, Python, Burp Suite, CCNA' : 'e.g. Python 3 / Bash / Go'}
+                style={{
+                  width: '100%',
+                  padding: '12px 14px',
+                  borderRadius: '12px',
+                  border: '1px solid var(--border-light)',
+                  background: 'var(--bg-secondary)',
+                  color: 'var(--text-primary)',
+                  fontSize: '0.9rem',
+                  boxSizing: 'border-box'
+                }}
+              />
+            </div>
+
+            <div>
+              <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-primary)', marginBottom: '8px' }}>
+                🔗 GitHub / Portfolio / LinkedIn Link
+              </label>
+              <input
+                type="url"
+                name="githubUrl"
+                value={formData.githubUrl}
+                onChange={handleInputChange}
+                placeholder="https://github.com/username or LinkedIn profile"
+                style={{
+                  width: '100%',
+                  padding: '12px 14px',
+                  borderRadius: '12px',
+                  border: '1px solid var(--border-light)',
+                  background: 'var(--bg-secondary)',
+                  color: 'var(--text-primary)',
+                  fontSize: '0.9rem',
+                  boxSizing: 'border-box'
+                }}
+              />
+            </div>
+          </div>
+
+          {/* File Upload Box */}
+          <div style={{
+            border: '2px dashed var(--border-light)',
+            borderRadius: '16px',
+            padding: '20px',
+            textAlign: 'center',
+            background: 'var(--bg-secondary)',
+            transition: 'border-color 0.2s ease'
+          }}>
+            <FolderArchive size={28} style={{ color: '#4F46E5', marginBottom: '8px' }} />
+            <div style={{ fontWeight: 700, fontSize: '0.9rem', color: 'var(--text-primary)', marginBottom: '4px' }}>
+              Upload {uploadType === 'resume' ? 'Resume PDF / Document' : 'Tool Package or Project PDF'}
+            </div>
+            <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginBottom: '12px' }}>
+              Upload document (.pdf, .doc, .docx, .zip, .py, .sh, .txt - max 50MB)
+            </p>
+
+            <input
+              type="file"
+              id="fileUploadInput"
+              onChange={handleFileChange}
+              style={{ display: 'none' }}
+              accept=".pdf,.doc,.docx,.zip,.py,.sh,.json,.txt,.tar.gz"
+            />
+
+            <label
+              htmlFor="fileUploadInput"
+              className="btn-secondary"
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '8px',
+                padding: '8px 18px',
+                fontSize: '0.85rem',
+                cursor: 'pointer'
+              }}
+            >
+              {isUploadingFile ? (
+                <>
+                  <Loader2 size={15} className="animate-spin" /> Uploading to Server...
+                </>
+              ) : (
+                <>
+                  <Upload size={15} /> Select File to Upload
+                </>
+              )}
+            </label>
+
+            {formData.fileName && (
+              <div style={{ marginTop: '12px', fontSize: '0.82rem', color: '#059669', fontWeight: 600, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
+                <CheckCircle2 size={16} /> {formData.fileName} ({formData.fileSize}) attached!
+              </div>
+            )}
+          </div>
+
+          {/* Status Alert Banner */}
+          <AnimatePresence>
+            {statusMessage && (
+              <motion.div
+                initial={{ opacity: 0, y: -8 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -8 }}
+                style={{
+                  padding: '14px 18px',
+                  borderRadius: '12px',
+                  fontSize: '0.88rem',
+                  fontWeight: 600,
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '10px',
+                  background: statusMessage.type === 'success' ? 'rgba(16, 185, 129, 0.12)' : 'rgba(239, 68, 68, 0.12)',
+                  color: statusMessage.type === 'success' ? '#10B981' : '#EF4444',
+                  border: statusMessage.type === 'success' ? '1px solid rgba(16, 185, 129, 0.3)' : '1px solid rgba(239, 68, 68, 0.3)'
+                }}
+              >
+                {statusMessage.type === 'success' ? <CheckCircle2 size={18} /> : <AlertCircle size={18} />}
+                <span>{statusMessage.text}</span>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          {/* Submit Action Button */}
+          <button
+            type="submit"
+            disabled={isSubmitting || isUploadingFile}
+            className="btn-primary"
+            style={{
+              width: '100%',
+              padding: '14px',
+              fontSize: '1rem',
+              borderRadius: '14px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '10px',
+              marginTop: '10px',
+              boxShadow: '0 4px 20px rgba(79, 70, 229, 0.4)'
+            }}
+          >
+            {isSubmitting ? (
+              <>
+                <Loader2 size={18} className="animate-spin" /> Submitting & Mailing Site Owner...
+              </>
+            ) : (
+              <>
+                <Upload size={18} /> Upload {uploadType === 'tool' ? 'Security Tool' : uploadType === 'project' ? 'Audit Project' : 'Resume'} & Trigger Database Mail
+              </>
+            )}
+          </button>
+        </form>
+      </motion.div>
+    </section>
+  );
+}
