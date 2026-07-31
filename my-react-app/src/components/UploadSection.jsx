@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Upload, Mail, ShieldAlert, Terminal, FileText, CheckCircle2, AlertCircle, FolderArchive, Loader2, Sparkles } from 'lucide-react';
 import confetti from 'canvas-confetti';
