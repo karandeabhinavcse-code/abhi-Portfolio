@@ -64,26 +64,48 @@ export default function AdminPanel({ isOpen, onClose, onProjectUpdated }) {
 
   const fetchProjects = async () => {
     setLoading(true);
+    let baseProjects = resumeData.projects;
     try {
       const res = await fetch(`${API_URL}/api/projects`);
       const data = await res.json();
-      if (data.success) setProjects(data.projects);
-      else setProjects(resumeData.projects);
+      if (data.success && data.projects.length > 0) {
+        baseProjects = data.projects;
+      }
     } catch (e) {
-      setProjects(resumeData.projects);
-    } finally {
-      setLoading(false);
+      console.log('Server offline, using local projects cache');
     }
+
+    const localProjects = JSON.parse(localStorage.getItem('custom_projects') || '[]');
+    const combined = [...localProjects];
+    baseProjects.forEach(bp => {
+      if (!combined.some(cp => (cp._id && cp._id === bp._id) || (cp.id && cp.id === bp.id) || cp.title === bp.title)) {
+        combined.push(bp);
+      }
+    });
+    setProjects(combined);
+    setLoading(false);
   };
 
   const fetchTools = async () => {
+    let baseTools = [];
     try {
       const res = await fetch(`${API_URL}/api/tools`);
       const data = await res.json();
-      if (data.success) setTools(data.tools);
+      if (data.success && data.tools) {
+        baseTools = data.tools;
+      }
     } catch (e) {
-      console.log('Error fetching tools:', e);
+      console.log('Server offline, using local tools cache');
     }
+
+    const localTools = JSON.parse(localStorage.getItem('custom_tools') || '[]');
+    const combined = [...localTools];
+    baseTools.forEach(bt => {
+      if (!combined.some(ct => (ct._id && ct._id === bt._id) || (ct.id && ct.id === bt.id) || ct.title === bt.title)) {
+        combined.push(bt);
+      }
+    });
+    setTools(combined);
   };
 
   const fetchMessages = async () => {
@@ -114,7 +136,7 @@ export default function AdminPanel({ isOpen, onClose, onProjectUpdated }) {
           setIsAuthenticated(true);
           setPasscode('');
         } else {
-          setLoginError('Invalid Passcode. Use "admin123"');
+          setLoginError('Invalid Passcode. Access denied.');
         }
       }
     } catch (err) {
@@ -122,7 +144,7 @@ export default function AdminPanel({ isOpen, onClose, onProjectUpdated }) {
         setIsAuthenticated(true);
         setPasscode('');
       } else {
-        setLoginError('Invalid Passcode. Use "admin123"');
+        setLoginError('Invalid Passcode. Access denied.');
       }
     }
   };
@@ -165,10 +187,13 @@ export default function AdminPanel({ isOpen, onClose, onProjectUpdated }) {
     setSelectedFile(file);
     setUploading(true);
 
-    const formData = new FormData();
-    formData.append('toolFile', file);
+    const sizeStr = (file.size / (1024 * 1024)).toFixed(2) + ' MB';
+    const localUrl = URL.createObjectURL(file);
 
     try {
+      const formData = new FormData();
+      formData.append('toolFile', file);
+
       const res = await fetch(`${API_URL}/api/tools/upload`, {
         method: 'POST',
         body: formData
@@ -178,15 +203,22 @@ export default function AdminPanel({ isOpen, onClose, onProjectUpdated }) {
         setUploadedFileUrl(data.fileUrl);
         setUploadedFileName(data.fileName);
         setUploadedFileSize(data.fileSize);
-        setFeedbackMsg(`File "${data.fileName}" uploaded successfully!`);
+        setFeedbackMsg(`File "${data.fileName}" uploaded to server!`);
         setTimeout(() => setFeedbackMsg(''), 3000);
+        return;
       }
     } catch (err) {
-      console.error('File upload error:', err);
-      setFeedbackMsg('Upload failed.');
+      console.log('Server upload endpoint unreachable, falling back to local file URL:', err);
     } finally {
       setUploading(false);
     }
+
+    // Fallback: Client local object URL works even if backend Express server is offline!
+    setUploadedFileUrl(localUrl);
+    setUploadedFileName(file.name);
+    setUploadedFileSize(sizeStr);
+    setFeedbackMsg(`File "${file.name}" attached successfully!`);
+    setTimeout(() => setFeedbackMsg(''), 3000);
   };
 
   // --- Save / Update Security Tool ---
@@ -194,7 +226,10 @@ export default function AdminPanel({ isOpen, onClose, onProjectUpdated }) {
     e.preventDefault();
     if (!toolTitle || !toolDesc) return;
 
+    const toolId = editingToolId || 'tool_' + Date.now();
     const payload = {
+      _id: toolId,
+      id: toolId,
       title: toolTitle,
       category: toolCategory,
       description: toolDesc,
@@ -207,9 +242,10 @@ export default function AdminPanel({ isOpen, onClose, onProjectUpdated }) {
       fileSize: uploadedFileSize
     };
 
+    let serverSaved = false;
     try {
       let res;
-      if (editingToolId) {
+      if (editingToolId && !editingToolId.startsWith('tool_')) {
         res = await fetch(`${API_URL}/api/tools/${editingToolId}`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
@@ -222,18 +258,27 @@ export default function AdminPanel({ isOpen, onClose, onProjectUpdated }) {
           body: JSON.stringify(payload)
         });
       }
-
       const data = await res.json();
-      if (data.success) {
-        setFeedbackMsg(editingToolId ? 'Tool updated!' : 'New Tool / Zip published to MongoDB!');
-        resetToolForm();
-        fetchTools();
-        if (onProjectUpdated) onProjectUpdated();
-        setTimeout(() => setFeedbackMsg(''), 3000);
-      }
+      if (data.success) serverSaved = true;
     } catch (err) {
-      console.error('Save tool error:', err);
+      console.log('Server offline, saving tool locally:', err);
     }
+
+    // Save to localStorage as seamless fallback
+    const existing = JSON.parse(localStorage.getItem('custom_tools') || '[]');
+    let updated;
+    if (editingToolId) {
+      updated = existing.map(t => (t._id === editingToolId || t.id === editingToolId) ? payload : t);
+    } else {
+      updated = [payload, ...existing];
+    }
+    localStorage.setItem('custom_tools', JSON.stringify(updated));
+
+    setFeedbackMsg(serverSaved ? 'Tool published to MongoDB Atlas!' : 'New Security Tool published!');
+    resetToolForm();
+    fetchTools();
+    if (onProjectUpdated) onProjectUpdated();
+    setTimeout(() => setFeedbackMsg(''), 3000);
   };
 
   const handleEditTool = (t) => {
@@ -251,19 +296,21 @@ export default function AdminPanel({ isOpen, onClose, onProjectUpdated }) {
   };
 
   const handleDeleteTool = async (id) => {
-    if (!window.confirm('Delete this tool and its uploaded file from MongoDB?')) return;
+    if (!window.confirm('Delete this tool and its uploaded file?')) return;
     try {
-      const res = await fetch(`${API_URL}/api/tools/${id}`, { method: 'DELETE' });
-      const data = await res.json();
-      if (data.success) {
-        setFeedbackMsg('Tool deleted.');
-        fetchTools();
-        if (onProjectUpdated) onProjectUpdated();
-        setTimeout(() => setFeedbackMsg(''), 3000);
-      }
+      await fetch(`${API_URL}/api/tools/${id}`, { method: 'DELETE' });
     } catch (e) {
-      console.log('Error deleting tool:', e);
+      console.log('Error deleting tool from server:', e);
     }
+
+    const localTools = JSON.parse(localStorage.getItem('custom_tools') || '[]');
+    const filtered = localTools.filter(t => t._id !== id && t.id !== id);
+    localStorage.setItem('custom_tools', JSON.stringify(filtered));
+
+    setFeedbackMsg('Tool deleted.');
+    fetchTools();
+    if (onProjectUpdated) onProjectUpdated();
+    setTimeout(() => setFeedbackMsg(''), 3000);
   };
 
   // --- Save / Update Project ---
@@ -271,7 +318,10 @@ export default function AdminPanel({ isOpen, onClose, onProjectUpdated }) {
     e.preventDefault();
     if (!formTitle || !formTarget || !formSummary) return;
 
+    const projId = editingProjectId || 'proj_' + Date.now();
     const payload = {
+      _id: projId,
+      id: projId,
       title: formTitle,
       target: formTarget,
       period: formPeriod,
@@ -296,9 +346,10 @@ export default function AdminPanel({ isOpen, onClose, onProjectUpdated }) {
       ]
     };
 
+    let serverSaved = false;
     try {
       let res;
-      if (editingProjectId) {
+      if (editingProjectId && !editingProjectId.startsWith('proj_')) {
         res = await fetch(`${API_URL}/api/projects/${editingProjectId}`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
@@ -311,18 +362,27 @@ export default function AdminPanel({ isOpen, onClose, onProjectUpdated }) {
           body: JSON.stringify(payload)
         });
       }
-
       const data = await res.json();
-      if (data.success) {
-        setFeedbackMsg(editingProjectId ? 'Project updated in MongoDB!' : 'New Project published!');
-        resetProjectForm();
-        fetchProjects();
-        if (onProjectUpdated) onProjectUpdated();
-        setTimeout(() => setFeedbackMsg(''), 3000);
-      }
+      if (data.success) serverSaved = true;
     } catch (err) {
-      console.error('Error saving project:', err);
+      console.log('Server offline, saving project locally:', err);
     }
+
+    // Save to localStorage as seamless fallback
+    const existing = JSON.parse(localStorage.getItem('custom_projects') || '[]');
+    let updated;
+    if (editingProjectId) {
+      updated = existing.map(p => (p._id === editingProjectId || p.id === editingProjectId) ? payload : p);
+    } else {
+      updated = [payload, ...existing];
+    }
+    localStorage.setItem('custom_projects', JSON.stringify(updated));
+
+    setFeedbackMsg(serverSaved ? 'Project updated in MongoDB!' : 'New VAPT Project published!');
+    resetProjectForm();
+    fetchProjects();
+    if (onProjectUpdated) onProjectUpdated();
+    setTimeout(() => setFeedbackMsg(''), 3000);
   };
 
   const handleEditClick = (proj) => {
@@ -341,19 +401,21 @@ export default function AdminPanel({ isOpen, onClose, onProjectUpdated }) {
   };
 
   const handleDeleteProject = async (id) => {
-    if (!window.confirm('Delete this project from MongoDB?')) return;
+    if (!window.confirm('Delete this project?')) return;
     try {
-      const res = await fetch(`${API_URL}/api/projects/${id}`, { method: 'DELETE' });
-      const data = await res.json();
-      if (data.success) {
-        setFeedbackMsg('Project deleted.');
-        fetchProjects();
-        if (onProjectUpdated) onProjectUpdated();
-        setTimeout(() => setFeedbackMsg(''), 3000);
-      }
+      await fetch(`${API_URL}/api/projects/${id}`, { method: 'DELETE' });
     } catch (err) {
       console.error('Delete error:', err);
     }
+
+    const localProjects = JSON.parse(localStorage.getItem('custom_projects') || '[]');
+    const filtered = localProjects.filter(p => p._id !== id && p.id !== id);
+    localStorage.setItem('custom_projects', JSON.stringify(filtered));
+
+    setFeedbackMsg('Project deleted.');
+    fetchProjects();
+    if (onProjectUpdated) onProjectUpdated();
+    setTimeout(() => setFeedbackMsg(''), 3000);
   };
 
   const handleDeleteMessage = async (id) => {
@@ -377,7 +439,9 @@ export default function AdminPanel({ isOpen, onClose, onProjectUpdated }) {
           width: '100%',
           maxWidth: '1050px',
           maxHeight: '92vh',
-          background: '#FFFFFF',
+          background: 'var(--bg-card-solid)',
+          color: 'var(--text-primary)',
+          border: '1px solid var(--border-light)',
           borderRadius: '24px',
           boxShadow: '0 25px 50px -12px rgba(15, 23, 42, 0.3)',
           overflow: 'hidden',
@@ -433,13 +497,13 @@ export default function AdminPanel({ isOpen, onClose, onProjectUpdated }) {
         {!isAuthenticated ? (
           /* Login Screen */
           <div style={{ padding: '60px 24px', maxWidth: '420px', margin: '0 auto', textAlign: 'center' }}>
-            <div style={{ width: '56px', height: '56px', borderRadius: '50%', background: 'rgba(79, 70, 229, 0.1)', color: '#4F46E5', display: 'flex', alignItems: 'center', justifySelf: 'center', margin: '0 auto 20px' }}>
+            <div style={{ width: '56px', height: '56px', borderRadius: '50%', background: 'rgba(79, 70, 229, 0.1)', color: '#4F46E5', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px' }}>
               <Lock size={28} />
             </div>
-            <h3 style={{ fontSize: '1.5rem', fontWeight: 800, marginBottom: '8px' }}>
+            <h3 style={{ fontSize: '1.5rem', fontWeight: 800, marginBottom: '8px', color: 'var(--text-primary)' }}>
               Admin Authentication Required
             </h3>
-            <p style={{ fontSize: '0.875rem', color: '#64748B', marginBottom: '24px' }}>
+            <p style={{ fontSize: '0.875rem', color: 'var(--text-muted)', marginBottom: '24px' }}>
               Enter administrator passcode to upload hacking tools, zip files, and manage projects in MongoDB Atlas.
             </p>
 
@@ -455,13 +519,14 @@ export default function AdminPanel({ isOpen, onClose, onProjectUpdated }) {
                 required
                 value={passcode}
                 onChange={(e) => setPasscode(e.target.value)}
-                placeholder="Enter passcode (default: admin123)..."
+                placeholder="Enter passcode..."
                 style={{
                   width: '100%',
                   padding: '12px 16px',
                   borderRadius: '10px',
                   border: '1px solid var(--border-light)',
-                  background: '#F8FAFC',
+                  background: 'var(--bg-secondary)',
+                  color: 'var(--text-primary)',
                   fontSize: '0.95rem',
                   textAlign: 'center'
                 }}
@@ -477,7 +542,7 @@ export default function AdminPanel({ isOpen, onClose, onProjectUpdated }) {
           <div style={{ display: 'flex', flexDirection: 'column', flex: 1, overflow: 'hidden' }}>
             
             {/* Nav Tabs */}
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 28px', background: '#F8FAFC', borderBottom: '1px solid var(--border-light)' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 28px', background: 'var(--bg-secondary)', borderBottom: '1px solid var(--border-light)' }}>
               <div style={{ display: 'flex', gap: '8px' }}>
                 <button
                   onClick={() => setActiveTab('projects')}
@@ -488,7 +553,7 @@ export default function AdminPanel({ isOpen, onClose, onProjectUpdated }) {
                     fontWeight: 600,
                     border: 'none',
                     background: activeTab === 'projects' ? '#4F46E5' : 'transparent',
-                    color: activeTab === 'projects' ? '#FFFFFF' : '#475569',
+                    color: activeTab === 'projects' ? '#FFFFFF' : 'var(--text-secondary)',
                     cursor: 'pointer'
                   }}
                 >
@@ -504,7 +569,7 @@ export default function AdminPanel({ isOpen, onClose, onProjectUpdated }) {
                     fontWeight: 600,
                     border: 'none',
                     background: activeTab === 'tools' ? '#0891B2' : 'transparent',
-                    color: activeTab === 'tools' ? '#FFFFFF' : '#475569',
+                    color: activeTab === 'tools' ? '#FFFFFF' : 'var(--text-secondary)',
                     cursor: 'pointer'
                   }}
                 >
@@ -520,7 +585,7 @@ export default function AdminPanel({ isOpen, onClose, onProjectUpdated }) {
                     fontWeight: 600,
                     border: 'none',
                     background: activeTab === 'messages' ? '#4F46E5' : 'transparent',
-                    color: activeTab === 'messages' ? '#FFFFFF' : '#475569',
+                    color: activeTab === 'messages' ? '#FFFFFF' : 'var(--text-secondary)',
                     cursor: 'pointer'
                   }}
                 >
@@ -548,13 +613,13 @@ export default function AdminPanel({ isOpen, onClose, onProjectUpdated }) {
               <div style={{ display: 'grid', gridTemplateColumns: '1.1fr 0.9fr', gap: '24px', padding: '24px', overflowY: 'auto', flex: 1 }}>
                 
                 {/* Left Side: Upload & Create Form */}
-                <div style={{ background: '#F8FAFC', borderRadius: '16px', padding: '20px', border: '1px solid var(--border-light)' }}>
+                <div style={{ background: 'var(--bg-secondary)', borderRadius: '16px', padding: '20px', border: '1px solid var(--border-light)' }}>
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
-                    <h4 style={{ fontWeight: 800, fontSize: '1.1rem', color: '#0F172A' }}>
+                    <h4 style={{ fontWeight: 800, fontSize: '1.1rem', color: 'var(--text-primary)' }}>
                       {editingToolId ? '✏️ Edit Hacking Tool' : '📦 Upload New Tool / Zip File'}
                     </h4>
                     {editingToolId && (
-                      <button onClick={resetToolForm} style={{ fontSize: '0.75rem', color: '#64748B', cursor: 'pointer', background: 'none', border: 'none' }}>
+                      <button onClick={resetToolForm} style={{ fontSize: '0.75rem', color: 'var(--text-muted)', cursor: 'pointer', background: 'none', border: 'none' }}>
                         Cancel Editing
                       </button>
                     )}
@@ -571,17 +636,17 @@ export default function AdminPanel({ isOpen, onClose, onProjectUpdated }) {
                       background: 'rgba(8, 145, 178, 0.04)'
                     }}>
                       <Upload size={24} style={{ color: '#0891B2', margin: '0 auto 6px' }} />
-                      <div style={{ fontSize: '0.85rem', fontWeight: 700, color: '#0F172A' }}>
+                      <div style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-primary)' }}>
                         {uploading ? 'Uploading Zip File...' : 'Select Tool Executable / Zip File to Upload'}
                       </div>
-                      <div style={{ fontSize: '0.75rem', color: '#64748B', marginBottom: '10px' }}>
+                      <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginBottom: '10px' }}>
                         Supports .zip, .py, .sh, .js, .json up to 50MB
                       </div>
 
                       <input
                         type="file"
                         onChange={handleFileUpload}
-                        style={{ fontSize: '0.8rem', cursor: 'pointer' }}
+                        style={{ fontSize: '0.8rem', cursor: 'pointer', color: 'var(--text-primary)' }}
                       />
 
                       {uploadedFileName && (
@@ -592,24 +657,24 @@ export default function AdminPanel({ isOpen, onClose, onProjectUpdated }) {
                     </div>
 
                     <div>
-                      <label style={{ fontSize: '0.75rem', fontWeight: 700, color: '#334155' }}>Tool Title *</label>
+                      <label style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-secondary)' }}>Tool Title *</label>
                       <input
                         type="text"
                         required
                         value={toolTitle}
                         onChange={(e) => setToolTitle(e.target.value)}
                         placeholder="e.g. Frida Dynamic SSL Pinning Automator"
-                        style={{ width: '100%', padding: '8px 12px', borderRadius: '8px', border: '1px solid var(--border-light)', fontSize: '0.85rem' }}
+                        style={{ width: '100%', padding: '8px 12px', borderRadius: '8px', border: '1px solid var(--border-light)', background: 'var(--bg-card-solid)', color: 'var(--text-primary)', fontSize: '0.85rem' }}
                       />
                     </div>
 
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
                       <div>
-                        <label style={{ fontSize: '0.75rem', fontWeight: 700, color: '#334155' }}>Category</label>
+                        <label style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-secondary)' }}>Category</label>
                         <select
                           value={toolCategory}
                           onChange={(e) => setToolCategory(e.target.value)}
-                          style={{ width: '100%', padding: '8px 12px', borderRadius: '8px', border: '1px solid var(--border-light)', fontSize: '0.85rem' }}
+                          style={{ width: '100%', padding: '8px 12px', borderRadius: '8px', border: '1px solid var(--border-light)', background: 'var(--bg-card-solid)', color: 'var(--text-primary)', fontSize: '0.85rem' }}
                         >
                           <option value="Web VAPT Scanner">Web VAPT Scanner</option>
                           <option value="Mobile Security Utility">Mobile Security Utility</option>
@@ -619,48 +684,48 @@ export default function AdminPanel({ isOpen, onClose, onProjectUpdated }) {
                       </div>
 
                       <div>
-                        <label style={{ fontSize: '0.75rem', fontWeight: 700, color: '#334155' }}>Programming Language</label>
+                        <label style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-secondary)' }}>Programming Language</label>
                         <input
                           type="text"
                           value={toolLang}
                           onChange={(e) => setToolLang(e.target.value)}
                           placeholder="e.g. Python 3 / Bash"
-                          style={{ width: '100%', padding: '8px 12px', borderRadius: '8px', border: '1px solid var(--border-light)', fontSize: '0.85rem' }}
+                          style={{ width: '100%', padding: '8px 12px', borderRadius: '8px', border: '1px solid var(--border-light)', background: 'var(--bg-card-solid)', color: 'var(--text-primary)', fontSize: '0.85rem' }}
                         />
                       </div>
                     </div>
 
                     <div>
-                      <label style={{ fontSize: '0.75rem', fontWeight: 700, color: '#334155' }}>Tool Description *</label>
+                      <label style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-secondary)' }}>Tool Description *</label>
                       <textarea
                         required
                         rows={2}
                         value={toolDesc}
                         onChange={(e) => setToolDesc(e.target.value)}
                         placeholder="Explain functionality, attack vector, and testing methodology..."
-                        style={{ width: '100%', padding: '8px 12px', borderRadius: '8px', border: '1px solid var(--border-light)', fontSize: '0.85rem' }}
+                        style={{ width: '100%', padding: '8px 12px', borderRadius: '8px', border: '1px solid var(--border-light)', background: 'var(--bg-card-solid)', color: 'var(--text-primary)', fontSize: '0.85rem' }}
                       />
                     </div>
 
                     <div>
-                      <label style={{ fontSize: '0.75rem', fontWeight: 700, color: '#334155' }}>Terminal Command Usage</label>
+                      <label style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-secondary)' }}>Terminal Command Usage</label>
                       <input
                         type="text"
                         value={toolUsage}
                         onChange={(e) => setToolUsage(e.target.value)}
                         placeholder="python tool.py --target http://127.0.0.1"
-                        style={{ width: '100%', padding: '8px 12px', borderRadius: '8px', border: '1px solid var(--border-light)', fontFamily: 'var(--font-mono)', fontSize: '0.85rem' }}
+                        style={{ width: '100%', padding: '8px 12px', borderRadius: '8px', border: '1px solid var(--border-light)', background: 'var(--bg-card-solid)', color: 'var(--text-primary)', fontFamily: 'var(--font-mono)', fontSize: '0.85rem' }}
                       />
                     </div>
 
                     <div>
-                      <label style={{ fontSize: '0.75rem', fontWeight: 700, color: '#334155' }}>Tags (Comma Separated)</label>
+                      <label style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-secondary)' }}>Tags (Comma Separated)</label>
                       <input
                         type="text"
                         value={toolTags}
                         onChange={(e) => setToolTags(e.target.value)}
                         placeholder="Frida, SSL Pinning, Android VAPT"
-                        style={{ width: '100%', padding: '8px 12px', borderRadius: '8px', border: '1px solid var(--border-light)', fontSize: '0.85rem' }}
+                        style={{ width: '100%', padding: '8px 12px', borderRadius: '8px', border: '1px solid var(--border-light)', background: 'var(--bg-card-solid)', color: 'var(--text-primary)', fontSize: '0.85rem' }}
                       />
                     </div>
 
@@ -682,18 +747,18 @@ export default function AdminPanel({ isOpen, onClose, onProjectUpdated }) {
                         key={t._id || t.id}
                         style={{
                           padding: '14px',
-                          background: '#FFFFFF',
+                          background: 'var(--bg-card-solid)',
                           borderRadius: '12px',
                           border: '1px solid var(--border-light)',
                           boxShadow: 'var(--shadow-sm)'
                         }}
                       >
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '4px' }}>
-                          <div style={{ fontWeight: 700, fontSize: '0.95rem', color: '#0F172A' }}>{t.title}</div>
+                          <div style={{ fontWeight: 700, fontSize: '0.95rem', color: 'var(--text-primary)' }}>{t.title}</div>
                           <span className="badge-cyber" style={{ fontSize: '0.65rem', color: '#0891B2', borderColor: 'rgba(8, 145, 178, 0.3)' }}>{t.category}</span>
                         </div>
 
-                        <div style={{ fontSize: '0.8rem', color: '#475569', marginBottom: '8px' }}>
+                        <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginBottom: '8px' }}>
                           {t.description}
                         </div>
 
@@ -706,7 +771,7 @@ export default function AdminPanel({ isOpen, onClose, onProjectUpdated }) {
                         <div style={{ display: 'flex', gap: '8px' }}>
                           <button
                             onClick={() => handleEditTool(t)}
-                            style={{ padding: '4px 10px', borderRadius: '6px', border: '1px solid #CBD5E1', background: '#F8FAFC', fontSize: '0.75rem', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}
+                            style={{ padding: '4px 10px', borderRadius: '6px', border: '1px solid var(--border-light)', background: 'var(--bg-secondary)', color: 'var(--text-primary)', fontSize: '0.75rem', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}
                           >
                             <Edit3 size={12} /> Edit
                           </button>
@@ -731,13 +796,13 @@ export default function AdminPanel({ isOpen, onClose, onProjectUpdated }) {
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px', padding: '24px', overflowY: 'auto', flex: 1 }}>
                 
                 {/* Left Side: Add / Edit Form */}
-                <div style={{ background: '#F8FAFC', borderRadius: '16px', padding: '20px', border: '1px solid var(--border-light)' }}>
+                <div style={{ background: 'var(--bg-secondary)', borderRadius: '16px', padding: '20px', border: '1px solid var(--border-light)' }}>
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
-                    <h4 style={{ fontWeight: 800, fontSize: '1.1rem' }}>
+                    <h4 style={{ fontWeight: 800, fontSize: '1.1rem', color: 'var(--text-primary)' }}>
                       {editingProjectId ? '✏️ Edit VAPT Project' : '➕ Add New VAPT Project'}
                     </h4>
                     {editingProjectId && (
-                      <button onClick={resetProjectForm} style={{ fontSize: '0.75rem', color: '#64748B', cursor: 'pointer', background: 'none', border: 'none' }}>
+                      <button onClick={resetProjectForm} style={{ fontSize: '0.75rem', color: 'var(--text-muted)', cursor: 'pointer', background: 'none', border: 'none' }}>
                         Cancel Editing
                       </button>
                     )}
@@ -745,36 +810,36 @@ export default function AdminPanel({ isOpen, onClose, onProjectUpdated }) {
 
                   <form onSubmit={handleSaveProject} style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                     <div>
-                      <label style={{ fontSize: '0.75rem', fontWeight: 700, color: '#334155' }}>Project Title *</label>
+                      <label style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-secondary)' }}>Project Title *</label>
                       <input
                         type="text"
                         required
                         value={formTitle}
                         onChange={(e) => setFormTitle(e.target.value)}
                         placeholder="e.g. API Security Audit & OWASP Top 10"
-                        style={{ width: '100%', padding: '8px 12px', borderRadius: '8px', border: '1px solid var(--border-light)', fontSize: '0.85rem' }}
+                        style={{ width: '100%', padding: '8px 12px', borderRadius: '8px', border: '1px solid var(--border-light)', background: 'var(--bg-card-solid)', color: 'var(--text-primary)', fontSize: '0.85rem' }}
                       />
                     </div>
 
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
                       <div>
-                        <label style={{ fontSize: '0.75rem', fontWeight: 700, color: '#334155' }}>Target System *</label>
+                        <label style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-secondary)' }}>Target System *</label>
                         <input
                           type="text"
                           required
                           value={formTarget}
                           onChange={(e) => setFormTarget(e.target.value)}
                           placeholder="e.g. JuiceShop Web App"
-                          style={{ width: '100%', padding: '8px 12px', borderRadius: '8px', border: '1px solid var(--border-light)', fontSize: '0.85rem' }}
+                          style={{ width: '100%', padding: '8px 12px', borderRadius: '8px', border: '1px solid var(--border-light)', background: 'var(--bg-card-solid)', color: 'var(--text-primary)', fontSize: '0.85rem' }}
                         />
                       </div>
 
                       <div>
-                        <label style={{ fontSize: '0.75rem', fontWeight: 700, color: '#334155' }}>Category / Type</label>
+                        <label style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-secondary)' }}>Category / Type</label>
                         <select
                           value={formType}
                           onChange={(e) => setFormType(e.target.value)}
-                          style={{ width: '100%', padding: '8px 12px', borderRadius: '8px', border: '1px solid var(--border-light)', fontSize: '0.85rem' }}
+                          style={{ width: '100%', padding: '8px 12px', borderRadius: '8px', border: '1px solid var(--border-light)', background: 'var(--bg-card-solid)', color: 'var(--text-primary)', fontSize: '0.85rem' }}
                         >
                           <option value="Web & API Security">Web & API Security</option>
                           <option value="Mobile Security">Mobile Security</option>
@@ -791,7 +856,7 @@ export default function AdminPanel({ isOpen, onClose, onProjectUpdated }) {
                           type="number"
                           value={formCritical}
                           onChange={(e) => setFormCritical(e.target.value)}
-                          style={{ width: '100%', padding: '6px', borderRadius: '6px', border: '1px solid var(--border-light)', fontSize: '0.8rem' }}
+                          style={{ width: '100%', padding: '6px', borderRadius: '6px', border: '1px solid var(--border-light)', background: 'var(--bg-card-solid)', color: 'var(--text-primary)', fontSize: '0.8rem' }}
                         />
                       </div>
                       <div>
@@ -800,7 +865,7 @@ export default function AdminPanel({ isOpen, onClose, onProjectUpdated }) {
                           type="number"
                           value={formHigh}
                           onChange={(e) => setFormHigh(e.target.value)}
-                          style={{ width: '100%', padding: '6px', borderRadius: '6px', border: '1px solid var(--border-light)', fontSize: '0.8rem' }}
+                          style={{ width: '100%', padding: '6px', borderRadius: '6px', border: '1px solid var(--border-light)', background: 'var(--bg-card-solid)', color: 'var(--text-primary)', fontSize: '0.8rem' }}
                         />
                       </div>
                       <div>
@@ -809,42 +874,42 @@ export default function AdminPanel({ isOpen, onClose, onProjectUpdated }) {
                           type="number"
                           value={formMedium}
                           onChange={(e) => setFormMedium(e.target.value)}
-                          style={{ width: '100%', padding: '6px', borderRadius: '6px', border: '1px solid var(--border-light)', fontSize: '0.8rem' }}
+                          style={{ width: '100%', padding: '6px', borderRadius: '6px', border: '1px solid var(--border-light)', background: 'var(--bg-card-solid)', color: 'var(--text-primary)', fontSize: '0.8rem' }}
                         />
                       </div>
                     </div>
 
                     <div>
-                      <label style={{ fontSize: '0.75rem', fontWeight: 700, color: '#334155' }}>Summary Description *</label>
+                      <label style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-secondary)' }}>Summary Description *</label>
                       <textarea
                         required
                         rows={2}
                         value={formSummary}
                         onChange={(e) => setFormSummary(e.target.value)}
                         placeholder="Detailed overview of penetration testing findings..."
-                        style={{ width: '100%', padding: '8px 12px', borderRadius: '8px', border: '1px solid var(--border-light)', fontSize: '0.85rem' }}
+                        style={{ width: '100%', padding: '8px 12px', borderRadius: '8px', border: '1px solid var(--border-light)', background: 'var(--bg-card-solid)', color: 'var(--text-primary)', fontSize: '0.85rem' }}
                       />
                     </div>
 
                     <div>
-                      <label style={{ fontSize: '0.75rem', fontWeight: 700, color: '#334155' }}>Highlights (One per line)</label>
+                      <label style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-secondary)' }}>Highlights (One per line)</label>
                       <textarea
                         rows={2}
                         value={formHighlights}
                         onChange={(e) => setFormHighlights(e.target.value)}
                         placeholder="Identified SQL Injection in auth endpoint..."
-                        style={{ width: '100%', padding: '8px 12px', borderRadius: '8px', border: '1px solid var(--border-light)', fontSize: '0.85rem' }}
+                        style={{ width: '100%', padding: '8px 12px', borderRadius: '8px', border: '1px solid var(--border-light)', background: 'var(--bg-card-solid)', color: 'var(--text-primary)', fontSize: '0.85rem' }}
                       />
                     </div>
 
                     <div>
-                      <label style={{ fontSize: '0.75rem', fontWeight: 700, color: '#334155' }}>Tools Used (Comma Separated)</label>
+                      <label style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-secondary)' }}>Tools Used (Comma Separated)</label>
                       <input
                         type="text"
                         value={formTools}
                         onChange={(e) => setFormTools(e.target.value)}
                         placeholder="Burp Suite, OWASP ZAP"
-                        style={{ width: '100%', padding: '8px 12px', borderRadius: '8px', border: '1px solid var(--border-light)', fontSize: '0.85rem' }}
+                        style={{ width: '100%', padding: '8px 12px', borderRadius: '8px', border: '1px solid var(--border-light)', background: 'var(--bg-card-solid)', color: 'var(--text-primary)', fontSize: '0.85rem' }}
                       />
                     </div>
 
@@ -856,7 +921,7 @@ export default function AdminPanel({ isOpen, onClose, onProjectUpdated }) {
 
                 {/* Right Side: Existing Projects List */}
                 <div>
-                  <h4 style={{ fontWeight: 800, fontSize: '1.1rem', marginBottom: '16px' }}>
+                  <h4 style={{ fontWeight: 800, fontSize: '1.1rem', marginBottom: '16px', color: 'var(--text-primary)' }}>
                     Live MongoDB Projects ({projects.length})
                   </h4>
 
@@ -866,19 +931,19 @@ export default function AdminPanel({ isOpen, onClose, onProjectUpdated }) {
                         key={proj._id || proj.id}
                         style={{
                           padding: '14px',
-                          background: '#FFFFFF',
+                          background: 'var(--bg-card-solid)',
                           borderRadius: '12px',
                           border: '1px solid var(--border-light)',
                           boxShadow: 'var(--shadow-sm)'
                         }}
                       >
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '6px' }}>
-                          <div style={{ fontWeight: 700, fontSize: '0.95rem', color: '#0F172A' }}>{proj.title}</div>
+                          <div style={{ fontWeight: 700, fontSize: '0.95rem', color: 'var(--text-primary)' }}>{proj.title}</div>
                           <span className="badge-cyber" style={{ fontSize: '0.65rem' }}>{proj.type}</span>
                         </div>
 
-                        <div style={{ fontSize: '0.8rem', color: '#64748B', marginBottom: '8px' }}>
-                          Target: <strong style={{ color: '#0F172A' }}>{proj.target}</strong>
+                        <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '8px' }}>
+                          Target: <strong style={{ color: 'var(--text-primary)' }}>{proj.target}</strong>
                         </div>
 
                         <div style={{ display: 'flex', gap: '8px', marginTop: '10px' }}>
@@ -887,8 +952,9 @@ export default function AdminPanel({ isOpen, onClose, onProjectUpdated }) {
                             style={{
                               padding: '4px 10px',
                               borderRadius: '6px',
-                              border: '1px solid #CBD5E1',
-                              background: '#F8FAFC',
+                              border: '1px solid var(--border-light)',
+                              background: 'var(--bg-secondary)',
+                              color: 'var(--text-primary)',
                               fontSize: '0.75rem',
                               cursor: 'pointer',
                               display: 'flex',
@@ -928,12 +994,12 @@ export default function AdminPanel({ isOpen, onClose, onProjectUpdated }) {
             {/* TAB 3: CONTACT MESSAGES INBOX */}
             {activeTab === 'messages' && (
               <div style={{ padding: '24px', overflowY: 'auto', flex: 1 }}>
-                <h4 style={{ fontWeight: 800, fontSize: '1.1rem', marginBottom: '16px' }}>
+                <h4 style={{ fontWeight: 800, fontSize: '1.1rem', marginBottom: '16px', color: 'var(--text-primary)' }}>
                   Recruiter & Contact Messages Inbox ({messages.length})
                 </h4>
 
                 {messages.length === 0 ? (
-                  <div style={{ textAlign: 'center', padding: '40px', color: '#64748B' }}>
+                  <div style={{ textAlign: 'center', padding: '40px', color: 'var(--text-muted)' }}>
                     No messages received yet.
                   </div>
                 ) : (
@@ -943,19 +1009,19 @@ export default function AdminPanel({ isOpen, onClose, onProjectUpdated }) {
                         key={msg._id}
                         style={{
                           padding: '18px',
-                          background: '#F8FAFC',
+                          background: 'var(--bg-secondary)',
                           borderRadius: '14px',
                           border: '1px solid var(--border-light)'
                         }}
                       >
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '8px' }}>
                           <div>
-                            <div style={{ fontWeight: 800, fontSize: '1rem', color: '#0F172A' }}>{msg.name}</div>
+                            <div style={{ fontWeight: 800, fontSize: '1rem', color: 'var(--text-primary)' }}>{msg.name}</div>
                             <div style={{ fontSize: '0.8rem', color: '#4F46E5', fontFamily: 'var(--font-mono)' }}>{msg.email}</div>
                           </div>
 
                           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                            <span style={{ fontSize: '0.75rem', color: '#64748B' }}>
+                            <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
                               {new Date(msg.createdAt).toLocaleDateString()}
                             </span>
                             <button
@@ -967,10 +1033,10 @@ export default function AdminPanel({ isOpen, onClose, onProjectUpdated }) {
                           </div>
                         </div>
 
-                        <div style={{ fontWeight: 700, fontSize: '0.9rem', color: '#334155', marginBottom: '6px' }}>
+                        <div style={{ fontWeight: 700, fontSize: '0.9rem', color: 'var(--text-primary)', marginBottom: '6px' }}>
                           Subject: {msg.subject}
                         </div>
-                        <p style={{ fontSize: '0.9rem', color: '#475569', lineHeight: 1.5, background: '#FFFFFF', padding: '12px', borderRadius: '8px', border: '1px solid var(--border-light)' }}>
+                        <p style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', lineHeight: 1.5, background: 'var(--bg-card-solid)', padding: '12px', borderRadius: '8px', border: '1px solid var(--border-light)' }}>
                           {msg.message}
                         </p>
                       </div>

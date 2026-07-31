@@ -14,15 +14,25 @@ export default function ProjectsSection({ onSelectPoC, refreshTrigger }) {
   }, [refreshTrigger]);
 
   const fetchProjects = async () => {
+    let baseProjects = resumeData.projects;
     try {
       const res = await fetch(`${API_URL}/api/projects`);
       const data = await res.json();
       if (data.success && data.projects.length > 0) {
-        setProjectsList(data.projects);
+        baseProjects = data.projects;
       }
     } catch (e) {
       console.log('Using default resume projects:', e);
     }
+
+    const localProjects = JSON.parse(localStorage.getItem('custom_projects') || '[]');
+    const combined = [...localProjects];
+    baseProjects.forEach(bp => {
+      if (!combined.some(cp => (cp._id && cp._id === bp._id) || (cp.id && cp.id === bp.id) || cp.title === bp.title)) {
+        combined.push(bp);
+      }
+    });
+    setProjectsList(combined);
   };
 
   const categories = ['All', 'Web & API Security', 'Mobile Security', 'Network Infrastructure'];

@@ -13,15 +13,25 @@ export default function SecurityToolsSection({ refreshTrigger }) {
   }, [refreshTrigger]);
 
   const fetchTools = async () => {
+    let baseTools = [];
     try {
       const res = await fetch(`${API_URL}/api/tools`);
       const data = await res.json();
-      if (data.success) {
-        setToolsList(data.tools);
+      if (data.success && data.tools) {
+        baseTools = data.tools;
       }
     } catch (e) {
       console.log('Error fetching security tools:', e);
     }
+
+    const localTools = JSON.parse(localStorage.getItem('custom_tools') || '[]');
+    const combined = [...localTools];
+    baseTools.forEach(bt => {
+      if (!combined.some(ct => (ct._id && ct._id === bt._id) || (ct.id && ct.id === bt.id) || ct.title === bt.title)) {
+        combined.push(bt);
+      }
+    });
+    setToolsList(combined);
   };
 
   const categories = ['All', 'Web VAPT Scanner', 'Mobile Security Utility', 'Network Infrastructure Tool', 'Exploit PoC'];
