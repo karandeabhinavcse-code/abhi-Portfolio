@@ -48,11 +48,12 @@ export default function SkillsSection() {
             padding: '10px 20px',
             borderRadius: '9999px',
             fontSize: '0.875rem',
-            fontWeight: 600,
+            fontWeight: 700,
+            fontFamily: 'var(--font-mono)',
             border: activeTab === 'all' ? 'none' : '1px solid var(--border-light)',
-            background: activeTab === 'all' ? 'linear-gradient(135deg, #4F46E5 0%, #3730A3 100%)' : 'var(--bg-card-solid)',
-            color: activeTab === 'all' ? '#FFFFFF' : 'var(--text-secondary)',
-            boxShadow: activeTab === 'all' ? '0 4px 14px rgba(79, 70, 229, 0.3)' : 'var(--shadow-sm)',
+            background: activeTab === 'all' ? 'linear-gradient(135deg, #00F0FF 0%, #00FF9D 100%)' : 'var(--bg-card-solid)',
+            color: activeTab === 'all' ? '#050811' : 'var(--text-secondary)',
+            boxShadow: activeTab === 'all' ? '0 4px 18px rgba(0, 240, 255, 0.4)' : 'var(--shadow-sm)',
             cursor: 'pointer',
             transition: 'all 0.25s ease'
           }}
@@ -68,11 +69,12 @@ export default function SkillsSection() {
               padding: '10px 20px',
               borderRadius: '9999px',
               fontSize: '0.875rem',
-              fontWeight: 600,
+              fontWeight: 700,
+              fontFamily: 'var(--font-mono)',
               border: activeTab === cat.id ? 'none' : '1px solid var(--border-light)',
-              background: activeTab === cat.id ? 'linear-gradient(135deg, #4F46E5 0%, #3730A3 100%)' : 'var(--bg-card-solid)',
-              color: activeTab === cat.id ? '#FFFFFF' : 'var(--text-secondary)',
-              boxShadow: activeTab === cat.id ? '0 4px 14px rgba(79, 70, 229, 0.3)' : 'var(--shadow-sm)',
+              background: activeTab === cat.id ? 'linear-gradient(135deg, #00F0FF 0%, #00FF9D 100%)' : 'var(--bg-card-solid)',
+              color: activeTab === cat.id ? '#050811' : 'var(--text-secondary)',
+              boxShadow: activeTab === cat.id ? '0 4px 18px rgba(0, 240, 255, 0.4)' : 'var(--shadow-sm)',
               cursor: 'pointer',
               transition: 'all 0.25s ease'
             }}

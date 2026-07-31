@@ -36,9 +36,6 @@ export default function App() {
         {/* Hero Section */}
         <Hero onOpenTerminal={() => setTerminalModalOpen(true)} />
 
-        {/* Embedded Interactive VAPT Security CLI Console */}
-        <VaptTerminal />
-
         {/* Technical Skills & OWASP Matrix */}
         <SkillsSection />
 

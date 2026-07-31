@@ -9,7 +9,6 @@ export const resumeData = {
       "Ethical Hacker (EC-Council Trained)"
     ],
     email: "karandeabhinav@gmail.com",
-    phone: "+91 9270889444",
     location: "Pune, Kharadi, Maharashtra",
     reportUrl: "https://drive.google.com/file/d/17uzlAmnafOpMkg_QWuc7ZUYQEQAQVbnY/view",
     githubUrl: "https://github.com/",
@@ -292,7 +291,7 @@ export const resumeData = {
     },
     {
       cmd: "contact",
-      output: "Email: karandeabhinav@gmail.com | Phone: +91 9270889444 | Location: Pune, Kharadi"
+      output: "Email: karandeabhinav@gmail.com | Location: Pune, Kharadi"
     }
   ]
 };

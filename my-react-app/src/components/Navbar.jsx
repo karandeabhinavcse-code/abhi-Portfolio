@@ -10,7 +10,7 @@ export default function Navbar({ onOpenTerminal, onOpenAdmin }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const [theme, setTheme] = useState(() => {
-    return localStorage.getItem('theme') || 'light';
+    return localStorage.getItem('theme') || 'dark';
   });
 
   useEffect(() => {
@@ -262,7 +262,7 @@ export default function Navbar({ onOpenTerminal, onOpenAdmin }) {
               boxShadow: '0 2px 6px rgba(79, 70, 229, 0.12)',
               whiteSpace: 'nowrap'
             }}
-            title="Open MongoDB Atlas Admin Panel"
+            title="Open Security Admin Gateway"
           >
             <Shield size={13} />
             <span>Admin</span>

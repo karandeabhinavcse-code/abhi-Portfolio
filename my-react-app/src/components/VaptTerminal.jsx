@@ -79,33 +79,33 @@ export default function VaptTerminal({ isOpen, onClose, isModal = false }) {
 
   const terminalBody = (
     <div style={{
-      background: '#0F172A',
+      background: '#050914',
       borderRadius: '16px',
-      border: '1px solid #334155',
-      boxShadow: '0 25px 50px -12px rgba(15, 23, 42, 0.4)',
+      border: '1px solid rgba(0, 240, 255, 0.3)',
+      boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.8), 0 0 25px rgba(0, 240, 255, 0.15)',
       overflow: 'hidden',
       fontFamily: 'var(--font-mono)'
     }}>
       {/* Terminal Titlebar */}
       <div style={{
-        background: '#1E293B',
+        background: '#0A1020',
         padding: '12px 18px',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
-        borderBottom: '1px solid #334155'
+        borderBottom: '1px solid rgba(0, 240, 255, 0.2)'
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <div style={{ width: '12px', height: '12px', borderRadius: '50%', background: '#EF4444' }} />
-          <div style={{ width: '12px', height: '12px', borderRadius: '50%', background: '#F59E0B' }} />
-          <div style={{ width: '12px', height: '12px', borderRadius: '50%', background: '#10B981' }} />
-          <span style={{ fontSize: '0.85rem', color: '#94A3B8', marginLeft: '8px', fontWeight: 600 }}>
-            bash - abhinav@vapt-console:~
+          <div style={{ width: '12px', height: '12px', borderRadius: '50%', background: '#FF2E63', boxShadow: '0 0 6px #FF2E63' }} />
+          <div style={{ width: '12px', height: '12px', borderRadius: '50%', background: '#FFB800', boxShadow: '0 0 6px #FFB800' }} />
+          <div style={{ width: '12px', height: '12px', borderRadius: '50%', background: '#00FF9D', boxShadow: '0 0 6px #00FF9D' }} />
+          <span style={{ fontSize: '0.85rem', color: '#F0F6FC', marginLeft: '8px', fontWeight: 600 }}>
+            root@abhinav-sec: ~/vapt-cli
           </span>
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <span style={{ fontSize: '0.75rem', color: '#38BDF8', background: 'rgba(56, 189, 248, 0.1)', padding: '2px 8px', borderRadius: '4px' }}>
+          <span style={{ fontSize: '0.75rem', color: '#00F0FF', background: 'rgba(0, 240, 255, 0.12)', border: '1px solid rgba(0, 240, 255, 0.3)', padding: '2px 8px', borderRadius: '4px', fontWeight: 700 }}>
             OWASP 2025 ACTIVE
           </span>
           {isModal && (
@@ -121,26 +121,27 @@ export default function VaptTerminal({ isOpen, onClose, isModal = false }) {
 
       {/* Quick Command Pills */}
       <div style={{
-        background: '#0F172A',
+        background: '#070D1B',
         padding: '10px 18px',
-        borderBottom: '1px solid #1E293B',
+        borderBottom: '1px solid rgba(0, 240, 255, 0.15)',
         display: 'flex',
         alignItems: 'center',
         gap: '8px',
         flexWrap: 'wrap'
       }}>
-        <span style={{ fontSize: '0.75rem', color: '#64748B' }}>Quick Run:</span>
+        <span style={{ fontSize: '0.75rem', color: '#64748B', fontWeight: 700 }}>Quick Flags:</span>
         {quickCommands.map((cmd) => (
           <button
             key={cmd}
             onClick={() => handleCommand(cmd)}
             style={{
-              background: '#1E293B',
-              border: '1px solid #334155',
-              color: '#38BDF8',
+              background: 'rgba(0, 240, 255, 0.08)',
+              border: '1px solid rgba(0, 240, 255, 0.3)',
+              color: '#00F0FF',
               borderRadius: '6px',
               padding: '3px 10px',
               fontSize: '0.75rem',
+              fontWeight: 600,
               cursor: 'pointer',
               transition: 'all 0.2s ease'
             }}
@@ -162,11 +163,11 @@ export default function VaptTerminal({ isOpen, onClose, isModal = false }) {
         {history.map((item, idx) => (
           <div key={idx} style={{ marginBottom: '12px', position: 'relative' }}>
             {item.type === 'user' ? (
-              <div style={{ color: '#38BDF8', fontWeight: 600 }}>{item.text}</div>
+              <div style={{ color: '#00F0FF', fontWeight: 700 }}>{item.text}</div>
             ) : item.type === 'system' ? (
-              <div style={{ color: '#A7F3D0', whiteSpace: 'pre-wrap' }}>{item.text}</div>
+              <div style={{ color: '#00FF9D', whiteSpace: 'pre-wrap', fontWeight: 600 }}>{item.text}</div>
             ) : (
-              <div style={{ color: '#E2E8F0', whiteSpace: 'pre-wrap', position: 'relative' }}>
+              <div style={{ color: '#F0F6FC', whiteSpace: 'pre-wrap', position: 'relative' }}>
                 {item.text}
                 <button
                   onClick={() => handleCopy(item.text, idx)}
@@ -174,9 +175,9 @@ export default function VaptTerminal({ isOpen, onClose, isModal = false }) {
                     position: 'absolute',
                     top: 0,
                     right: 0,
-                    background: '#1E293B',
-                    border: '1px solid #334155',
-                    color: '#94A3B8',
+                    background: '#0B1120',
+                    border: '1px solid rgba(0, 240, 255, 0.25)',
+                    color: '#00F0FF',
                     borderRadius: '4px',
                     padding: '2px 6px',
                     fontSize: '0.7rem',
@@ -186,7 +187,7 @@ export default function VaptTerminal({ isOpen, onClose, isModal = false }) {
                     gap: '4px'
                   }}
                 >
-                  {copiedIndex === idx ? <Check size={12} style={{ color: '#10B981' }} /> : <Copy size={12} />}
+                  {copiedIndex === idx ? <Check size={12} style={{ color: '#00FF9D' }} /> : <Copy size={12} />}
                   {copiedIndex === idx ? 'Copied' : 'Copy'}
                 </button>
               </div>

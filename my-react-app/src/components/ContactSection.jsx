@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Mail, Phone, MapPin, Send, CheckCircle2, Copy, Check, FileText, ExternalLink, ShieldCheck } from 'lucide-react';
+import { Mail, MapPin, Send, CheckCircle2, Copy, Check, FileText, ExternalLink, ShieldCheck } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { resumeData } from '../data/resumeData';
 
@@ -86,7 +86,7 @@ export default function ContactSection() {
               {/* Email */}
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px', background: 'var(--bg-secondary)', borderRadius: '12px', border: '1px solid var(--border-light)' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                  <div style={{ padding: '10px', borderRadius: '10px', background: 'rgba(79, 70, 229, 0.1)', color: 'var(--accent-primary)' }}>
+                  <div style={{ padding: '10px', borderRadius: '10px', background: 'rgba(0, 240, 255, 0.1)', color: 'var(--accent-cyan)' }}>
                     <Mail size={20} />
                   </div>
                   <div>
@@ -98,30 +98,9 @@ export default function ContactSection() {
                 </div>
                 <button
                   onClick={() => handleCopy(resumeData.personalInfo.email, 'email')}
-                  style={{ background: 'none', border: 'none', cursor: 'pointer', color: copiedField === 'email' ? '#059669' : 'var(--text-muted)' }}
+                  style={{ background: 'none', border: 'none', cursor: 'pointer', color: copiedField === 'email' ? '#00FF9D' : 'var(--text-muted)' }}
                 >
                   {copiedField === 'email' ? <Check size={18} /> : <Copy size={18} />}
-                </button>
-              </div>
-
-              {/* Phone */}
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px', background: 'var(--bg-secondary)', borderRadius: '12px', border: '1px solid var(--border-light)' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                  <div style={{ padding: '10px', borderRadius: '10px', background: 'rgba(8, 145, 178, 0.1)', color: 'var(--accent-cyan)' }}>
-                    <Phone size={20} />
-                  </div>
-                  <div>
-                    <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: 600 }}>PHONE NUMBER</div>
-                    <div style={{ fontSize: '0.95rem', fontWeight: 700, color: 'var(--text-primary)', fontFamily: 'var(--font-mono)' }}>
-                      {resumeData.personalInfo.phone}
-                    </div>
-                  </div>
-                </div>
-                <button
-                  onClick={() => handleCopy(resumeData.personalInfo.phone, 'phone')}
-                  style={{ background: 'none', border: 'none', cursor: 'pointer', color: copiedField === 'phone' ? '#059669' : 'var(--text-muted)' }}
-                >
-                  {copiedField === 'phone' ? <Check size={18} /> : <Copy size={18} />}
                 </button>
               </div>
 
