@@ -10,25 +10,19 @@ export default function ProjectsSection({ onSelectPoC, refreshTrigger }) {
   const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
   const fetchProjects = useCallback(async () => {
-    let baseProjects = resumeData.projects;
     try {
       const res = await fetch(`${API_URL}/api/projects`);
       const data = await res.json();
-      if (data.success && data.projects.length > 0) {
-        baseProjects = data.projects;
+      if (data.success && data.projects && data.projects.length > 0) {
+        // Show ONLY official portfolio projects on public home page (exclude user uploads)
+        const officialProjects = data.projects.filter(p => !p.isUserUpload);
+        setProjectsList(officialProjects.length > 0 ? officialProjects : resumeData.projects);
+        return;
       }
     } catch (e) {
       console.log('Using default resume projects:', e);
     }
-
-    const localProjects = JSON.parse(localStorage.getItem('custom_projects') || '[]');
-    const combined = [...localProjects];
-    baseProjects.forEach(bp => {
-      if (!combined.some(cp => (cp._id && cp._id === bp._id) || (cp.id && cp.id === bp.id) || cp.title === bp.title)) {
-        combined.push(bp);
-      }
-    });
-    setProjectsList(combined);
+    setProjectsList(resumeData.projects);
   }, [API_URL]);
 
   useEffect(() => {

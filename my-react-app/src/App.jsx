@@ -14,6 +14,7 @@ import ReportModal from './components/ReportModal';
 import ContactSection from './components/ContactSection';
 import Footer from './components/Footer';
 import AdminLoginModal from './components/AdminLoginModal';
+import AdminDashboardModal from './components/AdminDashboardModal';
 
 export default function App() {
   const [terminalModalOpen, setTerminalModalOpen] = useState(false);
@@ -27,10 +28,12 @@ export default function App() {
     return sessionStorage.getItem('admin_email') || '';
   });
   const [loginModalOpen, setLoginModalOpen] = useState(false);
+  const [dashboardModalOpen, setDashboardModalOpen] = useState(false);
 
   const handleLoginSuccess = (email) => {
     setIsAdminAuthenticated(true);
     setAdminEmail(email);
+    setDashboardModalOpen(true);
   };
 
   const handleLogout = () => {
@@ -38,6 +41,7 @@ export default function App() {
     sessionStorage.removeItem('admin_email');
     setIsAdminAuthenticated(false);
     setAdminEmail('');
+    setDashboardModalOpen(false);
   };
 
   return (
@@ -51,6 +55,7 @@ export default function App() {
         isAdminAuthenticated={isAdminAuthenticated}
         adminEmail={adminEmail}
         onOpenLogin={() => setLoginModalOpen(true)}
+        onOpenDashboard={() => setDashboardModalOpen(true)}
         onLogout={handleLogout}
       />
 
@@ -77,6 +82,7 @@ export default function App() {
           isAdminAuthenticated={isAdminAuthenticated}
           adminEmail={adminEmail}
           onOpenLogin={() => setLoginModalOpen(true)}
+          onOpenDashboard={() => setDashboardModalOpen(true)}
           onLogout={handleLogout}
         />
 
@@ -111,11 +117,19 @@ export default function App() {
         />
       )}
 
-      {/* Owner Admin Sign In Modal */}
+      {/* Admin Login Modal */}
       <AdminLoginModal
         isOpen={loginModalOpen}
         onClose={() => setLoginModalOpen(false)}
         onLoginSuccess={handleLoginSuccess}
+      />
+
+      {/* Admin Submissions Dashboard Modal */}
+      <AdminDashboardModal
+        isOpen={dashboardModalOpen}
+        onClose={() => setDashboardModalOpen(false)}
+        adminEmail={adminEmail}
+        onLogout={handleLogout}
       />
     </div>
   );

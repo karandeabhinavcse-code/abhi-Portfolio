@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Shield, FileText, Menu, X, Sun, Moon, Upload, KeyRound, ShieldCheck, LogOut, Lock } from 'lucide-react';
 import { resumeData } from '../data/resumeData';
 
-export default function Navbar({ onOpenTerminal, isAdminAuthenticated, adminEmail, onOpenLogin, onLogout }) {
+export default function Navbar({ onOpenTerminal, isAdminAuthenticated, adminEmail, onOpenLogin, onOpenDashboard, onLogout }) {
   const [scrolled, setScrolled] = useState(false);
   const [activeSection, setActiveSection] = useState('about');
   const [hoveredSection, setHoveredSection] = useState(null);
@@ -266,10 +266,11 @@ export default function Navbar({ onOpenTerminal, isAdminAuthenticated, adminEmai
             <span>Upload (+)</span>
           </motion.a>
 
-          {/* Admin Login / Status Button */}
+          {/* Admin Status & Dashboard Trigger Button */}
           {isAdminAuthenticated ? (
             <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-              <span
+              <button
+                onClick={onOpenDashboard}
                 style={{
                   display: 'inline-flex',
                   alignItems: 'center',
@@ -281,13 +282,14 @@ export default function Navbar({ onOpenTerminal, isAdminAuthenticated, adminEmai
                   background: 'rgba(16, 185, 129, 0.15)',
                   color: '#10B981',
                   border: '1px solid rgba(16, 185, 129, 0.4)',
-                  whiteSpace: 'nowrap'
+                  whiteSpace: 'nowrap',
+                  cursor: 'pointer'
                 }}
-                title={`Authenticated Owner: ${adminEmail}`}
+                title={`Open Admin Dashboard (${adminEmail})`}
               >
                 <ShieldCheck size={12} />
                 <span>Admin</span>
-              </span>
+              </button>
               <button
                 onClick={onLogout}
                 style={{

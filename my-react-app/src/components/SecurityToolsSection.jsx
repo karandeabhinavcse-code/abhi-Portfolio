@@ -48,25 +48,19 @@ export default function SecurityToolsSection({ refreshTrigger }) {
   const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
   const fetchTools = useCallback(async () => {
-    let baseTools = defaultTools;
     try {
       const res = await fetch(`${API_URL}/api/tools`);
       const data = await res.json();
       if (data.success && data.tools && data.tools.length > 0) {
-        baseTools = data.tools;
+        // Show ONLY official portfolio tools on public home page (exclude user uploads)
+        const officialTools = data.tools.filter(t => !t.isUserUpload);
+        setToolsList(officialTools.length > 0 ? officialTools : defaultTools);
+        return;
       }
     } catch (e) {
       console.log('Using default security tools fallback:', e);
     }
-
-    const localTools = JSON.parse(localStorage.getItem('custom_tools') || '[]');
-    const combined = [...localTools];
-    baseTools.forEach(bt => {
-      if (!combined.some(ct => (ct._id && ct._id === bt._id) || (ct.id && ct.id === bt.id) || ct.title === bt.title)) {
-        combined.push(bt);
-      }
-    });
-    setToolsList(combined.length > 0 ? combined : defaultTools);
+    setToolsList(defaultTools);
   }, [API_URL]);
 
   useEffect(() => {

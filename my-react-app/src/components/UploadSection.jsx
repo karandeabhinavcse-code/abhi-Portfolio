@@ -4,7 +4,7 @@ import { Upload, Mail, ShieldAlert, Terminal, FileText, CheckCircle2, AlertCircl
 import confetti from 'canvas-confetti';
 import AdminLoginModal from './AdminLoginModal';
 
-export default function UploadSection({ onUploadSuccess, isAdminAuthenticated, adminEmail, onOpenLogin, onLogout }) {
+export default function UploadSection({ onUploadSuccess, isAdminAuthenticated, adminEmail, onOpenLogin, onOpenDashboard, onLogout }) {
   const [uploadType, setUploadType] = useState('tool'); // 'tool' | 'project' | 'resume'
   const [formData, setFormData] = useState({
     uploaderEmail: '',
@@ -737,7 +737,7 @@ export default function UploadSection({ onUploadSuccess, isAdminAuthenticated, a
               </p>
             </div>
 
-            <SubmissionsRegistryViewer refreshTrigger={isSubmitting} isAdminAuthenticated={isAdminAuthenticated} adminEmail={adminEmail} onOpenLogin={onOpenLogin} onLogout={onLogout} />
+            <SubmissionsRegistryViewer refreshTrigger={isSubmitting} isAdminAuthenticated={isAdminAuthenticated} adminEmail={adminEmail} onOpenLogin={onOpenLogin} onOpenDashboard={onOpenDashboard} onLogout={onLogout} />
           </div>
         )}
       </motion.div>
@@ -745,7 +745,7 @@ export default function UploadSection({ onUploadSuccess, isAdminAuthenticated, a
   );
 }
 
-function SubmissionsRegistryViewer({ refreshTrigger, isAdminAuthenticated, adminEmail, onLogout, onOpenLogin }) {
+function SubmissionsRegistryViewer({ refreshTrigger, isAdminAuthenticated, adminEmail, onLogout, onOpenLogin, onOpenDashboard }) {
   const [activeTab, setActiveTab] = useState('tools'); // 'tools' | 'projects' | 'resumes'
   const [items, setItems] = useState([]);
 
@@ -832,12 +832,16 @@ function SubmissionsRegistryViewer({ refreshTrigger, isAdminAuthenticated, admin
           ))}
         </div>
 
-        {/* Owner Authentication Badge / Login Trigger Button */}
+        {/* Admin Dashboard & Status Control Bar */}
         {isAdminAuthenticated ? (
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <span style={{ fontSize: '0.78rem', color: '#10B981', background: 'rgba(16, 185, 129, 0.12)', padding: '4px 10px', borderRadius: '8px', border: '1px solid rgba(16, 185, 129, 0.3)', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <ShieldCheck size={14} /> Admin Signed In ({adminEmail})
-            </span>
+            <button
+              onClick={onOpenDashboard}
+              style={{ fontSize: '0.78rem', color: '#10B981', background: 'rgba(16, 185, 129, 0.12)', padding: '4px 10px', borderRadius: '8px', border: '1px solid rgba(16, 185, 129, 0.3)', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer' }}
+              title="Open Admin Submissions Dashboard"
+            >
+              <ShieldCheck size={14} /> Admin Dashboard ({adminEmail})
+            </button>
             <button
               onClick={onLogout}
               style={{ fontSize: '0.75rem', background: 'transparent', border: '1px solid var(--border-light)', color: 'var(--text-muted)', padding: '4px 10px', borderRadius: '6px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}
