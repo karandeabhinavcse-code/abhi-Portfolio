@@ -113,7 +113,7 @@ export default function AdminLoginModal({ isOpen, onClose, onLoginSuccess }) {
           <form onSubmit={handleLogin} style={{ display: 'grid', gap: '16px' }}>
             <div>
               <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 700, color: 'var(--text-primary)', marginBottom: '6px' }}>
-                📧 Owner Gmail Address
+                📧 Admin Email Address
               </label>
               <div style={{ position: 'relative' }}>
                 <Mail size={16} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
@@ -121,7 +121,7 @@ export default function AdminLoginModal({ isOpen, onClose, onLoginSuccess }) {
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="karandeabhinav@gmail.com"
+                  placeholder="Enter admin email address..."
                   required
                   style={{
                     width: '100%',
