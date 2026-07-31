@@ -737,7 +737,7 @@ export default function UploadSection({ onUploadSuccess, isAdminAuthenticated, a
               </p>
             </div>
 
-            <SubmissionsRegistryViewer refreshTrigger={isSubmitting} isAdminAuthenticated={isAdminAuthenticated} adminEmail={adminEmail} />
+            <SubmissionsRegistryViewer refreshTrigger={isSubmitting} isAdminAuthenticated={isAdminAuthenticated} adminEmail={adminEmail} onOpenLogin={onOpenLogin} />
           </div>
         )}
       </motion.div>
@@ -745,16 +745,9 @@ export default function UploadSection({ onUploadSuccess, isAdminAuthenticated, a
   );
 }
 
-function SubmissionsRegistryViewer({ refreshTrigger }) {
+function SubmissionsRegistryViewer({ refreshTrigger, isAdminAuthenticated, adminEmail, onLogout, onOpenLogin }) {
   const [activeTab, setActiveTab] = useState('tools'); // 'tools' | 'projects' | 'resumes'
   const [items, setItems] = useState([]);
-  const [isAdminAuthenticated, setIsAdminAuthenticated] = useState(() => {
-    return sessionStorage.getItem('admin_authenticated') === 'true';
-  });
-  const [adminEmail, setAdminEmail] = useState(() => {
-    return sessionStorage.getItem('admin_email') || '';
-  });
-  const [loginModalOpen, setLoginModalOpen] = useState(false);
 
   const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
@@ -846,7 +839,7 @@ function SubmissionsRegistryViewer({ refreshTrigger }) {
               <ShieldCheck size={14} /> Admin Signed In ({adminEmail})
             </span>
             <button
-              onClick={handleLogout}
+              onClick={onLogout}
               style={{ fontSize: '0.75rem', background: 'transparent', border: '1px solid var(--border-light)', color: 'var(--text-muted)', padding: '4px 10px', borderRadius: '6px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}
             >
               <LogOut size={12} /> Log Out
@@ -854,7 +847,7 @@ function SubmissionsRegistryViewer({ refreshTrigger }) {
           </div>
         ) : (
           <button
-            onClick={() => setLoginModalOpen(true)}
+            onClick={onOpenLogin}
             className="btn-secondary"
             style={{ fontSize: '0.78rem', padding: '6px 12px', borderRadius: '8px', display: 'flex', alignItems: 'center', gap: '6px' }}
           >
