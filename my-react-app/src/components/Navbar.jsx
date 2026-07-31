@@ -63,10 +63,10 @@ export default function Navbar({ onOpenTerminal, isAdminAuthenticated, adminEmai
     <header
       style={{
         position: 'fixed',
-        top: scrolled ? '6px' : '12px',
+        top: scrolled ? '6px' : '10px',
         left: '50%',
         transform: 'translateX(-50%)',
-        width: 'min(98%, 1240px)',
+        width: 'min(99%, 1280px)',
         zIndex: 100,
         transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)'
       }}
@@ -82,14 +82,13 @@ export default function Navbar({ onOpenTerminal, isAdminAuthenticated, adminEmai
           boxShadow: scrolled
             ? '0 12px 32px -6px rgba(79, 70, 229, 0.16), 0 4px 12px rgba(15, 23, 42, 0.04)'
             : '0 6px 20px -4px rgba(15, 23, 42, 0.06)',
-          padding: '5px 12px',
+          padding: '4px 8px',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
-          gap: '8px',
+          gap: '6px',
           transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
-          boxSizing: 'border-box',
-          overflow: 'hidden'
+          boxSizing: 'border-box'
         }}
       >
 
@@ -101,7 +100,7 @@ export default function Navbar({ onOpenTerminal, isAdminAuthenticated, adminEmai
             textDecoration: 'none',
             display: 'flex',
             alignItems: 'center',
-            gap: '8px',
+            gap: '6px',
             flexShrink: 0,
             whiteSpace: 'nowrap'
           }}
@@ -109,8 +108,8 @@ export default function Navbar({ onOpenTerminal, isAdminAuthenticated, adminEmai
         >
           <div
             style={{
-              width: '32px',
-              height: '32px',
+              width: '30px',
+              height: '30px',
               borderRadius: '9999px',
               background: 'linear-gradient(135deg, #4F46E5 0%, #0891B2 100%)',
               display: 'flex',
@@ -122,14 +121,11 @@ export default function Navbar({ onOpenTerminal, isAdminAuthenticated, adminEmai
             }}
             className="logo-icon-pill"
           >
-            <Shield size={17} />
+            <Shield size={16} />
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', whiteSpace: 'nowrap' }}>
-            <span style={{ fontWeight: 800, fontSize: '0.9rem', color: 'var(--text-primary)', lineHeight: 1, whiteSpace: 'nowrap' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '4px', whiteSpace: 'nowrap' }}>
+            <span style={{ fontWeight: 800, fontSize: '0.88rem', color: 'var(--text-primary)', lineHeight: 1, whiteSpace: 'nowrap' }}>
               Abhinav<span style={{ color: '#4F46E5' }}>.Sec</span>
-            </span>
-            <span className="brand-subtext" style={{ fontSize: '0.62rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)', fontWeight: 700, whiteSpace: 'nowrap', background: 'var(--bg-secondary)', padding: '2px 7px', borderRadius: '9999px' }}>
-              VAPT & CCNA
             </span>
           </div>
         </motion.a>
@@ -139,9 +135,9 @@ export default function Navbar({ onOpenTerminal, isAdminAuthenticated, adminEmai
           style={{
             display: 'none',
             alignItems: 'center',
-            gap: '2px',
+            gap: '1px',
             background: 'var(--nav-inner-bg)',
-            padding: '3px 6px',
+            padding: '2px 4px',
             borderRadius: '9999px',
             border: '1px solid var(--nav-pill-border)',
             whiteSpace: 'nowrap'
@@ -162,9 +158,9 @@ export default function Navbar({ onOpenTerminal, isAdminAuthenticated, adminEmai
                 whileHover={{ y: -1, scale: 1.04 }}
                 style={{
                   textDecoration: 'none',
-                  fontSize: '0.76rem',
+                  fontSize: '0.74rem',
                   fontWeight: 700,
-                  padding: '5px 10px',
+                  padding: '4px 8px',
                   borderRadius: '9999px',
                   color: isActive ? '#4F46E5' : isHovered ? 'var(--text-primary)' : 'var(--text-muted)',
                   transition: 'color 0.2s ease',
@@ -217,7 +213,7 @@ export default function Navbar({ onOpenTerminal, isAdminAuthenticated, adminEmai
         </nav>
 
         {/* Action Buttons Container */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexShrink: 0, whiteSpace: 'nowrap' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '5px', flexShrink: 0, whiteSpace: 'nowrap' }}>
 
           {/* Light / Dark Mode Theme Switcher */}
           <motion.button
@@ -228,8 +224,8 @@ export default function Navbar({ onOpenTerminal, isAdminAuthenticated, adminEmai
               display: 'inline-flex',
               alignItems: 'center',
               justifyContent: 'center',
-              width: '32px',
-              height: '32px',
+              width: '30px',
+              height: '30px',
               borderRadius: '9999px',
               background: theme === 'dark' ? 'rgba(99, 102, 241, 0.2)' : 'rgba(245, 158, 11, 0.15)',
               color: theme === 'dark' ? '#818CF8' : '#D97706',
@@ -240,7 +236,7 @@ export default function Navbar({ onOpenTerminal, isAdminAuthenticated, adminEmai
             }}
             title={`Switch to ${theme === 'light' ? 'Dark' : 'Light'} Theme`}
           >
-            {theme === 'light' ? <Moon size={15} /> : <Sun size={15} />}
+            {theme === 'light' ? <Moon size={14} /> : <Sun size={14} />}
           </motion.button>
 
           {/* Public Visitor Upload Trigger */}
@@ -253,8 +249,8 @@ export default function Navbar({ onOpenTerminal, isAdminAuthenticated, adminEmai
               alignItems: 'center',
               gap: '4px',
               borderRadius: '9999px',
-              padding: '6px 13px',
-              fontSize: '0.75rem',
+              padding: '5px 11px',
+              fontSize: '0.74rem',
               fontWeight: 700,
               background: 'linear-gradient(135deg, rgba(79, 70, 229, 0.15) 0%, rgba(8, 145, 178, 0.15) 100%)',
               color: 'var(--accent-primary)',
@@ -266,20 +262,20 @@ export default function Navbar({ onOpenTerminal, isAdminAuthenticated, adminEmai
             }}
             title="Upload Your Tool, Project, or Resume"
           >
-            <Upload size={13} />
+            <Upload size={12} />
             <span>Upload (+)</span>
           </motion.a>
 
-          {/* Owner Admin Login / Status Button */}
+          {/* Admin Login / Status Button */}
           {isAdminAuthenticated ? (
-            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
               <span
                 style={{
                   display: 'inline-flex',
                   alignItems: 'center',
                   gap: '4px',
                   borderRadius: '9999px',
-                  padding: '5px 10px',
+                  padding: '4px 9px',
                   fontSize: '0.72rem',
                   fontWeight: 800,
                   background: 'rgba(16, 185, 129, 0.15)',
@@ -289,8 +285,8 @@ export default function Navbar({ onOpenTerminal, isAdminAuthenticated, adminEmai
                 }}
                 title={`Authenticated Owner: ${adminEmail}`}
               >
-                <ShieldCheck size={13} />
-                <span>Owner</span>
+                <ShieldCheck size={12} />
+                <span>Admin</span>
               </span>
               <button
                 onClick={onLogout}
@@ -299,13 +295,13 @@ export default function Navbar({ onOpenTerminal, isAdminAuthenticated, adminEmai
                   border: 'none',
                   color: 'var(--text-muted)',
                   cursor: 'pointer',
-                  padding: '4px',
+                  padding: '3px',
                   display: 'flex',
                   alignItems: 'center'
                 }}
-                title="Log Out of Owner Admin"
+                title="Log Out of Admin"
               >
-                <LogOut size={13} />
+                <LogOut size={12} />
               </button>
             </div>
           ) : (
@@ -318,8 +314,8 @@ export default function Navbar({ onOpenTerminal, isAdminAuthenticated, adminEmai
                 alignItems: 'center',
                 gap: '4px',
                 borderRadius: '9999px',
-                padding: '6px 12px',
-                fontSize: '0.75rem',
+                padding: '5px 11px',
+                fontSize: '0.74rem',
                 fontWeight: 700,
                 background: 'var(--bg-secondary)',
                 color: 'var(--text-primary)',
@@ -327,10 +323,10 @@ export default function Navbar({ onOpenTerminal, isAdminAuthenticated, adminEmai
                 cursor: 'pointer',
                 whiteSpace: 'nowrap'
               }}
-              title="Owner Admin Login to View & Download Submissions"
+              title="Admin Login to View & Manage Submissions"
             >
-              <KeyRound size={13} style={{ color: 'var(--accent-primary)' }} />
-              <span>Owner Login</span>
+              <KeyRound size={12} style={{ color: 'var(--accent-primary)' }} />
+              <span>Login</span>
             </motion.button>
           )}
 

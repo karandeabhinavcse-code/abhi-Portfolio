@@ -102,10 +102,10 @@ export default function AdminLoginModal({ isOpen, onClose, onLoginSuccess }) {
               <ShieldCheck size={26} />
             </div>
             <h3 style={{ fontSize: '1.3rem', fontWeight: 800, color: 'var(--text-primary)', margin: 0 }}>
-              Owner Admin Sign In
+              Admin Sign In
             </h3>
             <p style={{ fontSize: '0.82rem', color: 'var(--text-muted)', margin: '4px 0 0 0' }}>
-              Authenticate as site owner to unlock tool & project downloads.
+              Sign in as Admin to view & download community submissions.
             </p>
           </div>
 

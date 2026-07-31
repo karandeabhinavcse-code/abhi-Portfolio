@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Upload, Mail, ShieldAlert, Terminal, FileText, CheckCircle2, AlertCircle, FolderArchive, Loader2, Sparkles, Lock, Unlock, ShieldCheck, LogOut, KeyRound } from 'lucide-react';
+import { Upload, Mail, ShieldAlert, Terminal, FileText, CheckCircle2, AlertCircle, FolderArchive, Loader2, Sparkles, Lock, Unlock, ShieldCheck, LogOut, KeyRound, Trash2 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import AdminLoginModal from './AdminLoginModal';
 
@@ -783,11 +783,30 @@ function SubmissionsRegistryViewer({ refreshTrigger }) {
     setItems(localData);
   };
 
-  const handleLogout = () => {
-    sessionStorage.removeItem('admin_authenticated');
-    sessionStorage.removeItem('admin_email');
-    setIsAdminAuthenticated(false);
-    setAdminEmail('');
+  const handleDeleteItem = async (item, idx) => {
+    if (!window.confirm(`Are you sure you want to delete submission "${item.title}"?`)) return;
+
+    // Delete from local storage
+    const key = activeTab === 'tools' ? 'custom_tools' : activeTab === 'projects' ? 'custom_projects' : 'custom_resumes';
+    const localData = JSON.parse(localStorage.getItem(key) || '[]');
+    const updatedLocal = localData.filter((_, i) => i !== idx);
+    localStorage.setItem(key, JSON.stringify(updatedLocal));
+
+    // Delete from MongoDB server if valid id exists
+    if (item._id && !item._id.toString().startsWith('local_')) {
+      try {
+        const endpoint = activeTab === 'tools'
+          ? `${API_URL}/api/tools/${item._id}`
+          : activeTab === 'projects'
+          ? `${API_URL}/api/projects/${item._id}`
+          : `${API_URL}/api/resumes/${item._id}`;
+        await fetch(endpoint, { method: 'DELETE' });
+      } catch (e) {
+        console.warn('Server item delete notice:', e);
+      }
+    }
+
+    setItems((prev) => prev.filter((_, i) => i !== idx));
   };
 
   return (
@@ -824,7 +843,7 @@ function SubmissionsRegistryViewer({ refreshTrigger }) {
         {isAdminAuthenticated ? (
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
             <span style={{ fontSize: '0.78rem', color: '#10B981', background: 'rgba(16, 185, 129, 0.12)', padding: '4px 10px', borderRadius: '8px', border: '1px solid rgba(16, 185, 129, 0.3)', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <ShieldCheck size={14} /> Owner Signed In ({adminEmail})
+              <ShieldCheck size={14} /> Admin Signed In ({adminEmail})
             </span>
             <button
               onClick={handleLogout}
@@ -839,7 +858,7 @@ function SubmissionsRegistryViewer({ refreshTrigger }) {
             className="btn-secondary"
             style={{ fontSize: '0.78rem', padding: '6px 12px', borderRadius: '8px', display: 'flex', alignItems: 'center', gap: '6px' }}
           >
-            <KeyRound size={14} style={{ color: 'var(--accent-primary)' }} /> Owner Admin Login (Download Access)
+            <KeyRound size={14} style={{ color: 'var(--accent-primary)' }} /> Admin Login
           </button>
         )}
       </div>
@@ -864,34 +883,58 @@ function SubmissionsRegistryViewer({ refreshTrigger }) {
                 </div>
               </div>
 
-              {/* Download Option Gated Behind Owner Admin Login */}
-              {(item.fileUrl || item.reportUrl) && (
-                isAdminAuthenticated ? (
-                  <a
-                    href={item.fileUrl || item.reportUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    download
-                    className="btn-secondary"
-                    style={{ fontSize: '0.8rem', padding: '6px 14px', borderRadius: '8px', textDecoration: 'none', background: 'rgba(16, 185, 129, 0.15)', color: '#10B981', border: '1px solid rgba(16, 185, 129, 0.4)' }}
-                  >
-                    <FileText size={14} /> Download File
-                  </a>
-                ) : (
+              {/* Action Buttons: Download & Admin Delete */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                {(item.fileUrl || item.reportUrl) && (
+                  isAdminAuthenticated ? (
+                    <a
+                      href={item.fileUrl || item.reportUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      download
+                      className="btn-secondary"
+                      style={{ fontSize: '0.8rem', padding: '6px 14px', borderRadius: '8px', textDecoration: 'none', background: 'rgba(16, 185, 129, 0.15)', color: '#10B981', border: '1px solid rgba(16, 185, 129, 0.4)' }}
+                    >
+                      <FileText size={14} /> Download File
+                    </a>
+                  ) : (
+                    <button
+                      onClick={() => setLoginModalOpen(true)}
+                      style={{ fontSize: '0.78rem', padding: '6px 12px', borderRadius: '8px', border: '1px solid var(--border-light)', background: 'var(--bg-primary)', color: 'var(--text-muted)', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px' }}
+                    >
+                      <Lock size={13} style={{ color: '#EF4444' }} /> Login to Download
+                    </button>
+                  )
+                )}
+
+                {/* Admin Delete Action Button */}
+                {isAdminAuthenticated && (
                   <button
-                    onClick={() => setLoginModalOpen(true)}
-                    style={{ fontSize: '0.78rem', padding: '6px 12px', borderRadius: '8px', border: '1px solid var(--border-light)', background: 'var(--bg-primary)', color: 'var(--text-muted)', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px' }}
+                    onClick={() => handleDeleteItem(item, idx)}
+                    style={{
+                      padding: '6px 10px',
+                      borderRadius: '8px',
+                      border: '1px solid rgba(239, 68, 68, 0.35)',
+                      background: 'rgba(239, 68, 68, 0.12)',
+                      color: '#EF4444',
+                      cursor: 'pointer',
+                      fontSize: '0.78rem',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '4px'
+                    }}
+                    title="Delete this submission item"
                   >
-                    <Lock size={13} style={{ color: '#EF4444' }} /> Owner Login to Download
+                    <Trash2 size={13} /> Delete
                   </button>
-                )
-              )}
+                )}
+              </div>
             </div>
           ))}
         </div>
       )}
 
-      {/* Owner Admin Login Modal */}
+      {/* Admin Login Modal */}
       <AdminLoginModal
         isOpen={loginModalOpen}
         onClose={() => setLoginModalOpen(false)}
