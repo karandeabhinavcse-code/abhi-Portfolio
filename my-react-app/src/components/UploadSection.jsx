@@ -726,15 +726,6 @@ export default function UploadSection({ onUploadSuccess }) {
 
         {/* Uploaded Files & Downloads Registry Section */}
         <div style={{ marginTop: '40px', paddingTop: '28px', borderTop: '1px solid var(--border-light)' }}>
-          <div style={{ marginBottom: '16px' }}>
-            <h3 style={{ fontSize: '1.2rem', fontWeight: 800, color: 'var(--text-primary)', margin: 0 }}>
-              📦 Uploaded Files & Downloads
-            </h3>
-            <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', margin: '4px 0 0 0' }}>
-              View and download community uploaded tools, audit reports, and candidate resumes.
-            </p>
-          </div>
-
           <SubmissionsRegistryViewer refreshTrigger={isSubmitting} />
         </div>
       </motion.div>
@@ -745,6 +736,13 @@ export default function UploadSection({ onUploadSuccess }) {
 function SubmissionsRegistryViewer({ refreshTrigger }) {
   const [activeTab, setActiveTab] = useState('tools'); // 'tools' | 'projects' | 'resumes'
   const [items, setItems] = useState([]);
+  const [isOwnerUnlocked, setIsOwnerUnlocked] = useState(
+    () => localStorage.getItem('is_owner_authenticated') === 'true'
+  );
+  const [showPinInput, setShowPinInput] = useState(false);
+  const [pinText, setPinText] = useState('');
+  const [pinError, setPinError] = useState(false);
+
   const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
   useEffect(() => {
@@ -766,14 +764,106 @@ function SubmissionsRegistryViewer({ refreshTrigger }) {
       console.log('Fetching local storage submissions fallback:', e);
     }
 
-    // Fallback local storage lookup
     const key = activeTab === 'tools' ? 'custom_tools' : activeTab === 'projects' ? 'custom_projects' : 'custom_resumes';
     const localData = JSON.parse(localStorage.getItem(key) || '[]');
     setItems(localData);
   };
 
+  const handleUnlockOwner = (e) => {
+    e.preventDefault();
+    const cleanPin = pinText.trim().toLowerCase();
+    // Accept secret PIN 1337 or abhinav or owner email karandeabhinav@gmail.com
+    if (cleanPin === '1337' || cleanPin === 'abhinav' || cleanPin === 'karandeabhinav@gmail.com' || cleanPin === 'karandeabhinavcse@gmail.com') {
+      setIsOwnerUnlocked(true);
+      localStorage.setItem('is_owner_authenticated', 'true');
+      setShowPinInput(false);
+      setPinError(false);
+      setPinText('');
+    } else {
+      setPinError(true);
+    }
+  };
+
+  const handleLockOwner = () => {
+    setIsOwnerUnlocked(false);
+    localStorage.removeItem('is_owner_authenticated');
+  };
+
   return (
     <div>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px', flexWrap: 'wrap', gap: '12px' }}>
+        <div>
+          <h3 style={{ fontSize: '1.2rem', fontWeight: 800, color: 'var(--text-primary)', margin: 0 }}>
+            📦 Community Submissions Registry
+          </h3>
+          <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)', margin: '4px 0 0 0' }}>
+            Submitted tools, audit reports, and candidate resumes. (Downloads restricted to Site Owner).
+          </p>
+        </div>
+
+        {/* Owner Unlock Control */}
+        <div>
+          {isOwnerUnlocked ? (
+            <button
+              onClick={handleLockOwner}
+              style={{
+                padding: '6px 12px',
+                borderRadius: '8px',
+                fontSize: '0.78rem',
+                fontWeight: 700,
+                background: 'rgba(16, 185, 129, 0.15)',
+                color: '#10B981',
+                border: '1px solid rgba(16, 185, 129, 0.3)',
+                cursor: 'pointer'
+              }}
+            >
+              🔓 Owner Unlocked (Lock)
+            </button>
+          ) : (
+            <button
+              onClick={() => setShowPinInput(!showPinInput)}
+              style={{
+                padding: '6px 12px',
+                borderRadius: '8px',
+                fontSize: '0.78rem',
+                fontWeight: 700,
+                background: 'var(--bg-secondary)',
+                color: 'var(--text-secondary)',
+                border: '1px solid var(--border-light)',
+                cursor: 'pointer'
+              }}
+            >
+              🔒 Owner Login
+            </button>
+          )}
+        </div>
+      </div>
+
+      {/* Owner Secret PIN Prompt */}
+      {showPinInput && !isOwnerUnlocked && (
+        <form onSubmit={handleUnlockOwner} style={{ marginBottom: '16px', display: 'flex', gap: '8px', alignItems: 'center' }}>
+          <input
+            type="password"
+            placeholder="Enter Owner PIN / Passcode..."
+            value={pinText}
+            onChange={(e) => { setPinText(e.target.value); setPinError(false); }}
+            style={{
+              padding: '8px 12px',
+              borderRadius: '8px',
+              border: pinError ? '1px solid #EF4444' : '1px solid var(--border-light)',
+              background: 'var(--bg-secondary)',
+              color: 'var(--text-primary)',
+              fontSize: '0.82rem'
+            }}
+          />
+          <button type="submit" className="btn-primary" style={{ padding: '8px 14px', fontSize: '0.8rem', borderRadius: '8px' }}>
+            Unlock Downloads
+          </button>
+          {pinError && <span style={{ color: '#EF4444', fontSize: '0.75rem' }}>Incorrect owner passcode.</span>}
+        </form>
+      )}
+
+      {/* Category Submissions Tabs */}
       <div style={{ display: 'flex', gap: '8px', marginBottom: '16px', flexWrap: 'wrap' }}>
         {[
           { id: 'tools', label: '🛠️ Uploaded Tools' },
@@ -819,17 +909,35 @@ function SubmissionsRegistryViewer({ refreshTrigger }) {
                   Category: {item.category || item.type}
                 </div>
               </div>
+
               {(item.fileUrl || item.reportUrl) && (
-                <a
-                  href={item.fileUrl || item.reportUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  download
-                  className="btn-secondary"
-                  style={{ fontSize: '0.8rem', padding: '6px 14px', borderRadius: '8px', textDecoration: 'none' }}
-                >
-                  <FileText size={14} /> Download File
-                </a>
+                isOwnerUnlocked ? (
+                  <a
+                    href={item.fileUrl || item.reportUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    download
+                    className="btn-secondary"
+                    style={{ fontSize: '0.8rem', padding: '6px 14px', borderRadius: '8px', textDecoration: 'none' }}
+                  >
+                    <FileText size={14} /> Download File
+                  </a>
+                ) : (
+                  <button
+                    onClick={() => setShowPinInput(true)}
+                    style={{
+                      fontSize: '0.78rem',
+                      padding: '6px 12px',
+                      borderRadius: '8px',
+                      border: '1px solid var(--border-light)',
+                      background: 'rgba(255,255,255,0.05)',
+                      color: 'var(--text-muted)',
+                      cursor: 'pointer'
+                    }}
+                  >
+                    🔒 Owner Only
+                  </button>
+                )
               )}
             </div>
           ))}
