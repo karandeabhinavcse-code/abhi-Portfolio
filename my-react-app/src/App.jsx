@@ -77,6 +77,7 @@ export default function App() {
           isAdminAuthenticated={isAdminAuthenticated}
           adminEmail={adminEmail}
           onOpenLogin={() => setLoginModalOpen(true)}
+          onLogout={handleLogout}
         />
 
         {/* CCNA Network Protocol Topology Simulator */}

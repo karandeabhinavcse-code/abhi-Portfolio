@@ -4,7 +4,7 @@ import { Upload, Mail, ShieldAlert, Terminal, FileText, CheckCircle2, AlertCircl
 import confetti from 'canvas-confetti';
 import AdminLoginModal from './AdminLoginModal';
 
-export default function UploadSection({ onUploadSuccess, isAdminAuthenticated, adminEmail, onOpenLogin }) {
+export default function UploadSection({ onUploadSuccess, isAdminAuthenticated, adminEmail, onOpenLogin, onLogout }) {
   const [uploadType, setUploadType] = useState('tool'); // 'tool' | 'project' | 'resume'
   const [formData, setFormData] = useState({
     uploaderEmail: '',
@@ -737,7 +737,7 @@ export default function UploadSection({ onUploadSuccess, isAdminAuthenticated, a
               </p>
             </div>
 
-            <SubmissionsRegistryViewer refreshTrigger={isSubmitting} isAdminAuthenticated={isAdminAuthenticated} adminEmail={adminEmail} onOpenLogin={onOpenLogin} />
+            <SubmissionsRegistryViewer refreshTrigger={isSubmitting} isAdminAuthenticated={isAdminAuthenticated} adminEmail={adminEmail} onOpenLogin={onOpenLogin} onLogout={onLogout} />
           </div>
         )}
       </motion.div>
