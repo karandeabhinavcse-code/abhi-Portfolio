@@ -694,56 +694,45 @@ export default function UploadSection({ onUploadSuccess }) {
           </AnimatePresence>
 
           {/* Submit Action Button */}
-          <button
-            type="submit"
-            disabled={isSubmitting || isUploadingFile}
-            className="btn-primary"
-            style={{
-              width: '100%',
-              padding: '14px',
-              fontSize: '1rem',
-              borderRadius: '14px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: '10px',
-              marginTop: '10px',
-              boxShadow: '0 4px 20px rgba(79, 70, 229, 0.4)'
-            }}
-          >
-            {isSubmitting ? (
-              <>
-                <Loader2 size={18} className="animate-spin" /> Submitting & Mailing Site Owner...
-              </>
-            ) : (
-              <>
-                <Upload size={18} /> Upload {uploadType === 'tool' ? 'Security Tool' : uploadType === 'project' ? 'Audit Project' : 'Resume'} & Trigger Database Mail
-              </>
-            )}
-          </button>
+          <div style={{ display: 'flex', justifyContent: 'center', marginTop: '16px' }}>
+            <button
+              type="submit"
+              disabled={isSubmitting || isUploadingFile}
+              className="btn-primary"
+              style={{
+                padding: '12px 32px',
+                fontSize: '0.95rem',
+                borderRadius: '12px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '8px',
+                minWidth: '220px',
+                boxShadow: '0 4px 16px rgba(79, 70, 229, 0.35)'
+              }}
+            >
+              {isSubmitting ? (
+                <>
+                  <Loader2 size={16} className="animate-spin" /> Uploading...
+                </>
+              ) : (
+                <>
+                  <Upload size={16} /> Upload
+                </>
+              )}
+            </button>
+          </div>
         </form>
 
-        {/* MongoDB Database & Google Drive Storage Registry Viewer */}
-        <div style={{ marginTop: '48px', paddingTop: '32px', borderTop: '1px solid var(--border-light)' }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '18px', flexWrap: 'wrap', gap: '12px' }}>
-            <div>
-              <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--text-primary)', margin: 0 }}>
-                🗄️ MongoDB Database & Google Drive Registry
-              </h3>
-              <p style={{ fontSize: '0.82rem', color: 'var(--text-muted)', margin: '4px 0 0 0' }}>
-                All user uploaded tools, audit projects, and resumes registered under owner account (<strong>karandeabhinav@gmail.com</strong>).
-              </p>
-            </div>
-
-            <a
-              href="https://drive.google.com/file/d/1KLZQvENVGNpCsrxBUXEXGx3mcQzZ0j53/view?usp=sharing"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="btn-secondary"
-              style={{ fontSize: '0.8rem', padding: '8px 14px', borderRadius: '10px', textDecoration: 'none' }}
-            >
-              📂 Open Owner Google Drive
-            </a>
+        {/* Uploaded Files & Downloads Registry Section */}
+        <div style={{ marginTop: '40px', paddingTop: '28px', borderTop: '1px solid var(--border-light)' }}>
+          <div style={{ marginBottom: '16px' }}>
+            <h3 style={{ fontSize: '1.2rem', fontWeight: 800, color: 'var(--text-primary)', margin: 0 }}>
+              📦 Uploaded Files & Downloads
+            </h3>
+            <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', margin: '4px 0 0 0' }}>
+              View and download community uploaded tools, audit reports, and candidate resumes.
+            </p>
           </div>
 
           <SubmissionsRegistryViewer refreshTrigger={isSubmitting} />
@@ -813,21 +802,21 @@ function SubmissionsRegistryViewer({ refreshTrigger }) {
 
       {items.length === 0 ? (
         <div style={{ padding: '20px', textAlign: 'center', background: 'var(--bg-secondary)', borderRadius: '12px', border: '1px solid var(--border-light)', color: 'var(--text-muted)', fontSize: '0.85rem' }}>
-          No {activeTab} submitted yet. Use the upload form above to register your first item in MongoDB & Google Drive!
+          No {activeTab} submitted yet. Use the upload form above to submit your first file!
         </div>
       ) : (
         <div style={{ display: 'grid', gap: '12px' }}>
           {items.map((item, idx) => (
-            <div key={idx} style={{ padding: '16px', borderRadius: '12px', background: 'var(--bg-secondary)', border: '1px solid var(--border-light)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
+            <div key={idx} style={{ padding: '14px 18px', borderRadius: '12px', background: 'var(--bg-secondary)', border: '1px solid var(--border-light)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
               <div>
                 <div style={{ fontWeight: 700, fontSize: '0.95rem', color: 'var(--text-primary)' }}>
                   {item.title}
                 </div>
-                <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginTop: '2px' }}>
-                  Uploader: <strong style={{ color: 'var(--accent-primary)' }}>{item.uploaderName || item.uploaderEmail}</strong> ({item.uploaderEmail})
+                <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginTop: '2px' }}>
+                  By: <strong style={{ color: 'var(--accent-primary)' }}>{item.uploaderName || item.uploaderEmail}</strong> ({item.uploaderEmail})
                 </div>
-                <div style={{ fontSize: '0.78rem', color: 'var(--accent-emerald)', marginTop: '4px' }}>
-                  Category: {item.category || item.type} • Status: Registered in MongoDB
+                <div style={{ fontSize: '0.75rem', color: 'var(--accent-emerald)', marginTop: '3px' }}>
+                  Category: {item.category || item.type}
                 </div>
               </div>
               {(item.fileUrl || item.reportUrl) && (
@@ -835,10 +824,11 @@ function SubmissionsRegistryViewer({ refreshTrigger }) {
                   href={item.fileUrl || item.reportUrl}
                   target="_blank"
                   rel="noopener noreferrer"
+                  download
                   className="btn-secondary"
-                  style={{ fontSize: '0.8rem', padding: '6px 12px' }}
+                  style={{ fontSize: '0.8rem', padding: '6px 14px', borderRadius: '8px', textDecoration: 'none' }}
                 >
-                  <FileText size={14} /> Open File / Document
+                  <FileText size={14} /> Download File
                 </a>
               )}
             </div>
