@@ -449,3 +449,116 @@ h6 {
 .modal-content-card {
   animation: modalSlideIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
+
+/* ==========================================================================
+   NATIVE PLATFORM STYLING SYSTEM (iOS Apple HIG vs Android Material You)
+   ========================================================================== */
+
+/* --- iOS PLATFORM STYLES (Apple Human Interface Guidelines) --- */
+[data-platform="ios"] {
+  --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", sans-serif;
+  --ios-blur: blur(28px) saturate(190%);
+}
+
+[data-platform="ios"] .glass-card {
+  border-radius: 24px;
+  backdrop-filter: var(--ios-blur);
+  -webkit-backdrop-filter: var(--ios-blur);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  box-shadow: 0 12px 36px -10px rgba(0, 0, 0, 0.5), 0 0 0 0.5px rgba(255, 255, 255, 0.12);
+}
+
+[data-platform="ios"] .btn-primary {
+  border-radius: 9999px;
+  font-family: var(--font-sans);
+  letter-spacing: -0.01em;
+  box-shadow: 0 8px 20px -4px rgba(0, 240, 255, 0.4);
+}
+
+[data-platform="ios"] .btn-secondary {
+  border-radius: 9999px;
+  font-family: var(--font-sans);
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+[data-platform="ios"] .badge-cyber,
+[data-platform="ios"] .badge-emerald,
+[data-platform="ios"] .badge-rose {
+  border-radius: 9999px;
+  font-family: var(--font-sans);
+}
+
+/* --- ANDROID PLATFORM STYLES (Google Material Design 3) --- */
+[data-platform="android"] {
+  --font-sans: "Roboto", "Google Sans", "Segoe UI", sans-serif;
+  --md-surface-1: #111A2B;
+  --md-surface-2: #182338;
+  --md-surface-tonal: rgba(56, 189, 248, 0.14);
+}
+
+[data-platform="android"] .glass-card {
+  border-radius: 20px;
+  background: var(--md-surface-1);
+  border: 1px solid rgba(56, 189, 248, 0.22);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.6), 0 0 16px rgba(56, 189, 248, 0.12);
+}
+
+[data-platform="android"] .glass-card:hover {
+  border-color: rgba(0, 255, 157, 0.45);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7), 0 0 24px rgba(0, 255, 157, 0.2);
+}
+
+[data-platform="android"] .btn-primary {
+  border-radius: 16px;
+  font-family: var(--font-sans);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-size: 0.85rem;
+}
+
+[data-platform="android"] .btn-secondary {
+  border-radius: 16px;
+  font-family: var(--font-sans);
+  background: var(--md-surface-2);
+  border: 1px solid rgba(148, 163, 184, 0.2);
+}
+
+[data-platform="android"] .badge-cyber,
+[data-platform="android"] .badge-emerald,
+[data-platform="android"] .badge-rose {
+  border-radius: 8px;
+}
+
+/* Mobile Layout Responsiveness Polish */
+@media (max-width: 768px) {
+  body[data-mobile="true"] {
+    padding-bottom: 84px; /* Room for bottom navigation bar */
+  }
+
+  .modal-overlay {
+    padding: 0;
+    align-items: flex-end; /* Mobile Bottom Sheet presentation */
+  }
+
+  [data-platform="ios"] .modal-overlay .modal-content-card,
+  [data-platform="ios"] .modal-overlay > div {
+    border-radius: 28px 28px 0 0 !important;
+    max-height: 90vh !important;
+    width: 100% !important;
+  }
+
+  [data-platform="android"] .modal-overlay .modal-content-card,
+  [data-platform="android"] .modal-overlay > div {
+    border-radius: 24px 24px 0 0 !important;
+    max-height: 90vh !important;
+    width: 100% !important;
+  }
+
+  /* Universal Mobile Touch Target Minimum Heights */
+  button, a {
+    min-height: 44px;
+    touch-action: manipulation;
+  }
+}

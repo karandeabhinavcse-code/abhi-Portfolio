@@ -84,8 +84,14 @@ export default function VaptTerminal({ isOpen, onClose, isModal = false }) {
       border: '1px solid rgba(0, 240, 255, 0.3)',
       boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.8), 0 0 25px rgba(0, 240, 255, 0.15)',
       overflow: 'hidden',
-      fontFamily: 'var(--font-mono)'
+      fontFamily: 'var(--font-mono)',
+      position: 'relative'
     }}>
+      {/* Mobile Bottom Sheet Handle Bar */}
+      <div className="mobile-sheet-handle" style={{ display: 'flex', justifyContent: 'center', padding: '6px 0 0' }}>
+        <div style={{ width: '38px', height: '4px', background: 'rgba(255, 255, 255, 0.3)', borderRadius: '2px' }} />
+      </div>
+
       {/* Terminal Titlebar */}
       <div style={{
         background: '#0A1020',

@@ -71,17 +71,20 @@ export default function Hero({ onOpenTerminal }) {
             </h1>
 
             {/* Typewriter Subtitle with Hacker Prompt */}
-            <div style={{
-              fontSize: 'clamp(1.1rem, 2.2vw, 1.5rem)',
-              fontWeight: 700,
-              color: 'var(--text-primary)',
-              height: '42px',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '8px',
-              marginBottom: '20px',
-              fontFamily: 'var(--font-mono)'
-            }}>
+            <div
+              className="typewriter-box"
+              style={{
+                fontSize: 'clamp(1.1rem, 2.2vw, 1.5rem)',
+                fontWeight: 700,
+                color: 'var(--text-primary)',
+                height: '42px',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                marginBottom: '20px',
+                fontFamily: 'var(--font-mono)'
+              }}
+            >
               <span style={{ color: 'var(--accent-emerald)' }}>root@abhinav-sec:~#</span>
               <span>{typedText}</span>
               <motion.span
@@ -105,7 +108,7 @@ export default function Hero({ onOpenTerminal }) {
             </p>
 
             {/* CTA Action Buttons */}
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '16px', marginBottom: '48px' }}>
+            <div className="hero-cta-group" style={{ display: 'flex', flexWrap: 'wrap', gap: '16px', marginBottom: '48px' }}>
               <button onClick={onOpenTerminal} className="btn-primary">
                 <Terminal size={18} /> Launch Security CLI <Sparkles size={16} />
               </button>
@@ -233,6 +236,25 @@ export default function Hero({ onOpenTerminal }) {
       <style>{`
         @media (min-width: 992px) {
           .hero-grid { grid-template-columns: 1.2fr 0.8fr !important; }
+        }
+        @media (max-width: 768px) {
+          #about {
+            padding-top: 110px !important;
+            padding-bottom: 40px !important;
+          }
+          .hero-cta-group {
+            flex-direction: column !important;
+            width: 100% !important;
+          }
+          .hero-cta-group button, .hero-cta-group a {
+            width: 100% !important;
+            justify-content: center !important;
+          }
+          .typewriter-box {
+            font-size: 0.95rem !important;
+            height: auto !important;
+            flex-wrap: wrap !important;
+          }
         }
       `}</style>
     </section>

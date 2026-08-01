@@ -19,8 +19,9 @@ export default function CyberCanvas() {
     window.addEventListener('resize', handleResize);
 
     // Dynamic node density based on screen width
-    const densityFactor = 45;
-    const nodeCount = Math.floor(Math.min(canvas.width / 24, densityFactor));
+    const isMobile = window.innerWidth <= 768;
+    const densityFactor = isMobile ? 18 : 45;
+    const nodeCount = Math.floor(Math.min(canvas.width / (isMobile ? 32 : 24), densityFactor));
     const nodes = [];
 
     // Mouse tracker

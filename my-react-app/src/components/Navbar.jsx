@@ -2,12 +2,16 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Shield, FileText, Menu, X, Sun, Moon, Upload, KeyRound, ShieldCheck, LogOut, Lock } from 'lucide-react';
 import { resumeData } from '../data/resumeData';
+import MobileStatusBar from './MobileStatusBar';
+import { usePlatform } from '../context/PlatformContext';
 
 export default function Navbar({ onOpenTerminal, isAdminAuthenticated, adminEmail, onOpenLogin, onOpenDashboard, onLogout }) {
+  const { isMobileViewport } = usePlatform();
   const [scrolled, setScrolled] = useState(false);
   const [activeSection, setActiveSection] = useState('about');
   const [hoveredSection, setHoveredSection] = useState(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
 
   const [theme, setTheme] = useState(() => {
     return localStorage.getItem('theme') || 'dark';
@@ -63,7 +67,7 @@ export default function Navbar({ onOpenTerminal, isAdminAuthenticated, adminEmai
     <header
       style={{
         position: 'fixed',
-        top: scrolled ? '6px' : '10px',
+        top: scrolled ? '4px' : '8px',
         left: '50%',
         transform: 'translateX(-50%)',
         width: 'min(99%, 1280px)',
@@ -71,6 +75,9 @@ export default function Navbar({ onOpenTerminal, isAdminAuthenticated, adminEmai
         transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)'
       }}
     >
+      {/* Mobile Top Native Status Bar */}
+      <MobileStatusBar />
+
       {/* Streamlined Motion-Blur Floating Pill Header Container */}
       <div
         style={{

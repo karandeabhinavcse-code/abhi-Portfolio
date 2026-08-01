@@ -15,6 +15,8 @@ import ContactSection from './components/ContactSection';
 import Footer from './components/Footer';
 import AdminLoginModal from './components/AdminLoginModal';
 import AdminDashboardModal from './components/AdminDashboardModal';
+import MobileBottomNav from './components/MobileBottomNav';
+import { PlatformProvider } from './context/PlatformContext';
 
 export default function App() {
   const [terminalModalOpen, setTerminalModalOpen] = useState(false);
@@ -45,40 +47,14 @@ export default function App() {
   };
 
   return (
-    <div style={{ position: 'relative', minHeight: '100vh', background: 'var(--bg-primary)' }}>
-      {/* Background Interactive Cyber Canvas */}
-      <CyberCanvas />
+    <PlatformProvider>
+      <div style={{ position: 'relative', minHeight: '100vh', background: 'var(--bg-primary)' }}>
+        {/* Background Interactive Cyber Canvas */}
+        <CyberCanvas />
 
-      {/* Glassmorphism Header Navbar */}
-      <Navbar
-        onOpenTerminal={() => setTerminalModalOpen(true)}
-        isAdminAuthenticated={isAdminAuthenticated}
-        adminEmail={adminEmail}
-        onOpenLogin={() => setLoginModalOpen(true)}
-        onOpenDashboard={() => setDashboardModalOpen(true)}
-        onLogout={handleLogout}
-      />
-
-      {/* Main Content Area */}
-      <main>
-        {/* Hero Section */}
-        <Hero onOpenTerminal={() => setTerminalModalOpen(true)} />
-
-        {/* Technical Skills & OWASP Matrix */}
-        <SkillsSection />
-
-        {/* Audit Projects & Penetration Testing Reports */}
-        <ProjectsSection
-          onSelectPoC={(proj) => setSelectedPoCProject(proj)}
-          refreshTrigger={refreshTrigger}
-        />
-
-        {/* Custom Hacking & Security Tools Section */}
-        <SecurityToolsSection refreshTrigger={refreshTrigger} />
-
-        {/* Open Upload Project, Tool & Resume Visitor Hub */}
-        <UploadSection
-          onUploadSuccess={() => setRefreshTrigger(prev => prev + 1)}
+        {/* Glassmorphism Header Navbar */}
+        <Navbar
+          onOpenTerminal={() => setTerminalModalOpen(true)}
           isAdminAuthenticated={isAdminAuthenticated}
           adminEmail={adminEmail}
           onOpenLogin={() => setLoginModalOpen(true)}
@@ -86,51 +62,82 @@ export default function App() {
           onLogout={handleLogout}
         />
 
-        {/* CCNA Network Protocol Topology Simulator */}
-        <NetworkVisualizer />
+        {/* Main Content Area */}
+        <main>
+          {/* Hero Section */}
+          <Hero onOpenTerminal={() => setTerminalModalOpen(true)} />
 
-        {/* VAPT Experience Timeline & BCA Education */}
-        <ExperienceSection />
+          {/* Technical Skills & OWASP Matrix */}
+          <SkillsSection />
 
-        {/* Verified Certifications & Credentials */}
-        <CertificationsSection />
+          {/* Audit Projects & Penetration Testing Reports */}
+          <ProjectsSection
+            onSelectPoC={(proj) => setSelectedPoCProject(proj)}
+            refreshTrigger={refreshTrigger}
+          />
 
-        {/* Direct Contact & PDF Audit Link */}
-        <ContactSection />
-      </main>
+          {/* Custom Hacking & Security Tools Section */}
+          <SecurityToolsSection refreshTrigger={refreshTrigger} />
 
-      {/* Footer */}
-      <Footer />
+          {/* Open Upload Project, Tool & Resume Visitor Hub */}
+          <UploadSection
+            onUploadSuccess={() => setRefreshTrigger(prev => prev + 1)}
+            isAdminAuthenticated={isAdminAuthenticated}
+            adminEmail={adminEmail}
+            onOpenLogin={() => setLoginModalOpen(true)}
+            onOpenDashboard={() => setDashboardModalOpen(true)}
+            onLogout={handleLogout}
+          />
 
-      {/* Terminal Modal Triggered from Header/Hero */}
-      <VaptTerminal
-        isModal={true}
-        isOpen={terminalModalOpen}
-        onClose={() => setTerminalModalOpen(false)}
-      />
+          {/* CCNA Network Protocol Topology Simulator */}
+          <NetworkVisualizer />
 
-      {/* PoC Payload Inspector Modal */}
-      {selectedPoCProject && (
-        <ReportModal
-          project={selectedPoCProject}
-          onClose={() => setSelectedPoCProject(null)}
+          {/* VAPT Experience Timeline & BCA Education */}
+          <ExperienceSection />
+
+          {/* Verified Certifications & Credentials */}
+          <CertificationsSection />
+
+          {/* Direct Contact & PDF Audit Link */}
+          <ContactSection />
+        </main>
+
+        {/* Footer */}
+        <Footer />
+
+        {/* Mobile Bottom Dock / Navigation Rail */}
+        <MobileBottomNav onOpenTerminal={() => setTerminalModalOpen(true)} />
+
+        {/* Terminal Modal Triggered from Header/Hero/BottomNav */}
+        <VaptTerminal
+          isModal={true}
+          isOpen={terminalModalOpen}
+          onClose={() => setTerminalModalOpen(false)}
         />
-      )}
 
-      {/* Admin Login Modal */}
-      <AdminLoginModal
-        isOpen={loginModalOpen}
-        onClose={() => setLoginModalOpen(false)}
-        onLoginSuccess={handleLoginSuccess}
-      />
+        {/* PoC Payload Inspector Modal */}
+        {selectedPoCProject && (
+          <ReportModal
+            project={selectedPoCProject}
+            onClose={() => setSelectedPoCProject(null)}
+          />
+        )}
 
-      {/* Admin Submissions Dashboard Modal */}
-      <AdminDashboardModal
-        isOpen={dashboardModalOpen}
-        onClose={() => setDashboardModalOpen(false)}
-        adminEmail={adminEmail}
-        onLogout={handleLogout}
-      />
-    </div>
+        {/* Admin Login Modal */}
+        <AdminLoginModal
+          isOpen={loginModalOpen}
+          onClose={() => setLoginModalOpen(false)}
+          onLoginSuccess={handleLoginSuccess}
+        />
+
+        {/* Admin Submissions Dashboard Modal */}
+        <AdminDashboardModal
+          isOpen={dashboardModalOpen}
+          onClose={() => setDashboardModalOpen(false)}
+          adminEmail={adminEmail}
+          onLogout={handleLogout}
+        />
+      </div>
+    </PlatformProvider>
   );
 }
