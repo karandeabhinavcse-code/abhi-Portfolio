@@ -67,7 +67,7 @@ export default function Navbar({ onOpenTerminal, isAdminAuthenticated, adminEmai
     <header
       style={{
         position: 'fixed',
-        top: scrolled ? '4px' : '8px',
+        top: scrolled ? '6px' : '12px',
         left: '50%',
         transform: 'translateX(-50%)',
         width: 'min(99%, 1280px)',
@@ -75,9 +75,6 @@ export default function Navbar({ onOpenTerminal, isAdminAuthenticated, adminEmai
         transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)'
       }}
     >
-      {/* Mobile Top Native Status Bar */}
-      <MobileStatusBar />
-
       {/* Streamlined Motion-Blur Floating Pill Header Container */}
       <div
         style={{
