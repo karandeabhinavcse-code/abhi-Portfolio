@@ -30,7 +30,7 @@ export default function Navbar({ onOpenTerminal, isAdminAuthenticated, adminEmai
     const handleScroll = () => {
       setScrolled(window.scrollY > 25);
 
-      const sections = ['about', 'terminal', 'skills', 'projects', 'tools', 'upload', 'network', 'experience', 'certifications', 'contact'];
+      const sections = ['about', 'terminal', 'skills', 'projects', 'tools', 'news', 'upload', 'network', 'experience', 'certifications', 'contact'];
       const scrollPos = window.scrollY + 180;
 
       for (const section of sections) {
@@ -56,6 +56,7 @@ export default function Navbar({ onOpenTerminal, isAdminAuthenticated, adminEmai
     { id: 'skills', label: 'Skills' },
     { id: 'projects', label: 'Audits' },
     { id: 'tools', label: 'Tools' },
+    { id: 'news', label: 'News' },
     { id: 'upload', label: 'Upload' },
     { id: 'network', label: 'CCNA' },
     { id: 'experience', label: 'Experience' },

@@ -6,6 +6,7 @@ import VaptTerminal from './components/VaptTerminal';
 import SkillsSection from './components/SkillsSection';
 import ProjectsSection from './components/ProjectsSection';
 import SecurityToolsSection from './components/SecurityToolsSection';
+import CyberNewsSection from './components/CyberNewsSection';
 import UploadSection from './components/UploadSection';
 import NetworkVisualizer from './components/NetworkVisualizer';
 import ExperienceSection from './components/ExperienceSection';
@@ -78,6 +79,9 @@ export default function App() {
 
           {/* Custom Hacking & Security Tools Section */}
           <SecurityToolsSection refreshTrigger={refreshTrigger} />
+
+          {/* Daily Cyber Security & Hacking News Feed */}
+          <CyberNewsSection refreshTrigger={refreshTrigger} />
 
           {/* Open Upload Project, Tool & Resume Visitor Hub */}
           <UploadSection

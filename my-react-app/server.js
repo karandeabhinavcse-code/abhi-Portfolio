@@ -51,6 +51,7 @@ mongoose.connect(mongoURI)
     console.log('[DB] Connected to Abhinav Karande MongoDB Atlas Cluster successfully.');
     await seedProjectsIfEmpty();
     await seedToolsIfEmpty();
+    await seedNewsIfEmpty();
   })
   .catch(err => console.error('[DB] MongoDB Connection Error:', err));
 
@@ -132,6 +133,28 @@ const ResumeSchema = new mongoose.Schema({
 });
 
 const ResumeSubmission = mongoose.model('ResumeSubmission', ResumeSchema);
+
+// Mongoose Schema for Daily Cyber Security & Hacking News Articles
+const NewsSchema = new mongoose.Schema({
+  title: { type: String, required: true },
+  source: { type: String, default: 'The Hacker News' },
+  sourceUrl: { type: String, default: '' },
+  category: { type: String, default: 'Zero-Day Exploit' },
+  severity: { type: String, default: 'HIGH' },
+  summary: { type: String, required: true },
+  content: { type: String },
+  url: { type: String },
+  imageUrl: { type: String, default: 'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&w=800&q=80' },
+  publishedAt: { type: Date, default: Date.now },
+  author: { type: String, default: 'Cyber Intelligence Desk' },
+  tags: [{ type: String }],
+  uploaderEmail: { type: String, default: '' },
+  uploaderName: { type: String, default: 'The Hacker News Feed' },
+  isUserUpload: { type: Boolean, default: false },
+  createdAt: { type: Date, default: Date.now }
+});
+
+const NewsArticle = mongoose.model('NewsArticle', NewsSchema);
 
 // --- NODEMAILER EMAIL NOTIFICATION HELPER ---
 async function sendUploadNotificationEmail({ uploadType, title, uploaderEmail, uploaderName, category, description, fileUrl, externalUrl }) {
@@ -370,6 +393,63 @@ async function seedToolsIfEmpty() {
   }
 }
 
+const defaultSeedNews = [
+  {
+    title: "Critical Zero-Day Flaw Exploited in Enterprise VPN Gateway Allows Unauthenticated RCE",
+    source: "The Hacker News",
+    sourceUrl: "https://thehackernews.com",
+    category: "Zero-Day Exploit",
+    severity: "CRITICAL",
+    summary: "Threat actors are actively exploiting an unpatched zero-day vulnerability in leading enterprise VPN appliances to execute arbitrary code with elevated root privileges.",
+    content: "Security researchers have alerted enterprise IT security teams regarding active exploitation of a zero-day memory corruption vulnerability affecting enterprise VPN hardware. Attackers can trigger buffer overflow via custom-crafted HTTP POST headers without authentication. CISA has issued an emergency directive urging organizations to implement temporary firewall block rules immediately while patches are deployed.",
+    url: "https://thehackernews.com/2026/08/critical-zero-day-vpn-rce.html",
+    imageUrl: "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&w=800&q=80",
+    publishedAt: new Date(Date.now() - 2 * 60 * 60 * 1000),
+    author: "Cyber Intelligence Unit",
+    tags: ["VPN", "RCE", "Zero-Day", "CISA Alert", "Enterprise"]
+  },
+  {
+    title: "Sophisticated AI-Driven Ransomware Targeted Global Logistics Provider",
+    source: "BleepingComputer",
+    sourceUrl: "https://bleepingcomputer.com",
+    category: "Ransomware Attack",
+    severity: "HIGH",
+    summary: "A new ransomware variant utilizes automated LLM scripts for real-time internal credential harvesting and shadow volume deletion across Active Directory networks.",
+    content: "Incident responders at BleepingComputer report a novel ransomware campaign targeting major supply chain operators. The malware leverages automated machine learning routines to bypass EDR detection, mutate file extension signatures dynamically, and exfiltrate sensitive corporate databases prior to payload execution.",
+    url: "https://www.bleepingcomputer.com/news/security/ai-ransomware-attacks-global-logistics/",
+    imageUrl: "https://images.unsplash.com/photo-1563986768609-322da13575f3?auto=format&fit=crop&w=800&q=80",
+    publishedAt: new Date(Date.now() - 5 * 60 * 60 * 1000),
+    author: "Threat Hunter Desk",
+    tags: ["Ransomware", "AI Security", "Active Directory", "Data Leak"]
+  },
+  {
+    title: "CISA Releases Emergency Advisory on Critical Cloud API Authentication Bypass",
+    source: "CISA Advisory",
+    sourceUrl: "https://www.cisa.gov/known-exploited-vulnerabilities-catalog",
+    category: "CISA Advisory",
+    severity: "CRITICAL",
+    summary: "US Cybersecurity and Infrastructure Security Agency adds flaw affecting OAuth2 token validation mechanisms across multi-tenant cloud storage services to KEV catalog.",
+    content: "CISA has updated its Known Exploited Vulnerabilities (KEV) catalog with CVE-2026-8841. The flaw allows malicious actors to forge JWT claims due to improper cryptographic signature verification in OAuth2 endpoints. Federal agencies are mandated to patch within 48 hours.",
+    url: "https://www.cisa.gov/news-events/cybersecurity-advisories",
+    imageUrl: "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&w=800&q=80",
+    publishedAt: new Date(Date.now() - 11 * 60 * 60 * 1000),
+    author: "CISA Cyber Division",
+    tags: ["CISA", "OAuth2", "Cloud Security", "JWT Bypass"]
+  }
+];
+
+async function seedNewsIfEmpty() {
+  try {
+    const count = await NewsArticle.countDocuments();
+    if (count === 0) {
+      console.log('[DB] Seeding initial cyber news into MongoDB Atlas...');
+      await NewsArticle.insertMany(defaultSeedNews);
+    }
+  } catch (err) {
+    console.error('[DB Seed News Error]', err);
+  }
+}
+
 // Health Check Endpoint
 app.get('/api/health', (req, res) => {
   res.json({
@@ -413,6 +493,69 @@ app.post('/api/tools/upload', upload.single('toolFile'), (req, res) => {
   } catch (err) {
     console.error('[Upload Error]', err);
     res.status(500).json({ success: false, error: 'File upload failed.' });
+  }
+});
+
+// --- DAILY CYBER SECURITY & HACKING NEWS ENDPOINTS ---
+
+// GET All Cyber Security News
+app.get('/api/news', async (req, res) => {
+  try {
+    const news = await NewsArticle.find().sort({ publishedAt: -1, createdAt: -1 });
+    res.json({ success: true, count: news.length, news });
+  } catch (err) {
+    res.status(500).json({ success: false, error: 'Failed to fetch cyber news.' });
+  }
+});
+
+// POST Create / Publish Cyber News Article
+app.post('/api/news', async (req, res) => {
+  try {
+    const newsData = req.body;
+    if (!newsData.title || !newsData.summary) {
+      return res.status(400).json({ success: false, error: 'Title and Summary are required.' });
+    }
+
+    const newArticle = new NewsArticle({
+      ...newsData,
+      isUserUpload: true
+    });
+    await newArticle.save();
+
+    console.log(`[DB] Cyber News Published: "${newArticle.title}" by ${newArticle.uploaderEmail || newArticle.uploaderName || 'Admin'}`);
+
+    if (newArticle.uploaderEmail) {
+      sendUploadNotificationEmail({
+        uploadType: 'Cyber Security News Article',
+        title: newArticle.title,
+        uploaderEmail: newArticle.uploaderEmail,
+        uploaderName: newArticle.uploaderName || 'News Reporter',
+        category: newArticle.category,
+        description: newArticle.summary,
+        fileUrl: newArticle.url || newArticle.imageUrl,
+        externalUrl: newArticle.url
+      });
+    }
+
+    res.status(201).json({
+      success: true,
+      message: 'Cyber security news article published successfully!',
+      news: newArticle
+    });
+  } catch (err) {
+    console.error('[Publish News Error]', err);
+    res.status(500).json({ success: false, error: 'Failed to publish news article.' });
+  }
+});
+
+// DELETE Cyber News Article
+app.delete('/api/news/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    await NewsArticle.findByIdAndDelete(id);
+    res.json({ success: true, message: 'News article deleted successfully.' });
+  } catch (err) {
+    res.status(500).json({ success: false, error: 'Failed to delete news article.' });
   }
 });
 

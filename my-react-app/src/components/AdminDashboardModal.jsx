@@ -21,7 +21,13 @@ export default function AdminDashboardModal({ isOpen, onClose, adminEmail, onLog
       const res = await fetch(`${API_URL}/api/admin/submissions`);
       const data = await res.json();
       if (data.success && data.data) {
-        const fetchedList = activeTab === 'tools' ? data.data.tools : activeTab === 'projects' ? data.data.projects : data.data.resumes;
+        const fetchedList = activeTab === 'tools'
+          ? data.data.tools
+          : activeTab === 'projects'
+          ? data.data.projects
+          : activeTab === 'news'
+          ? data.data.news
+          : data.data.resumes;
         if (fetchedList && fetchedList.length > 0) {
           setItems(fetchedList);
           setIsLoading(false);
@@ -33,7 +39,7 @@ export default function AdminDashboardModal({ isOpen, onClose, adminEmail, onLog
     }
 
     // Local storage lookup
-    const key = activeTab === 'tools' ? 'custom_tools' : activeTab === 'projects' ? 'custom_projects' : 'custom_resumes';
+    const key = activeTab === 'tools' ? 'custom_tools' : activeTab === 'projects' ? 'custom_projects' : activeTab === 'news' ? 'custom_news' : 'custom_resumes';
     const localData = JSON.parse(localStorage.getItem(key) || '[]');
     setItems(localData);
     setIsLoading(false);
@@ -173,6 +179,7 @@ export default function AdminDashboardModal({ isOpen, onClose, adminEmail, onLog
             {[
               { id: 'tools', label: '🛠️ Uploaded Tools' },
               { id: 'projects', label: '🛡️ Uploaded Audit Projects' },
+              { id: 'news', label: '📰 Uploaded News' },
               { id: 'resumes', label: '📄 Uploaded Resumes' }
             ].map((tab) => (
               <button
