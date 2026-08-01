@@ -217,7 +217,7 @@ export default function Navbar({ onOpenTerminal, isAdminAuthenticated, adminEmai
         </nav>
 
         {/* Action Buttons Container */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '5px', flexShrink: 0, whiteSpace: 'nowrap' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexShrink: 0, whiteSpace: 'nowrap' }}>
 
           {/* Light / Dark Mode Theme Switcher */}
           <motion.button
@@ -228,8 +228,8 @@ export default function Navbar({ onOpenTerminal, isAdminAuthenticated, adminEmai
               display: 'inline-flex',
               alignItems: 'center',
               justifyContent: 'center',
-              width: '30px',
-              height: '30px',
+              width: '32px',
+              height: '32px',
               borderRadius: '9999px',
               background: theme === 'dark' ? 'rgba(99, 102, 241, 0.2)' : 'rgba(245, 158, 11, 0.15)',
               color: theme === 'dark' ? '#818CF8' : '#D97706',
@@ -243,11 +243,12 @@ export default function Navbar({ onOpenTerminal, isAdminAuthenticated, adminEmai
             {theme === 'light' ? <Moon size={14} /> : <Sun size={14} />}
           </motion.button>
 
-          {/* Public Visitor Upload Trigger */}
+          {/* Public Visitor Upload Trigger (Desktop only) */}
           <motion.a
             href="#upload"
             whileHover={{ scale: 1.05, y: -1 }}
             whileTap={{ scale: 0.96 }}
+            className="nav-upload-btn"
             style={{
               display: 'inline-flex',
               alignItems: 'center',
@@ -270,9 +271,9 @@ export default function Navbar({ onOpenTerminal, isAdminAuthenticated, adminEmai
             <span>Upload (+)</span>
           </motion.a>
 
-          {/* Admin Status & Dashboard Trigger Button */}
+          {/* Admin Status & Dashboard Trigger Button (Desktop only) */}
           {isAdminAuthenticated ? (
-            <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+            <div className="nav-admin-btn" style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
               <button
                 onClick={onOpenDashboard}
                 style={{
@@ -315,6 +316,7 @@ export default function Navbar({ onOpenTerminal, isAdminAuthenticated, adminEmai
               onClick={onOpenLogin}
               whileHover={{ scale: 1.05, y: -1 }}
               whileTap={{ scale: 0.96 }}
+              className="nav-admin-btn"
               style={{
                 display: 'inline-flex',
                 alignItems: 'center',
@@ -343,19 +345,20 @@ export default function Navbar({ onOpenTerminal, isAdminAuthenticated, adminEmai
             rel="noopener noreferrer"
             whileHover={{ scale: 1.05, y: -1 }}
             whileTap={{ scale: 0.96 }}
-            className="btn-primary"
+            className="btn-primary nav-resume-btn"
             style={{
               display: 'inline-flex',
               alignItems: 'center',
+              justifyContent: 'center',
               gap: '4px',
               borderRadius: '9999px',
-              padding: '6px 13px',
+              padding: '6px 11px',
               fontSize: '0.75rem',
               fontWeight: 700,
               whiteSpace: 'nowrap'
             }}
           >
-            <FileText size={13} />
+            <FileText size={14} />
             <span className="btn-resume-text">Resume</span>
           </motion.a>
 
@@ -372,7 +375,8 @@ export default function Navbar({ onOpenTerminal, isAdminAuthenticated, adminEmai
               border: '1px solid var(--border-light)',
               background: 'var(--bg-card-solid)',
               color: 'var(--text-primary)',
-              cursor: 'pointer'
+              cursor: 'pointer',
+              flexShrink: 0
             }}
             className="mobile-hamburger"
           >
@@ -402,6 +406,79 @@ export default function Navbar({ onOpenTerminal, isAdminAuthenticated, adminEmai
               gap: '6px'
             }}
           >
+            {/* Mobile Quick Action Buttons inside Drawer */}
+            <div style={{ display: 'flex', gap: '8px', marginBottom: '8px', paddingBottom: '10px', borderBottom: '1px solid var(--border-light)' }}>
+              <a
+                href="#upload"
+                onClick={() => setMobileMenuOpen(false)}
+                style={{
+                  flex: 1,
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '6px',
+                  borderRadius: '12px',
+                  padding: '9px 12px',
+                  fontSize: '0.8rem',
+                  fontWeight: 700,
+                  background: 'linear-gradient(135deg, rgba(79, 70, 229, 0.15) 0%, rgba(8, 145, 178, 0.15) 100%)',
+                  color: 'var(--accent-primary)',
+                  border: '1px solid rgba(79, 70, 229, 0.3)',
+                  textDecoration: 'none'
+                }}
+              >
+                <Upload size={14} />
+                <span>Upload (+)</span>
+              </a>
+
+              {isAdminAuthenticated ? (
+                <button
+                  onClick={() => { onOpenDashboard(); setMobileMenuOpen(false); }}
+                  style={{
+                    flex: 1,
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '6px',
+                    borderRadius: '12px',
+                    padding: '9px 12px',
+                    fontSize: '0.8rem',
+                    fontWeight: 700,
+                    background: 'rgba(16, 185, 129, 0.15)',
+                    color: '#10B981',
+                    border: '1px solid rgba(16, 185, 129, 0.4)',
+                    cursor: 'pointer'
+                  }}
+                >
+                  <ShieldCheck size={14} />
+                  <span>Admin Dashboard</span>
+                </button>
+              ) : (
+                <button
+                  onClick={() => { onOpenLogin(); setMobileMenuOpen(false); }}
+                  style={{
+                    flex: 1,
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '6px',
+                    borderRadius: '12px',
+                    padding: '9px 12px',
+                    fontSize: '0.8rem',
+                    fontWeight: 700,
+                    background: 'var(--bg-secondary)',
+                    color: 'var(--text-primary)',
+                    border: '1px solid var(--border-light)',
+                    cursor: 'pointer'
+                  }}
+                >
+                  <KeyRound size={14} style={{ color: 'var(--accent-primary)' }} />
+                  <span>Admin Login</span>
+                </button>
+              )}
+            </div>
+
+            {/* Navigation items list */}
             {navItems.map((item) => (
               <a
                 key={item.id}
@@ -435,6 +512,11 @@ export default function Navbar({ onOpenTerminal, isAdminAuthenticated, adminEmai
             display: flex !important;
           }
           .mobile-hamburger {
+            display: none !important;
+          }
+        }
+        @media (max-width: 959px) {
+          .nav-upload-btn, .nav-admin-btn {
             display: none !important;
           }
         }
