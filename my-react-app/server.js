@@ -240,6 +240,32 @@ async function sendUploadNotificationEmail({ uploadType, title, uploaderEmail, u
 // Seed Projects
 const defaultSeedProjects = [
   {
+    title: "VAPT-AI – AI-Assisted Vulnerability Assessment Toolkit",
+    target: "Kali Linux / Security Testing Environment",
+    period: null,
+    type: "Python Security Tool / VAPT Tool",
+    severityBreakdown: { critical: 0, high: 1, medium: 2 },
+    reportUrl: "",
+    githubUrl: "https://github.com/karandeabhinavcse-code/VAPT-AI",
+    summary: "A Python-based cybersecurity toolkit built for authorized vulnerability assessment and security testing, with automated assessment workflows, risk analysis, and security reporting.",
+    highlights: [
+      "Interactive Rich CLI terminal menu and subcommand interface with target validation logic.",
+      "Non-destructive HTTP header audits, TLS configuration checks, and technology fingerprinting.",
+      "Deterministic 0–100 risk scoring with automated HTML/JSON report generation.",
+      "Modular AI analysis layer for explaining findings and generating remediation guidance."
+    ],
+    tools: ["Python", "Kali Linux", "VAPT", "Security Automation"],
+    pocs: [
+      {
+        title: "VAPT-AI CLI Scan Command",
+        vulnerability: "Defensive Security Audit & Scan Workflow",
+        severity: "Medium",
+        code: "vapti scan https://target-app.local --report html",
+        impact: "Executes automated assessment workflows, scores risk, and exports HTML/JSON reports."
+      }
+    ]
+  },
+  {
     title: "Web Application VAPT – Gin & Juice Security Audit",
     target: "Gin & Juice (OWASP Practice Application)",
     period: "2024 - 2025",

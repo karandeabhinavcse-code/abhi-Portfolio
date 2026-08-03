@@ -24,7 +24,7 @@ export default function ProjectCard({ project, index, onSelectPoC }) {
   };
 
   const shortCategory = getShortCategory(project.type || project.category);
-  const yearDisplay = project.period ? project.period.split('-')[0].trim() : '2025';
+  const yearDisplay = project.period ? project.period.split('-')[0].trim() : null;
 
   return (
     <motion.div
@@ -49,9 +49,11 @@ export default function ProjectCard({ project, index, onSelectPoC }) {
           <span className="badge-cyber" style={{ fontSize: '0.72rem', padding: '4px 12px' }}>
             {shortCategory}
           </span>
-          <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)', fontWeight: 600 }}>
-            {yearDisplay}
-          </span>
+          {yearDisplay && (
+            <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)', fontWeight: 600 }}>
+              {yearDisplay}
+            </span>
+          )}
         </div>
 
         {/* 2. Project Title */}
@@ -131,7 +133,7 @@ export default function ProjectCard({ project, index, onSelectPoC }) {
 
       {/* 7. Action Buttons */}
       <div style={{ paddingTop: '16px', borderTop: '1px solid var(--border-light)', display: 'flex', flexWrap: 'wrap', gap: '8px', alignItems: 'center' }}>
-        
+
         {/* View Details Button */}
         <button
           onClick={() => onSelectPoC(project)}

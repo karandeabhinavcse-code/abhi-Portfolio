@@ -128,10 +128,66 @@ export const resumeData = {
 
   projects: [
     {
+      id: "vapt-ai-toolkit",
+      title: "VAPT-AI – AI-Assisted Vulnerability Assessment Toolkit",
+      target: "Kali Linux / Security Testing Environment",
+      period: null,
+      type: "Python Security Tool / VAPT Tool",
+      environmentType: "Kali Linux CLI / Security Testing",
+      objective: "A Python-based cybersecurity toolkit built for authorized vulnerability assessment and security testing, with automated assessment workflows, risk analysis, and security reporting.",
+      summary: "A Python-based cybersecurity toolkit built for authorized vulnerability assessment and security testing, with automated assessment workflows, risk analysis, and security reporting.",
+      methodology: "Target Validation → Defensive Reconnaissance → HTTP Security Audit → Deterministic Risk Scoring → Modular AI Analysis → Security Reporting",
+      whatILearned: "Engineered Python CLI with rich formatting, implemented non-destructive HTTP/TLS auditing, developed a 0–100 deterministic risk scoring algorithm, and built a modular AI analysis interface.",
+      keyWork: [
+        "Interactive Rich CLI terminal interface with target validation logic",
+        "Non-destructive HTTP header audits & TLS security checks",
+        "Deterministic 0–100 risk scoring & HTML/JSON report generation",
+        "Modular AI analysis layer for explaining findings & remediation guidance"
+      ],
+      highlights: [
+        "Interactive Rich CLI terminal menu and subcommand interface with target validation logic.",
+        "Non-destructive HTTP header audits, TLS configuration checks, and technology fingerprinting.",
+        "Deterministic 0–100 risk scoring with automated HTML/JSON report generation.",
+        "Modular AI analysis layer for explaining findings and generating remediation guidance."
+      ],
+      tools: ["Python", "Kali Linux", "VAPT", "Security Automation"],
+      githubUrl: "https://github.com/karandeabhinavcse-code/VAPT-AI",
+      reportUrl: null,
+      findings: [
+        {
+          name: "HTTP Security Header & TLS Audit Vulnerability Detection",
+          severity: "MEDIUM",
+          category: "Web Security Headers",
+          description: "Identifies missing HTTP defensive headers (HSTS, CSP, X-Frame-Options) and evaluates TLS transport security configuration.",
+          evidence: "vapti web https://target-app.local",
+          impact: "Detects unencrypted transport hazards and missing client-side security policies.",
+          remediation: "Enforce HSTS, implement strict Content-Security-Policy headers, and disable legacy TLS protocols."
+        },
+        {
+          name: "Deterministic Risk Scoring Engine",
+          severity: "INFO",
+          category: "Risk Assessment",
+          description: "Calculates a 0–100 risk index by assessing technical severity, impact factors, and evidence quality.",
+          evidence: "vapti scan https://target-app.local --output html",
+          impact: "Standardizes security risk evaluation across automated audit workflows.",
+          remediation: "Maintain consistent severity mappings and export standardized security reports."
+        }
+      ],
+      pocs: [
+        {
+          title: "VAPT-AI CLI Scan Command",
+          vulnerability: "Defensive Security Audit & Scan Workflow",
+          severity: "MEDIUM",
+          code: "vapti scan https://target-app.local --report html",
+          impact: "Executes automated assessment workflows, scores risk, and exports HTML/JSON reports."
+        }
+      ]
+    },
+    {
       id: "web-vapt-audit",
       title: "Web Application VAPT – Controlled Lab Audit",
       target: "OWASP Juice Shop",
-      period: "2024 - 2025",
+      period: null,
       type: "Web Application VAPT",
       environmentType: "Controlled Lab Assessment",
       objective: "Performed security testing of an intentionally vulnerable web application in a controlled environment to evaluate common vulnerabilities based on the OWASP Top 10.",
@@ -149,8 +205,8 @@ export const resumeData = {
         "Findings & remediation documentation with technical evidence."
       ],
       tools: ["Burp Suite", "OWASP ZAP", "Kali Linux", "OWASP Top 10"],
-      githubUrl: "https://github.com/karandeabhinavcse-code",
-      reportUrl: "/Abhinav_Karande_Resume.pdf",
+      githubUrl: null,
+      reportUrl: "https://drive.google.com/file/d/17uzlAmnafOpMkg_QWuc7ZUYQEQAQVbnY/view",
       findings: [
         {
           name: "Client-Side Template Injection (CSTI)",
@@ -201,7 +257,7 @@ export const resumeData = {
       id: "network-security-assessment",
       title: "Network Vulnerability Assessment & Reconnaissance Lab",
       target: "Controlled Subnet / Virtual Machine Topology",
-      period: "2024",
+      period: null,
       type: "Network Vulnerability Assessment",
       environmentType: "Controlled Lab Assessment",
       objective: "Performed network reconnaissance, service enumeration, vulnerability assessment, and network traffic analysis across virtual lab hosts in a controlled environment.",
@@ -219,7 +275,7 @@ export const resumeData = {
         "Network traffic analysis using Wireshark captures."
       ],
       tools: ["Nmap", "Wireshark", "Kali Linux", "Networking"],
-      githubUrl: "https://github.com/karandeabhinavcse-code",
+      githubUrl: null,
       reportUrl: null,
       findings: [
         {
@@ -241,88 +297,6 @@ export const resumeData = {
           impact: "Identified outdated service versions and unencrypted communication ports across lab hosts."
         }
       ]
-    },
-    {
-      id: "android-app-security",
-      title: "Android Application Security Assessment",
-      target: "Android APK Test Environment",
-      period: "2024",
-      type: "Android Application Security Assessment",
-      environmentType: "Controlled Lab Assessment",
-      objective: "Performed static APK analysis, manifest and permission reviews, hardcoded secret identification, and network security analysis of an Android application in a controlled environment.",
-      summary: "Performed static APK analysis, manifest and permission reviews, hardcoded secret identification, and network security analysis of an Android application in a controlled environment.",
-      methodology: "Decompilation → Static Manifest Inspection → Secret Identification → Traffic Interception Setup → Security Reporting",
-      whatILearned: "Gained hands-on experience with JADX decompiler inspection, Android manifest backup flag risks, ADB command utilities, and mobile proxy setup.",
-      keyWork: [
-        "Static APK analysis",
-        "Manifest & permission review",
-        "Application/network security analysis"
-      ],
-      highlights: [
-        "Static APK analysis using JADX decompiler.",
-        "Manifest & permission review for security risks.",
-        "Application/network security analysis in testing emulator."
-      ],
-      tools: ["ADB", "Burp Suite", "APK Analysis", "Android Security", "JADX"],
-      githubUrl: "https://github.com/karandeabhinavcse-code",
-      reportUrl: null,
-      findings: [
-        {
-          name: "Insecure Local Storage & Manifest Misconfiguration",
-          severity: "MEDIUM",
-          category: "Mobile Application Security",
-          description: "Target application allowed backup flag in AndroidManifest.xml and stored unencrypted prefs data.",
-          evidence: "adb shell run-as com.example.app cat /data/data/com.example.app/shared_prefs/user.xml",
-          impact: "Physical or ADB access permits extraction of local application data.",
-          remediation: "Set android:allowBackup='false' and encrypt sensitive data using Android EncryptedSharedPreferences."
-        }
-      ],
-      pocs: [
-        {
-          title: "ADB Application Inspection",
-          vulnerability: "Insecure Local Storage",
-          severity: "MEDIUM",
-          code: "adb shell run-as com.example.app cat /data/data/com.example.app/shared_prefs/user.xml",
-          impact: "Audited local storage practices for unencrypted session data."
-        }
-      ]
-    },
-    {
-      id: "python-security-script",
-      title: "Python Security & Network Scanning Utility",
-      target: "Personal / Academic Scripting Lab",
-      period: "2024 - 2025",
-      type: "Python Security Project",
-      environmentType: "Personal Security Lab",
-      objective: "Developed custom Python utilities to automate basic network port scanning, HTTP response header inspection, and command-line log analysis.",
-      summary: "Developed custom Python scripting utilities to automate basic network port scanning, HTTP response header inspection, and command-line log analysis.",
-      methodology: "Script Design → Socket Port Connection → HTTP Header Parsing → Result Formatting → Command-Line Utility Execution",
-      whatILearned: "Strengthened core Python socket programming, HTTP response header verification (HSTS, CSP, X-Frame-Options), and automated security scripting.",
-      keyWork: [
-        "Custom port scanner scripting",
-        "HTTP security header inspection",
-        "Automated log & output parsing"
-      ],
-      highlights: [
-        "Custom port scanner scripting with Python socket module.",
-        "HTTP security header inspection utility.",
-        "Automated log & output parsing in Linux terminal."
-      ],
-      tools: ["Python", "Sockets", "Requests", "Linux Terminal"],
-      githubUrl: "https://github.com/karandeabhinavcse-code",
-      reportUrl: null,
-      findings: [
-        {
-          name: "Missing Security Response Headers",
-          severity: "LOW",
-          category: "Web Security Headers",
-          description: "Target web server headers missing HSTS (Strict-Transport-Security) and X-Frame-Options.",
-          evidence: "import requests; r = requests.get('http://target'); print(r.headers)",
-          impact: "Increases risk of clickjacking attacks and unencrypted downgrade connections.",
-          remediation: "Configure web server to emit HSTS, X-Frame-Options, X-Content-Type-Options, and CSP headers."
-        }
-      ],
-      pocs: []
     }
   ],
 

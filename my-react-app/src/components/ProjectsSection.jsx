@@ -32,7 +32,6 @@ export default function ProjectsSection({ onSelectPoC, refreshTrigger }) {
     { id: 'All', label: 'All' },
     { id: 'Web VAPT', label: 'Web VAPT', matches: ['web application vapt', 'web vapt'] },
     { id: 'Network VAPT', label: 'Network VAPT', matches: ['network vulnerability assessment', 'network vapt'] },
-    { id: 'Android VAPT', label: 'Android VAPT', matches: ['android application security assessment', 'android vapt'] },
     { id: 'Python', label: 'Python', matches: ['python security project', 'python'] }
   ];
 
