@@ -1,54 +1,53 @@
-import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Shield, Terminal, ArrowRight, Download, CheckCircle2, Sparkles } from 'lucide-react';
+import { Shield, ArrowRight, Download, Terminal } from 'lucide-react';
 import { resumeData } from '../data/resumeData';
 
+const GithubIcon = ({ size = 20 }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4" />
+    <path d="M9 18c-4.51 2-5-2-7-2" />
+  </svg>
+);
+
+const LinkedinIcon = ({ size = 20 }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z" />
+    <rect width="4" height="12" x="2" y="9" />
+    <circle cx="4" cy="4" r="2" />
+  </svg>
+);
+
 export default function Hero({ onOpenTerminal }) {
-  const [subtitleIndex, setSubtitleIndex] = useState(0);
-  const [typedText, setTypedText] = useState('');
-  const [isDeleting, setIsDeleting] = useState(false);
-
-  const subtitles = resumeData.personalInfo.subtitles;
-
-  useEffect(() => {
-    const currentFullText = subtitles[subtitleIndex];
-    let timer;
-
-    if (!isDeleting) {
-      if (typedText.length < currentFullText.length) {
-        timer = setTimeout(() => {
-          setTypedText(currentFullText.slice(0, typedText.length + 1));
-        }, 80);
-      } else {
-        timer = setTimeout(() => setIsDeleting(true), 2000);
-      }
-    } else {
-      if (typedText.length > 0) {
-        timer = setTimeout(() => {
-          setTypedText(currentFullText.slice(0, typedText.length - 1));
-        }, 40);
-      } else {
-        setIsDeleting(false);
-        setSubtitleIndex((prev) => (prev + 1) % subtitles.length);
-      }
-    }
-
-    return () => clearTimeout(timer);
-  }, [typedText, isDeleting, subtitleIndex, subtitles]);
-
   return (
     <section
-      id="about"
+      id="hero"
       style={{
-        minHeight: '100vh',
+        minHeight: '90vh',
         paddingTop: '130px',
-        paddingBottom: '80px',
+        paddingBottom: '60px',
         display: 'flex',
         alignItems: 'center',
         position: 'relative',
         zIndex: 1
       }}
     >
+      {/* Subtle Radial Depth Glow behind Hero Section */}
+      <div
+        aria-hidden="true"
+        style={{
+          position: 'absolute',
+          top: '40%',
+          left: '50%',
+          transform: 'translate(-50%, -50%)',
+          width: '80%',
+          maxWidth: '900px',
+          height: '500px',
+          background: 'radial-gradient(circle, rgba(56, 189, 248, 0.12) 0%, rgba(99, 102, 241, 0.05) 45%, transparent 75%)',
+          filter: 'blur(60px)',
+          pointerEvents: 'none',
+          zIndex: -1
+        }}
+      />
       <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '0 24px', width: '100%' }}>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '48px', alignItems: 'center' }} className="hero-grid">
           
@@ -58,77 +57,107 @@ export default function Hero({ onOpenTerminal }) {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
           >
-            {/* Security Compliance Badge */}
-            <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', marginBottom: '20px' }}>
-              <span className="badge-cyber" style={{ padding: '6px 18px', fontSize: '0.82rem' }}>
-                <Shield size={14} className="animate-pulse-slow" /> [ STATUS: ONLINE ] OWASP Top 10 (2025) & CCNA Certified
+            {/* SOC Terminal System Status Banner */}
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: '10px', marginBottom: '20px', flexWrap: 'wrap' }}>
+              <span className="soc-status-badge">
+                <span className="status-dot-pulse"></span>
+                SOC ONLINE // VAPT AUDITOR
+              </span>
+              <span className="badge-cyber" style={{ padding: '6px 16px', fontSize: '0.82rem' }}>
+                <Shield size={14} /> BCA Final Year Student • Application Security Focus
               </span>
             </div>
 
-            {/* Main Headline */}
-            <h1 style={{ fontSize: 'clamp(2.5rem, 5vw, 4rem)', lineHeight: 1.1, marginBottom: '16px', fontWeight: 800 }}>
-              Hi, I'm <span className="text-gradient">Abhinav Karande</span>
+            {/* Main Name Heading */}
+            <h1 style={{ fontSize: 'clamp(2.5rem, 5vw, 4.2rem)', lineHeight: 1.1, marginBottom: '12px', fontWeight: 800 }}>
+              Hi, I'm <span className="text-gradient text-glow-cyan">{resumeData.personalInfo.name}</span>
             </h1>
 
-            {/* Typewriter Subtitle with Hacker Prompt */}
-            <div
-              className="typewriter-box"
-              style={{
-                fontSize: 'clamp(1.1rem, 2.2vw, 1.5rem)',
-                fontWeight: 700,
-                color: 'var(--text-primary)',
-                height: '42px',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '8px',
-                marginBottom: '20px',
-                fontFamily: 'var(--font-mono)'
-              }}
-            >
-              <span style={{ color: 'var(--accent-emerald)' }}>root@abhinav-sec:~#</span>
-              <span>{typedText}</span>
-              <motion.span
-                animate={{ opacity: [1, 0] }}
-                transition={{ duration: 0.5, repeat: Infinity, repeatType: 'reverse' }}
-                style={{ color: 'var(--accent-cyan)', fontWeight: 800 }}
-              >
-                _
-              </motion.span>
-            </div>
+            {/* Professional Title Subtitle */}
+            <h2 style={{
+              fontSize: 'clamp(1.2rem, 2.5vw, 1.8rem)',
+              fontWeight: 700,
+              color: 'var(--accent-primary)',
+              marginBottom: '20px',
+              fontFamily: 'var(--font-mono)'
+            }}>
+              {resumeData.personalInfo.title}
+            </h2>
 
-            {/* Summary Paragraph */}
+            {/* Introduction Paragraph */}
             <p style={{
-              fontSize: '1.05rem',
+              fontSize: '1.08rem',
               color: 'var(--text-secondary)',
               lineHeight: 1.7,
               marginBottom: '32px',
-              maxWidth: '650px'
+              maxWidth: '640px'
             }}>
               {resumeData.personalInfo.summary}
             </p>
 
-            {/* CTA Action Buttons */}
-            <div className="hero-cta-group" style={{ display: 'flex', flexWrap: 'wrap', gap: '16px', marginBottom: '48px' }}>
-              <button onClick={onOpenTerminal} className="btn-primary">
-                <Terminal size={18} /> Launch Security CLI <Sparkles size={16} />
-              </button>
-
-              <a href="#projects" className="btn-secondary">
-                Explore VAPT Audits <ArrowRight size={18} />
+            {/* CTA Buttons & Social Icons */}
+            <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '16px', marginBottom: '40px' }}>
+              <a href="#projects" className="btn-primary" style={{ padding: '12px 24px', fontSize: '0.95rem' }}>
+                View Projects <ArrowRight size={18} />
               </a>
 
               <a
                 href={resumeData.personalInfo.reportUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="btn-cyber"
-                style={{ padding: '11px 20px', fontSize: '0.92rem' }}
+                className="btn-secondary"
+                style={{ padding: '12px 24px', fontSize: '0.95rem' }}
               >
-                <Download size={16} /> View Report & Resume PDF
+                <Download size={18} /> Download Resume
               </a>
+
+              {/* Social Links */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginLeft: '8px' }}>
+                <a
+                  href={resumeData.personalInfo.githubUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{
+                    width: '42px',
+                    height: '42px',
+                    borderRadius: '12px',
+                    background: 'var(--bg-secondary)',
+                    border: '1px solid var(--border-light)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    color: 'var(--text-primary)',
+                    transition: 'all 0.2s ease'
+                  }}
+                  title="GitHub Profile"
+                >
+                  <GithubIcon size={20} />
+                </a>
+
+                <a
+                  href={resumeData.personalInfo.linkedinUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{
+                    width: '42px',
+                    height: '42px',
+                    borderRadius: '12px',
+                    background: 'var(--bg-secondary)',
+                    border: '1px solid var(--border-light)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    color: 'var(--accent-primary)',
+                    transition: 'all 0.2s ease'
+                  }}
+                  title="LinkedIn Profile"
+                >
+                  <LinkedinIcon size={20} />
+                </a>
+              </div>
             </div>
 
-            {/* Stat Counters */}
+            {/* Quick Stats Banner */}
             <div style={{
               display: 'grid',
               gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))',
@@ -137,11 +166,11 @@ export default function Hero({ onOpenTerminal }) {
               borderTop: '1px solid var(--border-light)'
             }}>
               {resumeData.stats.map((stat, idx) => (
-                <div key={idx} style={{ padding: '12px', background: 'rgba(0, 240, 255, 0.03)', borderRadius: '12px', border: '1px solid var(--border-light)' }}>
-                  <div style={{ fontSize: '1.75rem', fontWeight: 800, color: 'var(--accent-cyan)', fontFamily: 'var(--font-mono)', textShadow: '0 0 10px rgba(0, 240, 255, 0.3)' }}>
+                <div key={idx} style={{ padding: '12px', background: 'var(--bg-card-solid)', borderRadius: '12px', border: '1px solid var(--border-light)' }}>
+                  <div style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--accent-primary)', fontFamily: 'var(--font-mono)' }}>
                     {stat.value}
                   </div>
-                  <div style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--accent-emerald)' }}>
+                  <div style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-primary)' }}>
                     {stat.label}
                   </div>
                   <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
@@ -152,80 +181,59 @@ export default function Hero({ onOpenTerminal }) {
             </div>
           </motion.div>
 
-          {/* Right Column: Interactive Dark VAPT HUD Card Widget */}
+          {/* Right Column: Clean Terminal HUD Widget */}
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.6, delay: 0.2 }}
             style={{ width: '100%' }}
           >
-            <div className="glass-card" style={{ padding: '28px', position: 'relative', overflow: 'hidden' }}>
+            <div className="glass-card" style={{ padding: '28px', borderRadius: '24px' }}>
               
-              {/* Header Bar */}
+              {/* Terminal Title Bar */}
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px', paddingBottom: '14px', borderBottom: '1px solid var(--border-light)' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                  <div style={{ width: '10px', height: '10px', borderRadius: '50%', background: '#00FF9D', boxShadow: '0 0 10px #00FF9D' }} />
-                  <span style={{ fontSize: '0.85rem', fontWeight: 700, fontFamily: 'var(--font-mono)', color: 'var(--text-primary)' }}>
-                    VAPT_AUDIT_CONSOLE :: ACTIVE
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <div style={{ width: '10px', height: '10px', borderRadius: '50%', background: '#EF4444' }} />
+                  <div style={{ width: '10px', height: '10px', borderRadius: '50%', background: '#F59E0B' }} />
+                  <div style={{ width: '10px', height: '10px', borderRadius: '50%', background: '#10B981' }} />
+                  <span style={{ fontSize: '0.8rem', fontWeight: 700, fontFamily: 'var(--font-mono)', color: 'var(--text-muted)', marginLeft: '6px' }}>
+                    cyber_profile.sh
                   </span>
                 </div>
                 <span className="badge-emerald" style={{ fontSize: '0.7rem' }}>
-                  [ SECURE SESSION ]
+                  [ STATUS: READY ]
                 </span>
               </div>
 
-              {/* Security Metrics Card */}
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '20px' }}>
-                <div style={{ padding: '14px', borderRadius: '12px', background: 'var(--bg-secondary)', border: '1px solid var(--border-light)' }}>
-                  <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: 600 }}>TARGET SYSTEM</div>
-                  <div style={{ fontSize: '0.95rem', fontWeight: 700, color: 'var(--accent-cyan)', fontFamily: 'var(--font-mono)' }}>Gin & Juice App</div>
-                  <div style={{ fontSize: '0.75rem', color: '#00FF9D', display: 'flex', alignItems: 'center', gap: '4px', marginTop: '4px' }}>
-                    <CheckCircle2 size={12} /> Audit Verified
-                  </div>
-                </div>
-
-                <div style={{ padding: '14px', borderRadius: '12px', background: 'var(--bg-secondary)', border: '1px solid var(--border-light)' }}>
-                  <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: 600 }}>EC-COUNCIL ID</div>
-                  <div style={{ fontSize: '0.95rem', fontWeight: 700, color: 'var(--accent-emerald)', fontFamily: 'var(--font-mono)' }}>ECC1456328907</div>
-                  <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '4px' }}>
-                    Certified Ethical Hacker
-                  </div>
-                </div>
-              </div>
-
-              {/* Sample PoCs Code Preview */}
+              {/* Terminal Code Snippet */}
               <div style={{
-                background: '#070C18',
+                background: '#0B0F19',
                 borderRadius: '12px',
                 padding: '16px',
-                border: '1px solid rgba(0, 240, 255, 0.2)',
+                border: '1px solid rgba(79, 70, 229, 0.2)',
                 color: '#F8FAFC',
                 fontFamily: 'var(--font-mono)',
-                fontSize: '0.8rem',
-                lineHeight: 1.6,
-                marginBottom: '20px',
-                boxShadow: 'inset 0 2px 8px rgba(0,0,0,0.6)'
+                fontSize: '0.82rem',
+                lineHeight: 1.7,
+                marginBottom: '20px'
               }}>
-                <div style={{ color: '#64748B', marginBottom: '8px', fontSize: '0.75rem', display: 'flex', justifyContent: 'space-between' }}>
-                  <span>// OWASP 2025 PoC Exploitation Log</span>
-                  <span style={{ color: '#00F0FF' }}>Burp Suite v2025.1</span>
-                </div>
-                <div style={{ color: '#FF2E63', fontWeight: 700 }}>[!] CRITICAL: CSTI Payload Executed</div>
-                <div style={{ color: '#CBD5E1', margin: '4px 0' }}>
-                  <span style={{ color: '#FFB800' }}>PAYLOAD:</span> {`{{constructor.constructor('alert(1)')()}}`}
-                </div>
-                <div style={{ color: '#00FF9D' }}>[✓] SQLi: Bypassed Auth via Union Injection</div>
-                <div style={{ color: '#00F0FF' }}>[✓] Network: OSPF Area 0 Trunk Configured</div>
+                <div style={{ color: '#64748B' }}>// Security Profile Overview</div>
+                <div><span style={{ color: '#4F46E5' }}>$</span> whoami</div>
+                <div style={{ color: '#10B981' }}>&gt; Abhinav Karande (BCA Student)</div>
+                <div><span style={{ color: '#4F46E5' }}>$</span> cat focus_areas.txt</div>
+                <div style={{ color: '#CBD5E1' }}>&gt; Web VAPT | Android Security | CCNA Protocols | Python Scripting</div>
+                <div><span style={{ color: '#4F46E5' }}>$</span> status</div>
+                <div style={{ color: '#0891B2' }}>[✓] Open to Internship & Entry-Level Security Roles</div>
               </div>
 
-              {/* Action Link inside card */}
-              <a
-                href="#projects"
+              {/* Launch CLI Action Button */}
+              <button
+                onClick={onOpenTerminal}
                 className="btn-secondary"
-                style={{ width: '100%', borderRadius: '10px', padding: '11px', fontSize: '0.9rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
+                style={{ width: '100%', borderRadius: '12px', padding: '12px', fontSize: '0.9rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
               >
-                <Shield size={16} /> Inspect Audit Reports & PoCs
-              </a>
+                <Terminal size={16} /> Open Interactive Security CLI
+              </button>
 
             </div>
           </motion.div>
@@ -236,25 +244,6 @@ export default function Hero({ onOpenTerminal }) {
       <style>{`
         @media (min-width: 992px) {
           .hero-grid { grid-template-columns: 1.2fr 0.8fr !important; }
-        }
-        @media (max-width: 768px) {
-          #about {
-            padding-top: 110px !important;
-            padding-bottom: 40px !important;
-          }
-          .hero-cta-group {
-            flex-direction: column !important;
-            width: 100% !important;
-          }
-          .hero-cta-group button, .hero-cta-group a {
-            width: 100% !important;
-            justify-content: center !important;
-          }
-          .typewriter-box {
-            font-size: 0.95rem !important;
-            height: auto !important;
-            flex-wrap: wrap !important;
-          }
         }
       `}</style>
     </section>

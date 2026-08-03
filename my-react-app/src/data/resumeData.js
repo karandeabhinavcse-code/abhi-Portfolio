@@ -1,180 +1,238 @@
 export const resumeData = {
   personalInfo: {
     name: "Abhinav Karande",
-    title: "Cybersecurity Specialist & VAPT Engineer",
+    title: "Cybersecurity & VAPT Enthusiast",
     subtitles: [
-      "Web Application VAPT Specialist",
-      "Android VAPT Auditor",
-      "CCNA Network Security Engineer",
-      "Ethical Hacker (EC-Council Trained)"
+      "Cybersecurity & VAPT Enthusiast",
+      "Web Application VAPT Learner",
+      "Android Security & VAPT Practitioner",
+      "CCNA Networking Concepts & Security"
     ],
     email: "karandeabhinav@gmail.com",
-    location: "Pune, Kharadi, Maharashtra",
-    reportUrl: "https://drive.google.com/file/d/1KLZQvENVGNpCsrxBUXEXGx3mcQzZ0j53/view?usp=sharing",
-    githubUrl: "https://github.com/",
-    linkedinUrl: "https://linkedin.com/",
-    status: "Open to Application Security & VAPT Roles",
-    summary: "Cybersecurity-focused BCA final-year student with hands-on training in Ethical Hacking, Web Application VAPT, and Android VAPT. Strong foundation in CCNA networking with practical experience in vulnerability assessment, penetration testing, PoC development, and security reporting. Seeking opportunities in Application Security and VAPT roles to apply real-world testing and remediation skills."
+    location: "Pune, Maharashtra, India",
+    reportUrl: "/Abhinav_Karande_Resume.pdf",
+    githubUrl: "https://github.com/karandeabhinavcse-code",
+    linkedinUrl: "https://www.linkedin.com/in/abhinav-karande-9227b33a2?utm_source=share_via&utm_content=profile&utm_medium=member_android",
+    status: "Open for Cybersecurity & VAPT Internships",
+    summary: "BCA student focused on Web, Network, and Android Application Security, with hands-on experience in vulnerability assessment, penetration testing labs, networking, and security tools."
   },
-  
+
+  about: {
+    intro: "I am a Bachelor of Computer Applications (BCA) student with a core focus on Cybersecurity, Vulnerability Assessment, and Penetration Testing (VAPT).",
+    bullets: [
+      "BCA final-year student with a strong foundation in computer science fundamentals.",
+      "Primary interest and passion in Cybersecurity & Practical Security Testing.",
+      "Focused on Web Application VAPT following OWASP Top 10 standards.",
+      "Solid knowledge of networking protocols and CCNA security concepts.",
+      "Actively working on and learning Android Application Security & VAPT.",
+      "Developing Python and Bash scripting skills for security automation.",
+      "Enthusiastic about hands-on security labs, CTF challenges, and practical vulnerability auditing."
+    ]
+  },
+
   stats: [
-    { label: "OWASP Top 10 (2025)", value: "100%", subtext: "Lab Audit Compliance" },
-    { label: "Critical PoCs Built", value: "12+", subtext: "CSTI, SQLi, XSS, SSRF" },
+    { label: "Focus Areas", value: "Web & Mobile", subtext: "OWASP Top 10 & Android VAPT" },
+    { label: "Lab Audits", value: "3+", subtext: "Web, Mobile & Network Labs" },
     { label: "Certifications", value: "7+", subtext: "Cisco, EC-Council, Cybervault" },
-    { label: "Network Protocol Suite", value: "CCNA", subtext: "OSPF, EIGRP, VLAN, TCP/IP" }
+    { label: "Networking", value: "CCNA", subtext: "TCP/IP, Routing & Subnetting" }
   ],
 
   skillCategories: [
     {
-      id: "web-vapt",
-      title: "Web & API Security VAPT",
+      id: "web-security",
+      title: "Web Security",
       icon: "ShieldAlert",
-      description: "Comprehensive vulnerability discovery, manual exploitation, and remediation aligned with OWASP Top 10 (2025).",
+      description: "Identification and assessment of web application vulnerabilities in controlled lab environments.",
       skills: [
-        { name: "OWASP Top 10 (2025)", level: 95, icon: "CheckCircle2" },
-        { name: "SQL Injection (SQLi)", level: 90, icon: "Database" },
-        { name: "Cross-Site Scripting (XSS)", level: 92, icon: "Code2" },
-        { name: "Client-Side Template Injection (CSTI)", level: 88, icon: "Layers" },
-        { name: "Server-Side Request Forgery (SSRF)", level: 85, icon: "Server" },
-        { name: "XML External Entity (XXE)", level: 85, icon: "FileCode" },
-        { name: "API Security & Auth Bypass", level: 88, icon: "KeyRound" },
-        { name: "Burp Suite & OWASP ZAP", level: 95, icon: "Cpu" }
+        "Burp Suite",
+        "OWASP ZAP",
+        "OWASP Top 10",
+        "Web VAPT",
+        "SQL Injection (SQLi)",
+        "Cross-Site Scripting (XSS)",
+        "CSTI & Template Exploitation",
+        "SSRF & XXE Vulnerabilities"
       ]
     },
     {
-      id: "networking",
-      title: "Networking & Systems Architecture",
+      id: "network-security",
+      title: "Network Security",
       icon: "Network",
-      description: "Strong CCNA foundation in enterprise routing, switching, firewalls, and network packet analysis.",
+      description: "Network reconnaissance, protocol analysis, traffic sniffing, and fundamental CCNA routing & switching.",
       skills: [
-        { name: "CCNA Networking Standards", level: 92, icon: "Network" },
-        { name: "TCP/IP & OSI Architecture", level: 95, icon: "Globe" },
-        { name: "Subnetting & VLSM", level: 90, icon: "Binary" },
-        { name: "VLAN Configuration & Security", level: 88, icon: "Shield" },
-        { name: "OSPF & EIGRP Routing", level: 85, icon: "GitFork" },
-        { name: "Firewalls & Access Control Lists", level: 88, icon: "Lock" },
-        { name: "Wireshark Packet Analysis", level: 90, icon: "Search" },
-        { name: "Network Troubleshooting", level: 92, icon: "Wrench" }
+        "Nmap",
+        "Wireshark",
+        "TCP/IP",
+        "Networking",
+        "CCNA concepts",
+        "Network enumeration",
+        "Subnetting & VLSM",
+        "Access Control Lists (ACLs)"
       ]
     },
     {
-      id: "mobile-vapt",
-      title: "Mobile Security (Android VAPT)",
+      id: "android-security",
+      title: "Android Security",
       icon: "Smartphone",
-      description: "Static and dynamic analysis of Android APKs, API traffic interception, and security bypasses.",
+      description: "Static analysis, dynamic instrumentation, and traffic proxying for mobile application audits.",
       skills: [
-        { name: "Android Static & Dynamic VAPT", level: 85, icon: "Smartphone" },
-        { name: "Frida Dynamic Instrumentation", level: 82, icon: "Terminal" },
-        { name: "JADX Decompilation & Reverse Eng", level: 85, icon: "FolderSearch" },
-        { name: "SSL Pinning Bypass", level: 88, icon: "Unlock" },
-        { name: "API Traffic Interception", level: 90, icon: "Radio" }
+        "Android VAPT",
+        "ADB (Android Debug Bridge)",
+        "APK analysis",
+        "Burp Suite Proxy",
+        "JADX Decompilation",
+        "Frida Hooking Basics",
+        "SSL Pinning Bypass Basics"
       ]
     },
     {
-      id: "tools-reporting",
-      title: "Security Tools & Reporting",
+      id: "penetration-testing",
+      title: "Security / Penetration Testing",
       icon: "Wrench",
-      description: "End-to-end security assessment tools and professional remediation documentation.",
+      description: "Practical penetration testing tools and structured vulnerability assessment methodology.",
       skills: [
-        { name: "Burp Suite Professional / ZAP", level: 95, icon: "Radio" },
-        { name: "Nmap Network Scanner", level: 92, icon: "Radar" },
-        { name: "Metasploit Framework", level: 85, icon: "Terminal" },
-        { name: "Kali Linux OS", level: 90, icon: "TerminalSquare" },
-        { name: "PoC Development & Impact Analysis", level: 95, icon: "FileText" },
-        { name: "Remediation & Report Writing", level: 92, icon: "ShieldCheck" }
+        "Kali Linux",
+        "Metasploit",
+        "Vulnerability Assessment",
+        "Nessus / OpenVAS",
+        "PoC Development",
+        "Security Audit Documentation"
+      ]
+    },
+    {
+      id: "programming-scripting",
+      title: "Programming / Scripting",
+      icon: "Code2",
+      description: "Writing scripts and basic utilities for cybersecurity automation and data manipulation.",
+      skills: [
+        "Python",
+        "Bash Scripting",
+        "SQL",
+        "HTML / CSS Basics",
+        "JavaScript Fundamentals"
+      ]
+    },
+    {
+      id: "platforms-environment",
+      title: "Platforms / Environment",
+      icon: "Server",
+      description: "Operating system environments and virtualized laboratory infrastructure.",
+      skills: [
+        "Linux (Kali, Ubuntu)",
+        "Windows",
+        "VMware Workstation / VirtualBox",
+        "Docker Basics"
       ]
     }
   ],
 
   projects: [
     {
-      id: "gin-and-juice-vapt",
-      title: "Web Application VAPT – Gin & Juice Security Audit",
+      id: "web-vapt-audit",
+      title: "Web Application VAPT – Controlled Lab Audit",
       target: "Gin & Juice (OWASP Practice Application)",
       period: "2024 - 2025",
-      type: "Web & API Security",
-      severityBreakdown: { critical: 2, high: 4, medium: 3 },
-      reportUrl: "https://drive.google.com/file/d/17uzlAmnafOpMkg_QWuc7ZUYQEQAQVbnY/view",
-      summary: "Conducted an end-to-end Web Application Vulnerability Assessment and Penetration Test aligned with OWASP Top 10 (2025). Discovered critical vulnerabilities, crafted working Proof-of-Concepts (PoCs), performed impact analysis, and authored actionable remediation guidelines.",
+      type: "Web Application VAPT",
+      objective: "Performed security testing of a controlled web application environment to identify common vulnerabilities based on the OWASP Top 10.",
+      summary: "Conducted an end-to-end Web Application Vulnerability Assessment in a controlled environment. Discovered critical security misconfigurations, crafted working Proof-of-Concepts (PoCs), and authored actionable remediation recommendations.",
       highlights: [
-        "Identified Client-Side Template Injection (CSTI) leading to remote code execution risk.",
-        "Discovered SQL Injection (SQLi) in search and authentication endpoints allowing database exfiltration.",
-        "Uncovered Reflected & Stored Cross-Site Scripting (XSS) exploiting user session tokens.",
-        "Exploited Server-Side Request Forgery (SSRF) and XML External Entity (XXE) vulnerabilities.",
-        "Documented security misconfigurations and weak access controls with step-by-step remediation steps."
+        "Identified Client-Side Template Injection (CSTI) leading to client-side code execution risks.",
+        "Discovered SQL Injection (SQLi) in search endpoints allowing unauthorized database querying.",
+        "Uncovered Reflected & Stored Cross-Site Scripting (XSS) exploiting user sessions.",
+        "Tested Server-Side Request Forgery (SSRF) and XML External Entity (XXE) vectors.",
+        "Documented step-by-step remediation strategies for each identified vulnerability."
       ],
       tools: ["Burp Suite", "OWASP ZAP", "Burp Collaborator", "SQLmap", "Browser DevTools"],
+      githubUrl: "https://github.com/karandeabhinavcse-code",
+      reportUrl: "/Abhinav_Karande_Resume.pdf",
       pocs: [
         {
           title: "CSTI Payload Execution",
           vulnerability: "Client-Side Template Injection",
           severity: "Critical",
           code: "{{constructor.constructor('alert(document.domain)')()}}",
-          impact: "Unsanitized template evaluation on client-side frontend resulting in arbitrary JavaScript execution."
+          impact: "Unsanitized template evaluation on client-side frontend resulting in script execution."
         },
         {
-          title: "SQL Injection Data Extraction",
+          title: "SQL Injection Authentication Bypass",
           vulnerability: "SQL Injection",
           severity: "Critical",
           code: "' UNION SELECT 1, username, password_hash, 4 FROM users--",
-          impact: "Bypassed authentication filter and extracted hashed user credentials directly from database table."
-        },
-        {
-          title: "SSRF Internal Metadata Fetch",
-          vulnerability: "Server-Side Request Forgery",
-          severity: "High",
-          code: "POST /fetch?url=http://169.254.169.254/latest/meta-data/",
-          impact: "Server made unvalidated internal HTTP request exposing cloud infrastructure metadata."
+          impact: "Bypassed filter logic to extract hashed credentials from database table in lab testing."
         }
       ]
     },
     {
-      id: "android-vapt-audit",
-      title: "Android VAPT & SSL Pinning Bypass Framework",
+      id: "network-security-assessment",
+      title: "Network Vulnerability Assessment & Reconnaissance Lab",
+      target: "Controlled Subnet / Virtual Machine Topology",
+      period: "2024",
+      type: "Network Vulnerability Assessment",
+      objective: "Performed network reconnaissance, service enumeration, vulnerability assessment, and traffic analysis in a controlled lab environment.",
+      summary: "Executed active scanning, port enumeration, and packet interception across virtual lab hosts to detect unpatched services and misconfigured network access controls.",
+      highlights: [
+        "Executed Nmap host discovery, OS fingerprinting, and script scanning across lab subnets.",
+        "Analyzed TCP/IP traffic flows, HTTP requests, and DNS lookups using Wireshark.",
+        "Simulated router access control lists (ACLs) to restrict unauthorized subnet traversal.",
+        "Documented service vulnerability findings and recommended network hardening measures."
+      ],
+      tools: ["Nmap", "Wireshark", "Kali Linux", "Cisco Packet Tracer", "TCP/IP"],
+      githubUrl: "https://github.com/karandeabhinavcse-code",
+      reportUrl: null,
+      pocs: [
+        {
+          title: "Nmap Service Enumeration Command",
+          vulnerability: "Exposed Unencrypted Services",
+          severity: "Medium",
+          code: "nmap -sV -sC -p- -T4 192.168.1.0/24 -oN network_audit.txt",
+          impact: "Identified outdated service versions and unencrypted communication ports across lab hosts."
+        }
+      ]
+    },
+    {
+      id: "android-app-security",
+      title: "Android Application Security Assessment",
       target: "Android APK Test Environment",
       period: "2024",
-      type: "Mobile Security",
-      severityBreakdown: { critical: 1, high: 3, medium: 2 },
-      summary: "Performed static APK decompilation and dynamic runtime manipulation using JADX and Frida scripts to bypass custom SSL pinning and audit sensitive mobile endpoints.",
+      type: "Android Application Security Assessment",
+      objective: "Performed static and dynamic security analysis of an Android application in a controlled testing environment.",
+      summary: "Decompiled target Android APK files to evaluate manifest permissions, hardcoded secrets, and network communication security using reverse engineering tools.",
       highlights: [
-        "Decompiled APK binary using JADX to analyze hardcoded API tokens and secret endpoints.",
-        "Executed Frida hook scripts to disable SSL certificate verification dynamically.",
-        "Intercepted HTTPS network payloads via Burp Suite proxy for parameter tampering testing."
+        "Decompiled APK binary using JADX to inspect source code and manifest components.",
+        "Analyzed application permissions and potential storage leakage risks.",
+        "Configured Burp Suite HTTP proxy with ADB emulator for HTTPS traffic analysis.",
+        "Tested basic SSL pinning bypass techniques using dynamic hooking concepts."
       ],
-      tools: ["Frida", "JADX-GUI", "Burp Suite Proxy", "ADB Terminal", "Android Emulator"],
+      tools: ["Android VAPT", "ADB", "APK Analysis", "JADX-GUI", "Burp Suite"],
+      githubUrl: "https://github.com/karandeabhinavcse-code",
+      reportUrl: null,
       pocs: [
         {
-          title: "Frida SSL Pinning Hook Script",
-          vulnerability: "Insecure Transport / SSL Pinning",
-          severity: "High",
-          code: "Java.perform(function() { var TrustManager = Java.use('javax.net.ssl.X509TrustManager'); ... });",
-          impact: "Bypassed SSL pinning to decrypt encrypted REST API traffic between mobile client and backend."
+          title: "ADB Application Inspection",
+          vulnerability: "Insecure Local Storage",
+          severity: "Medium",
+          code: "adb shell run-as com.example.app cat /data/data/com.example.app/shared_prefs/user.xml",
+          impact: "Audited local storage practices for unencrypted session data."
         }
       ]
     },
     {
-      id: "ccna-enterprise-network",
-      title: "Enterprise Multi-VLAN & Routed Network Architecture",
-      target: "Cisco Packet Tracer / GNS3 Topology",
-      period: "2024",
-      type: "Network Infrastructure",
-      severityBreakdown: { critical: 0, high: 1, medium: 4 },
-      summary: "Designed and implemented a secure hierarchical network topology with segmented VLANs, inter-VLAN routing, dynamic OSPF/EIGRP protocols, and firewall Access Control Lists (ACLs).",
+      id: "python-security-script",
+      title: "Python Security & Network Scanning Utility",
+      target: "Personal / Academic Scripting Lab",
+      period: "2024 - 2025",
+      type: "Python Security Project",
+      objective: "Developing custom Python utilities to automate basic network port scanning, header inspection, and log analysis.",
+      summary: "Created Python scripts using socket and requests libraries to perform multi-threaded port scans and check target Web servers for missing security response headers.",
       highlights: [
-        "Configured 8+ isolated VLANs (Management, HR, IT, Guest) with strict 802.1Q trunking.",
-        "Implemented OSPF Area 0 and EIGRP routing protocols with route redistribution and fast convergence.",
-        "Applied Extended ACL firewalls to block unauthorized subnet traversal and ICMP probing."
+        "Built custom port scanner script utilizing Python socket module.",
+        "Implemented HTTP header security checker for missing Security Headers (HSTS, CSP, X-Frame-Options).",
+        "Designed clean command-line outputs for quick security auditing."
       ],
-      tools: ["Cisco IOS", "Packet Tracer", "Wireshark", "GNS3", "CLI"],
-      pocs: [
-        {
-          title: "Extended ACL Firewall Rule Set",
-          vulnerability: "Unrestricted Subnet Access",
-          severity: "High",
-          code: "access-list 101 deny ip 192.168.20.0 0.0.0.255 192.168.10.0 0.0.0.255 log\naccess-list 101 permit ip any any",
-          impact: "Segmented Guest VLAN from accessing secure Admin infrastructure."
-        }
-      ]
+      tools: ["Python", "Sockets", "Requests", "Linux Terminal"],
+      githubUrl: "https://github.com/karandeabhinavcse-code",
+      reportUrl: null,
+      pocs: []
     }
   ],
 
@@ -183,13 +241,13 @@ export const resumeData = {
       role: "Ethical Hacking & VAPT Trainee",
       organization: "Cybervault, Pune (Kothrud)",
       period: "2024",
-      type: "Professional Security Training",
+      type: "Practical Security Training",
       location: "Pune, India",
       bullets: [
-        "Hands-on intensive training in Ethical Hacking, Web Application VAPT, and Network Security.",
-        "Performed vulnerability assessments and penetration testing using Burp Suite, OWASP ZAP, Nmap, and Wireshark.",
-        "Developed Proof of Concepts (PoCs) and generated structured security audit reports with remediation blueprints.",
-        "Practiced real-world OWASP Top 10 (2025) vulnerability exploitation in specialized CTF and lab environments."
+        "Hands-on practical training in Ethical Hacking, Web Application VAPT, and Network Security.",
+        "Performed vulnerability assessment and penetration testing exercises using Burp Suite, OWASP ZAP, Nmap, and Wireshark.",
+        "Practiced OWASP Top 10 vulnerability identification in controlled laboratory environments.",
+        "Prepared structured vulnerability assessment reports detailing findings and remediation steps."
       ]
     }
   ],
@@ -197,101 +255,76 @@ export const resumeData = {
   education: [
     {
       degree: "Bachelor of Computer Applications (BCA)",
-      specialization: "Networking & Systems",
       institution: "Shoolini University",
-      location: "Solan, Himachal Pradesh",
       period: "2024 – 2027 (Final Year)",
-      highlights: "Focus on Computer Networks, Data Communications, Web Systems, and Information Security."
-    },
-    {
-      degree: "Higher Secondary Certificate (HSC)",
-      specialization: "Science Stream",
-      institution: "Maharashtra State Board",
-      location: "Pune, Maharashtra",
-      period: "Completed",
-      highlights: "Strong analytical foundation in Physics, Mathematics, and Computer Science fundamentals."
+      status: "Currently Pursuing",
+      coursework: "Computer Networks, Data Communications, Web Security Fundamentals, Information Security, Python Programming, Database Management."
     }
   ],
 
   certifications: [
     {
-      title: "CCNA (Cisco Certified Network Associate)",
+      title: "CCNA (Cisco Certified Network Associate) Course",
       issuer: "Cisco Networking Academy",
-      certNumber: "ECC1456328907",
-      status: "Verified",
-      icon: "Network",
-      badgeColor: "#0284C7"
+      completionDate: "2024",
+      certNumber: "Verified Coursework",
+      credentialUrl: null,
+      icon: "Network"
     },
     {
       title: "Ethical Hacking Certification",
       issuer: "EC-Council | Cybervault, Pune",
+      completionDate: "2024",
       certNumber: "ECC1456328907",
-      status: "Verified",
-      icon: "ShieldCheck",
-      badgeColor: "#10B981"
+      credentialUrl: "https://drive.google.com/file/d/1YGL5TF68hMsIBeRAdu6evVHTbnNsNeYa/view?usp=sharing",
+      icon: "ShieldCheck"
     },
     {
       title: "Web Application VAPT",
       issuer: "Cybervault Security Academy",
+      completionDate: "2024",
       certNumber: "CV-WVAPT-2024",
-      status: "Completed",
-      icon: "Code",
-      badgeColor: "#6366F1"
+      credentialUrl: null,
+      icon: "Code"
     },
     {
       title: "Android VAPT Specialist",
       issuer: "Cybervault Security Academy",
-      certNumber: "CV-AVAPT-INPROGRESS",
-      status: "Ongoing",
-      icon: "Smartphone",
-      badgeColor: "#F59E0B"
+      completionDate: "2024 (In Progress)",
+      certNumber: "CV-AVAPT-2024",
+      credentialUrl: null,
+      icon: "Smartphone"
     },
     {
       title: "IT Essentials & Networking Academy",
       issuer: "Cybervault",
+      completionDate: "2024",
       certNumber: "CV-ITE-2024",
-      status: "Verified",
-      icon: "Cpu",
-      badgeColor: "#8B5CF6"
+      credentialUrl: null,
+      icon: "Cpu"
     },
     {
       title: "Cloud Computing Fundamentals",
       issuer: "Cybervault",
+      completionDate: "2024",
       certNumber: "CV-CC-2024",
-      status: "Completed",
-      icon: "Cloud",
-      badgeColor: "#06B6D4"
+      credentialUrl: null,
+      icon: "Cloud"
     },
     {
       title: "Cyber Secure User Certification",
       issuer: "Cybervault",
+      completionDate: "2024",
       certNumber: "CV-CSU-2024",
-      status: "Verified",
-      icon: "Lock",
-      badgeColor: "#EC4899"
+      credentialUrl: null,
+      icon: "Lock"
     }
   ],
 
-  terminalCommands: [
-    {
-      cmd: "whoami",
-      output: "Abhinav Karande — Cybersecurity Specialist & VAPT Engineer based in Pune, India."
-    },
-    {
-      cmd: "skills",
-      output: "Web VAPT | Android VAPT | OWASP Top 10 (2025) | CCNA | TCP/IP | Burp Suite | Nmap | Wireshark"
-    },
-    {
-      cmd: "scan --target gin-juice",
-      output: "[+] Scanning Gin & Juice Web App...\n[!] Found CSTI in search endpoint [CRITICAL]\n[!] Found SQL Injection in /login [CRITICAL]\n[!] Found SSRF in /fetch-avatar [HIGH]\n[+] Audit Report generated successfully."
-    },
-    {
-      cmd: "cert --verify",
-      output: "[✓] CCNA - Cisco Networking Academy\n[✓] Ethical Hacking (EC-Council) - Cert # ECC1456328907\n[✓] Web VAPT Certified - Cybervault Pune"
-    },
-    {
-      cmd: "contact",
-      output: "Email: karandeabhinav@gmail.com | Location: Pune, Kharadi"
-    }
+  currentlyLearning: [
+    { name: "Android VAPT", desc: "Deeper static/dynamic APK analysis & Frida hooking" },
+    { name: "Advanced Web VAPT", desc: "Complex business logic & OAuth API security audits" },
+    { name: "Python for Security Automation", desc: "Custom security tools & log parser utilities" },
+    { name: "Cybersecurity Labs", desc: "Hands-on vulnerability labs & CTF challenge practice" }
   ]
 };

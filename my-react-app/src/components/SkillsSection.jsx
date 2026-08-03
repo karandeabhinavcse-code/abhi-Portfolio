@@ -1,18 +1,18 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import {
-  ShieldAlert, Network, Smartphone, Wrench, CheckCircle2,
-  Database, Code2, Layers, Server, FileCode, KeyRound, Cpu,
-  Globe, Binary, Shield, GitFork, Lock, Search, Terminal,
-  FolderSearch, Unlock, Radio, Radar, TerminalSquare, FileText, ShieldCheck, Cloud
+  ShieldAlert, Network, Smartphone, Wrench, Code2, Server,
+  CheckCircle2, Cpu, Globe, Lock, Search, Terminal, Radio
 } from 'lucide-react';
 import { resumeData } from '../data/resumeData';
 
 const iconMap = {
-  ShieldAlert, Network, Smartphone, Wrench, CheckCircle2,
-  Database, Code2, Layers, Server, FileCode, KeyRound, Cpu,
-  Globe, Binary, Shield, GitFork, Lock, Search, Terminal,
-  FolderSearch, Unlock, Radio, Radar, TerminalSquare, FileText, ShieldCheck, Cloud
+  ShieldAlert,
+  Network,
+  Smartphone,
+  Wrench,
+  Code2,
+  Server
 };
 
 export default function SkillsSection() {
@@ -27,38 +27,39 @@ export default function SkillsSection() {
   return (
     <section id="skills" style={{ padding: '70px 24px', maxWidth: '1280px', margin: '0 auto' }}>
       
-      {/* Header */}
+      {/* Technical Section Connector & Header */}
       <div style={{ textAlign: 'center', marginBottom: '36px' }}>
-        <span className="badge-cyber" style={{ marginBottom: '12px' }}>
-          <ShieldAlert size={14} /> Core Expertise & Arsenal
+        <div className="section-connector-line" />
+        <span className="section-number-tag">
+          02 // TECHNICAL SKILLS
         </span>
         <h2 style={{ fontSize: '2.5rem', fontWeight: 800 }}>
-          Technical Skills & <span className="text-gradient">Security Matrix</span>
+          Technical <span className="text-gradient">Skills Matrix</span>
         </h2>
         <p style={{ color: 'var(--text-muted)', maxWidth: '650px', margin: '10px auto 0', fontSize: '1.05rem' }}>
-          Hands-on proficiency across Web VAPT (OWASP 2025), Android Security, CCNA Networking Protocols, and Security Audit Reporting.
+          Categorized technical skills across Web Security, Network Security, Android Security, Penetration Testing tools, Scripting, and Environments.
         </p>
       </div>
 
-      {/* Filter Tabs */}
+      {/* Category Filter Tabs */}
       <div style={{ display: 'flex', justifyContent: 'center', gap: '8px', flexWrap: 'wrap', marginBottom: '32px' }}>
         <button
           onClick={() => setActiveTab('all')}
           style={{
-            padding: '10px 20px',
+            padding: '8px 18px',
             borderRadius: '9999px',
-            fontSize: '0.875rem',
+            fontSize: '0.85rem',
             fontWeight: 700,
             fontFamily: 'var(--font-mono)',
             border: activeTab === 'all' ? 'none' : '1px solid var(--border-light)',
-            background: activeTab === 'all' ? 'linear-gradient(135deg, #00F0FF 0%, #00FF9D 100%)' : 'var(--bg-card-solid)',
-            color: activeTab === 'all' ? '#050811' : 'var(--text-secondary)',
-            boxShadow: activeTab === 'all' ? '0 4px 18px rgba(0, 240, 255, 0.4)' : 'var(--shadow-sm)',
+            background: activeTab === 'all' ? 'linear-gradient(135deg, #4F46E5 0%, #0891B2 100%)' : 'var(--bg-card-solid)',
+            color: activeTab === 'all' ? '#FFFFFF' : 'var(--text-secondary)',
+            boxShadow: activeTab === 'all' ? '0 4px 14px rgba(79, 70, 229, 0.3)' : 'var(--shadow-sm)',
             cursor: 'pointer',
             transition: 'all 0.25s ease'
           }}
         >
-          All Skills Matrix
+          All Categories
         </button>
 
         {categories.map((cat) => (
@@ -66,15 +67,15 @@ export default function SkillsSection() {
             key={cat.id}
             onClick={() => setActiveTab(cat.id)}
             style={{
-              padding: '10px 20px',
+              padding: '8px 18px',
               borderRadius: '9999px',
-              fontSize: '0.875rem',
+              fontSize: '0.85rem',
               fontWeight: 700,
               fontFamily: 'var(--font-mono)',
               border: activeTab === cat.id ? 'none' : '1px solid var(--border-light)',
-              background: activeTab === cat.id ? 'linear-gradient(135deg, #00F0FF 0%, #00FF9D 100%)' : 'var(--bg-card-solid)',
-              color: activeTab === cat.id ? '#050811' : 'var(--text-secondary)',
-              boxShadow: activeTab === cat.id ? '0 4px 18px rgba(0, 240, 255, 0.4)' : 'var(--shadow-sm)',
+              background: activeTab === cat.id ? 'linear-gradient(135deg, #4F46E5 0%, #0891B2 100%)' : 'var(--bg-card-solid)',
+              color: activeTab === cat.id ? '#FFFFFF' : 'var(--text-secondary)',
+              boxShadow: activeTab === cat.id ? '0 4px 14px rgba(79, 70, 229, 0.3)' : 'var(--shadow-sm)',
               cursor: 'pointer',
               transition: 'all 0.25s ease'
             }}
@@ -85,9 +86,9 @@ export default function SkillsSection() {
       </div>
 
       {/* Skills Grid */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(360px, 1fr))', gap: '32px' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(360px, 1fr))', gap: '28px' }}>
         {filteredCategories.map((cat, catIdx) => {
-          const CategoryIcon = iconMap[cat.icon] || Shield;
+          const CategoryIcon = iconMap[cat.icon] || ShieldAlert;
 
           return (
             <motion.div
@@ -95,73 +96,58 @@ export default function SkillsSection() {
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: catIdx * 0.1 }}
+              transition={{ duration: 0.4, delay: catIdx * 0.08 }}
               className="glass-card"
-              style={{ padding: '28px', borderRadius: '20px' }}
+              style={{ padding: '28px', borderRadius: '20px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}
             >
-              {/* Category Card Header */}
-              <div style={{ display: 'flex', alignItems: 'center', gap: '14px', marginBottom: '16px' }}>
-                <div style={{
-                  width: '46px',
-                  height: '46px',
-                  borderRadius: '12px',
-                  background: 'rgba(79, 70, 229, 0.08)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  color: 'var(--accent-primary)',
-                  border: '1px solid var(--border-accent)'
-                }}>
-                  <CategoryIcon size={24} />
+              <div>
+                {/* Category Header */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: '14px', marginBottom: '14px' }}>
+                  <div style={{
+                    width: '44px',
+                    height: '44px',
+                    borderRadius: '12px',
+                    background: 'rgba(79, 70, 229, 0.1)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    color: 'var(--accent-primary)',
+                    border: '1px solid rgba(79, 70, 229, 0.25)',
+                    flexShrink: 0
+                  }}>
+                    <CategoryIcon size={22} />
+                  </div>
+                  <div>
+                    <h3 style={{ fontSize: '1.2rem', fontWeight: 800, color: 'var(--text-primary)' }}>{cat.title}</h3>
+                    <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>{cat.description}</p>
+                  </div>
                 </div>
-                <div>
-                  <h3 style={{ fontSize: '1.2rem', fontWeight: 700, color: 'var(--text-primary)' }}>{cat.title}</h3>
-                  <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>{cat.description}</p>
-                </div>
-              </div>
 
-              {/* Skills Progress Bars */}
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginTop: '20px' }}>
-                {cat.skills.map((skill, sIdx) => {
-                  const SkillIcon = iconMap[skill.icon] || CheckCircle2;
-
-                  return (
-                    <div key={sIdx}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.9rem', fontWeight: 600, color: 'var(--text-primary)' }}>
-                          <SkillIcon size={16} style={{ color: 'var(--accent-primary)' }} />
-                          <span>{skill.name}</span>
-                        </div>
-                        <span style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--accent-primary)', fontFamily: 'var(--font-mono)' }}>
-                          {skill.level}%
-                        </span>
-                      </div>
-
-                      {/* Progress Bar Container */}
-                      <div style={{
-                        width: '100%',
-                        height: '8px',
+                {/* Skill Badges/Tags Container */}
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginTop: '18px' }}>
+                  {cat.skills.map((skillName, sIdx) => (
+                    <span
+                      key={sIdx}
+                      style={{
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '6px',
+                        fontSize: '0.85rem',
+                        fontWeight: 600,
+                        padding: '6px 12px',
+                        borderRadius: '10px',
                         background: 'var(--bg-secondary)',
-                        borderRadius: '9999px',
-                        overflow: 'hidden'
-                      }}>
-                        <motion.div
-                          initial={{ width: 0 }}
-                          whileInView={{ width: `${skill.level}%` }}
-                          viewport={{ once: true }}
-                          transition={{ duration: 1, ease: 'easeOut', delay: sIdx * 0.05 }}
-                          style={{
-                            height: '100%',
-                            background: 'linear-gradient(90deg, #4F46E5 0%, #0891B2 100%)',
-                            borderRadius: '9999px'
-                          }}
-                        />
-                      </div>
-                    </div>
-                  );
-                })}
+                        color: 'var(--text-primary)',
+                        border: '1px solid var(--border-light)',
+                        transition: 'all 0.2s ease'
+                      }}
+                    >
+                      <CheckCircle2 size={13} style={{ color: '#10B981' }} />
+                      {skillName}
+                    </span>
+                  ))}
+                </div>
               </div>
-
             </motion.div>
           );
         })}

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Award, ShieldCheck, Copy, Check, Network, Code, Smartphone, Cpu, Cloud, Lock } from 'lucide-react';
+import { Award, ShieldCheck, Copy, Check, Network, Code, Smartphone, Cpu, Cloud, Lock, ExternalLink } from 'lucide-react';
 import { resumeData } from '../data/resumeData';
 
 const iconMap = {
@@ -21,14 +21,15 @@ export default function CertificationsSection() {
       
       {/* Header */}
       <div style={{ textAlign: 'center', marginBottom: '36px' }}>
-        <span className="badge-cyber" style={{ marginBottom: '12px' }}>
-          <Award size={14} /> Verified Credentials & Licenses
+        <div className="section-connector-line" />
+        <span className="section-number-tag">
+          04 // VERIFIED CREDENTIALS
         </span>
         <h2 style={{ fontSize: '2.5rem', fontWeight: 800 }}>
-          Certifications & <span className="text-gradient">Accreditations</span>
+          Certifications & <span className="text-gradient">Course Completions</span>
         </h2>
         <p style={{ color: 'var(--text-muted)', maxWidth: '650px', margin: '10px auto 0', fontSize: '1.05rem' }}>
-          Certified credentials from Cisco Networking Academy, EC-Council, and Cybervault Pune.
+          Certified training & coursework completed with Cisco Networking Academy, EC-Council, and Cybervault Security Academy.
         </p>
       </div>
 
@@ -37,6 +38,7 @@ export default function CertificationsSection() {
         {resumeData.certifications.map((cert, idx) => {
           const CertIcon = iconMap[cert.icon] || Award;
           const isCopied = copiedId === cert.certNumber;
+          const hasCredentialUrl = cert.credentialUrl && cert.credentialUrl !== '#' && !cert.credentialUrl.includes('TODO');
 
           return (
             <motion.div
@@ -49,27 +51,24 @@ export default function CertificationsSection() {
               style={{ padding: '24px', borderRadius: '18px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}
             >
               <div>
-                {/* Header Icon & Status Pill */}
+                {/* Header Icon & Date Pill */}
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
                   <div style={{
                     width: '42px',
                     height: '42px',
                     borderRadius: '10px',
-                    background: `${cert.badgeColor}15`,
+                    background: 'rgba(79, 70, 229, 0.1)',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    color: cert.badgeColor,
-                    border: `1px solid ${cert.badgeColor}30`
+                    color: 'var(--accent-primary)',
+                    border: '1px solid rgba(79, 70, 229, 0.25)'
                   }}>
                     <CertIcon size={22} />
                   </div>
 
-                  <span
-                    className={cert.status === 'Ongoing' ? 'badge-rose' : 'badge-emerald'}
-                    style={{ fontSize: '0.7rem' }}
-                  >
-                    {cert.status}
+                  <span className="badge-cyber" style={{ fontSize: '0.75rem' }}>
+                    {cert.completionDate}
                   </span>
                 </div>
 
@@ -77,12 +76,12 @@ export default function CertificationsSection() {
                 <h3 style={{ fontSize: '1.15rem', fontWeight: 700, marginBottom: '6px', color: 'var(--text-primary)' }}>
                   {cert.title}
                 </h3>
-                <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', fontWeight: 600, marginBottom: '16px' }}>
+                <div style={{ fontSize: '0.85rem', color: 'var(--accent-primary)', fontWeight: 600, marginBottom: '16px' }}>
                   {cert.issuer}
                 </div>
               </div>
 
-              {/* Footer: Cert Number & Copy Action */}
+              {/* Footer: Cert Number & Action */}
               <div style={{
                 paddingTop: '14px',
                 borderTop: '1px solid var(--border-light)',
@@ -94,26 +93,42 @@ export default function CertificationsSection() {
                   ID: <span style={{ color: 'var(--text-primary)', fontWeight: 700 }}>{cert.certNumber}</span>
                 </div>
 
-                <button
-                  onClick={() => handleCopyCert(cert.certNumber)}
-                  style={{
-                    background: 'var(--bg-secondary)',
-                    border: '1px solid var(--border-light)',
-                    borderRadius: '6px',
-                    padding: '4px 10px',
-                    fontSize: '0.75rem',
-                    color: isCopied ? '#059669' : 'var(--text-secondary)',
-                    cursor: 'pointer',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '4px',
-                    fontWeight: 600
-                  }}
-                  title="Copy Certificate ID"
-                >
-                  {isCopied ? <Check size={12} /> : <Copy size={12} />}
-                  {isCopied ? 'Copied' : 'Copy ID'}
-                </button>
+                <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                  {/* Copy ID Button */}
+                  <button
+                    onClick={() => handleCopyCert(cert.certNumber)}
+                    style={{
+                      background: 'var(--bg-secondary)',
+                      border: '1px solid var(--border-light)',
+                      borderRadius: '6px',
+                      padding: '4px 10px',
+                      fontSize: '0.75rem',
+                      color: isCopied ? '#10B981' : 'var(--text-secondary)',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '4px',
+                      fontWeight: 600
+                    }}
+                    title="Copy Credential ID"
+                  >
+                    {isCopied ? <Check size={12} /> : <Copy size={12} />}
+                    {isCopied ? 'Copied' : 'Copy ID'}
+                  </button>
+
+                  {/* View Credential Button (ONLY displayed if link exists) */}
+                  {hasCredentialUrl && (
+                    <a
+                      href={cert.credentialUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="btn-primary"
+                      style={{ padding: '4px 10px', fontSize: '0.75rem', borderRadius: '6px', display: 'inline-flex', alignItems: 'center', gap: '4px' }}
+                    >
+                      View <ExternalLink size={11} />
+                    </a>
+                  )}
+                </div>
               </div>
 
             </motion.div>

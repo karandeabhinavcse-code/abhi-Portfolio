@@ -1,17 +1,13 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Shield, FileText, Menu, X, Sun, Moon, Upload, KeyRound, ShieldCheck, LogOut, Lock } from 'lucide-react';
+import { Shield, FileText, Menu, X, Sun, Moon, KeyRound, ShieldCheck, LogOut } from 'lucide-react';
 import { resumeData } from '../data/resumeData';
-import MobileStatusBar from './MobileStatusBar';
-import { usePlatform } from '../context/PlatformContext';
 
 export default function Navbar({ onOpenTerminal, isAdminAuthenticated, adminEmail, onOpenLogin, onOpenDashboard, onLogout }) {
-  const { isMobileViewport } = usePlatform();
   const [scrolled, setScrolled] = useState(false);
-  const [activeSection, setActiveSection] = useState('about');
+  const [activeSection, setActiveSection] = useState('hero');
   const [hoveredSection, setHoveredSection] = useState(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-
 
   const [theme, setTheme] = useState(() => {
     return localStorage.getItem('theme') || 'dark';
@@ -30,7 +26,7 @@ export default function Navbar({ onOpenTerminal, isAdminAuthenticated, adminEmai
     const handleScroll = () => {
       setScrolled(window.scrollY > 25);
 
-      const sections = ['about', 'terminal', 'skills', 'projects', 'tools', 'news', 'upload', 'network', 'experience', 'certifications', 'contact'];
+      const sections = ['hero', 'about', 'skills', 'projects', 'certifications', 'education', 'contact'];
       const scrollPos = window.scrollY + 180;
 
       for (const section of sections) {
@@ -51,16 +47,12 @@ export default function Navbar({ onOpenTerminal, isAdminAuthenticated, adminEmai
   }, []);
 
   const navItems = [
+    { id: 'hero', label: 'Home' },
     { id: 'about', label: 'About' },
-    { id: 'terminal', label: 'VAPT Lab' },
     { id: 'skills', label: 'Skills' },
-    { id: 'projects', label: 'Audits' },
-    { id: 'tools', label: 'Tools' },
-    { id: 'news', label: 'News' },
-    { id: 'upload', label: 'Upload' },
-    { id: 'network', label: 'CCNA' },
-    { id: 'experience', label: 'Experience' },
-    { id: 'certifications', label: 'Certs' },
+    { id: 'projects', label: 'Projects' },
+    { id: 'certifications', label: 'Certifications' },
+    { id: 'education', label: 'Education' },
     { id: 'contact', label: 'Contact' }
   ];
 
@@ -71,23 +63,22 @@ export default function Navbar({ onOpenTerminal, isAdminAuthenticated, adminEmai
         top: scrolled ? '6px' : '12px',
         left: '50%',
         transform: 'translateX(-50%)',
-        width: 'min(99%, 1380px)',
+        width: 'min(98%, 1280px)',
         zIndex: 100,
         transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)'
       }}
     >
-      {/* Streamlined Motion-Blur Floating Pill Header Container */}
       <div
         style={{
           background: scrolled ? 'var(--nav-pill-scrolled-bg)' : 'var(--nav-pill-bg)',
-          backdropFilter: 'blur(28px) saturate(180%)',
-          WebkitBackdropFilter: 'blur(28px) saturate(180%)',
+          backdropFilter: 'blur(24px) saturate(180%)',
+          WebkitBackdropFilter: 'blur(24px) saturate(180%)',
           border: scrolled ? '1px solid var(--nav-scrolled-border)' : '1px solid var(--nav-pill-border)',
           borderRadius: '9999px',
           boxShadow: scrolled
             ? '0 12px 32px -6px rgba(79, 70, 229, 0.16), 0 4px 12px rgba(15, 23, 42, 0.04)'
             : '0 6px 20px -4px rgba(15, 23, 42, 0.06)',
-          padding: '6px 14px',
+          padding: '6px 16px',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
@@ -97,55 +88,48 @@ export default function Navbar({ onOpenTerminal, isAdminAuthenticated, adminEmai
         }}
       >
 
-        {/* Brand Logo - Single Line Clean Pill */}
+        {/* Brand Logo */}
         <motion.a
-          href="#about"
-          whileHover={{ scale: 1.04, y: -1 }}
+          href="#hero"
+          whileHover={{ scale: 1.03 }}
           style={{
             textDecoration: 'none',
             display: 'flex',
             alignItems: 'center',
             gap: '8px',
-            flexShrink: 0,
-            whiteSpace: 'nowrap'
+            flexShrink: 0
           }}
-          className="brand-logo-link"
         >
           <div
             style={{
-              width: '36px',
-              height: '36px',
+              width: '34px',
+              height: '34px',
               borderRadius: '9999px',
               background: 'linear-gradient(135deg, #4F46E5 0%, #0891B2 100%)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
               color: '#FFFFFF',
-              boxShadow: '0 3px 10px rgba(79, 70, 229, 0.35)',
-              transition: 'transform 0.3s ease'
+              boxShadow: '0 3px 10px rgba(79, 70, 229, 0.35)'
             }}
-            className="logo-icon-pill"
           >
-            <Shield size={18} />
+            <Shield size={17} />
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '4px', whiteSpace: 'nowrap' }}>
-            <span style={{ fontWeight: 800, fontSize: '0.98rem', color: 'var(--text-primary)', lineHeight: 1, whiteSpace: 'nowrap' }}>
-              Abhinav<span style={{ color: '#4F46E5' }}>.Sec</span>
-            </span>
-          </div>
+          <span style={{ fontWeight: 800, fontSize: '0.95rem', color: 'var(--text-primary)', lineHeight: 1 }}>
+            Abhinav<span style={{ color: '#4F46E5' }}>.Sec</span>
+          </span>
         </motion.a>
 
-        {/* Desktop Nav Items - Single Line Guarantees */}
+        {/* Desktop Nav Links */}
         <nav
           style={{
             display: 'none',
             alignItems: 'center',
-            gap: '3px',
+            gap: '4px',
             background: 'var(--nav-inner-bg)',
             padding: '4px 6px',
             borderRadius: '9999px',
-            border: '1px solid var(--nav-pill-border)',
-            whiteSpace: 'nowrap'
+            border: '1px solid var(--nav-pill-border)'
           }}
           className="desktop-nav"
         >
@@ -154,29 +138,26 @@ export default function Navbar({ onOpenTerminal, isAdminAuthenticated, adminEmai
             const isHovered = hoveredSection === item.id;
 
             return (
-              <motion.a
+              <a
                 key={item.id}
                 href={`#${item.id}`}
                 onClick={() => setActiveSection(item.id)}
                 onMouseEnter={() => setHoveredSection(item.id)}
                 onMouseLeave={() => setHoveredSection(null)}
-                whileHover={{ y: -1, scale: 1.04 }}
                 style={{
                   textDecoration: 'none',
                   fontSize: '0.82rem',
                   fontWeight: 700,
-                  padding: '6px 12px',
+                  padding: '6px 14px',
                   borderRadius: '9999px',
-                  color: isActive ? '#4F46E5' : isHovered ? 'var(--text-primary)' : 'var(--text-muted)',
-                  transition: 'color 0.2s ease',
+                  color: isActive ? 'var(--accent-cyan)' : isHovered ? 'var(--text-primary)' : 'var(--text-muted)',
+                  transition: 'all 0.2s ease',
                   position: 'relative',
                   display: 'inline-block',
                   zIndex: 1,
-                  cursor: 'pointer',
-                  whiteSpace: 'nowrap'
+                  cursor: 'pointer'
                 }}
               >
-                {/* Active Sliding Pill Background */}
                 {isActive && (
                   <motion.div
                     layoutId="activeNavPill"
@@ -186,14 +167,13 @@ export default function Navbar({ onOpenTerminal, isAdminAuthenticated, adminEmai
                       inset: 0,
                       background: 'var(--bg-card-solid)',
                       borderRadius: '9999px',
-                      boxShadow: '0 2px 8px rgba(79, 70, 229, 0.18), 0 1px 3px rgba(0, 0, 0, 0.05)',
+                      boxShadow: '0 2px 8px rgba(79, 70, 229, 0.18)',
                       border: '1px solid rgba(79, 70, 229, 0.25)',
                       zIndex: -1
                     }}
                   />
                 )}
 
-                {/* Hover Soft Glow Pill Background with Motion Blur */}
                 {!isActive && isHovered && (
                   <motion.div
                     initial={{ opacity: 0, scale: 0.95 }}
@@ -204,164 +184,62 @@ export default function Navbar({ onOpenTerminal, isAdminAuthenticated, adminEmai
                       position: 'absolute',
                       inset: 0,
                       background: 'var(--bg-card)',
-                      backdropFilter: 'blur(12px)',
                       borderRadius: '9999px',
                       zIndex: -1
                     }}
                   />
                 )}
 
-                <span style={{ position: 'relative', zIndex: 2, whiteSpace: 'nowrap' }}>{item.label}</span>
-              </motion.a>
+                <span style={{ position: 'relative', zIndex: 2 }}>{item.label}</span>
+              </a>
             );
           })}
         </nav>
 
-        {/* Action Buttons Container */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0, whiteSpace: 'nowrap' }}>
+        {/* Action Controls */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0 }}>
 
-          {/* Light / Dark Mode Theme Switcher */}
-          <motion.button
+          {/* Light / Dark Mode Toggle */}
+          <button
             onClick={toggleTheme}
-            whileHover={{ scale: 1.08, y: -1 }}
-            whileTap={{ scale: 0.92 }}
             style={{
               display: 'inline-flex',
               alignItems: 'center',
               justifyContent: 'center',
-              width: '36px',
-              height: '36px',
+              width: '34px',
+              height: '34px',
               borderRadius: '9999px',
-              background: theme === 'dark' ? 'rgba(99, 102, 241, 0.2)' : 'rgba(245, 158, 11, 0.15)',
+              background: theme === 'dark' ? 'rgba(99, 102, 241, 0.15)' : 'rgba(245, 158, 11, 0.15)',
               color: theme === 'dark' ? '#818CF8' : '#D97706',
-              border: theme === 'dark' ? '1px solid rgba(99, 102, 241, 0.4)' : '1px solid rgba(245, 158, 11, 0.35)',
+              border: theme === 'dark' ? '1px solid rgba(99, 102, 241, 0.3)' : '1px solid rgba(245, 158, 11, 0.3)',
               cursor: 'pointer',
-              boxShadow: theme === 'dark' ? '0 0 10px rgba(99, 102, 241, 0.3)' : '0 2px 6px rgba(245, 158, 11, 0.2)',
-              transition: 'all 0.25s ease'
+              transition: 'all 0.2s ease'
             }}
             title={`Switch to ${theme === 'light' ? 'Dark' : 'Light'} Theme`}
           >
-            {theme === 'light' ? <Moon size={16} /> : <Sun size={16} />}
-          </motion.button>
+            {theme === 'light' ? <Moon size={15} /> : <Sun size={15} />}
+          </button>
 
-          {/* Public Visitor Upload Trigger (Desktop only) */}
-          <motion.a
-            href="#upload"
-            whileHover={{ scale: 1.05, y: -1 }}
-            whileTap={{ scale: 0.96 }}
-            className="nav-upload-btn"
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '6px',
-              borderRadius: '9999px',
-              padding: '7px 14px',
-              fontSize: '0.82rem',
-              fontWeight: 700,
-              background: 'linear-gradient(135deg, rgba(79, 70, 229, 0.15) 0%, rgba(8, 145, 178, 0.15) 100%)',
-              color: 'var(--accent-primary)',
-              border: '1px solid rgba(79, 70, 229, 0.3)',
-              cursor: 'pointer',
-              boxShadow: '0 2px 8px rgba(79, 70, 229, 0.15)',
-              textDecoration: 'none',
-              whiteSpace: 'nowrap'
-            }}
-            title="Upload Your Tool, Project, or Resume"
-          >
-            <Upload size={14} />
-            <span>Upload (+)</span>
-          </motion.a>
-
-          {/* Admin Status & Dashboard Trigger Button (Desktop only) */}
-          {isAdminAuthenticated ? (
-            <div className="nav-admin-btn" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <button
-                onClick={onOpenDashboard}
-                style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '6px',
-                  borderRadius: '9999px',
-                  padding: '6px 12px',
-                  fontSize: '0.8rem',
-                  fontWeight: 800,
-                  background: 'rgba(16, 185, 129, 0.15)',
-                  color: '#10B981',
-                  border: '1px solid rgba(16, 185, 129, 0.4)',
-                  whiteSpace: 'nowrap',
-                  cursor: 'pointer'
-                }}
-                title={`Open Admin Dashboard (${adminEmail})`}
-              >
-                <ShieldCheck size={14} />
-                <span>Admin</span>
-              </button>
-              <button
-                onClick={onLogout}
-                style={{
-                  background: 'transparent',
-                  border: 'none',
-                  color: 'var(--text-muted)',
-                  cursor: 'pointer',
-                  padding: '4px',
-                  display: 'flex',
-                  alignItems: 'center'
-                }}
-                title="Log Out of Admin"
-              >
-                <LogOut size={14} />
-              </button>
-            </div>
-          ) : (
-            <motion.button
-              onClick={onOpenLogin}
-              whileHover={{ scale: 1.05, y: -1 }}
-              whileTap={{ scale: 0.96 }}
-              className="nav-admin-btn"
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '6px',
-                borderRadius: '9999px',
-                padding: '7px 14px',
-                fontSize: '0.82rem',
-                fontWeight: 700,
-                background: 'var(--bg-secondary)',
-                color: 'var(--text-primary)',
-                border: '1px solid var(--border-light)',
-                cursor: 'pointer',
-                whiteSpace: 'nowrap'
-              }}
-              title="Admin Login to View & Manage Submissions"
-            >
-              <KeyRound size={14} style={{ color: 'var(--accent-primary)' }} />
-              <span>Login</span>
-            </motion.button>
-          )}
-
-          {/* Download Resume / View PDF */}
-          <motion.a
+          {/* Download Resume Link */}
+          <a
             href={resumeData.personalInfo.reportUrl}
             target="_blank"
             rel="noopener noreferrer"
-            whileHover={{ scale: 1.05, y: -1 }}
-            whileTap={{ scale: 0.96 }}
             className="btn-primary nav-resume-btn"
             style={{
               display: 'inline-flex',
               alignItems: 'center',
-              justifyContent: 'center',
               gap: '6px',
               borderRadius: '9999px',
-              padding: '7px 15px',
-              fontSize: '0.82rem',
+              padding: '6px 14px',
+              fontSize: '0.8rem',
               fontWeight: 700,
-              whiteSpace: 'nowrap'
+              textDecoration: 'none'
             }}
           >
             <FileText size={14} />
-            <span className="btn-resume-text">Resume</span>
-          </motion.a>
+            <span>Resume</span>
+          </a>
 
           {/* Mobile Hamburger Toggle */}
           <button
@@ -376,8 +254,7 @@ export default function Navbar({ onOpenTerminal, isAdminAuthenticated, adminEmai
               border: '1px solid var(--border-light)',
               background: 'var(--bg-card-solid)',
               color: 'var(--text-primary)',
-              cursor: 'pointer',
-              flexShrink: 0
+              cursor: 'pointer'
             }}
             className="mobile-hamburger"
           >
@@ -386,13 +263,13 @@ export default function Navbar({ onOpenTerminal, isAdminAuthenticated, adminEmai
         </div>
       </div>
 
-      {/* Mobile Drawer Menu */}
+      {/* Mobile Menu Drawer */}
       <AnimatePresence>
         {mobileMenuOpen && (
           <motion.div
-            initial={{ opacity: 0, y: -10, scale: 0.96 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: -10, scale: 0.96 }}
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
             transition={{ duration: 0.2 }}
             style={{
               marginTop: '8px',
@@ -404,82 +281,9 @@ export default function Navbar({ onOpenTerminal, isAdminAuthenticated, adminEmai
               boxShadow: '0 20px 40px -10px rgba(15, 23, 42, 0.15)',
               display: 'flex',
               flexDirection: 'column',
-              gap: '6px'
+              gap: '4px'
             }}
           >
-            {/* Mobile Quick Action Buttons inside Drawer */}
-            <div style={{ display: 'flex', gap: '8px', marginBottom: '8px', paddingBottom: '10px', borderBottom: '1px solid var(--border-light)' }}>
-              <a
-                href="#upload"
-                onClick={() => setMobileMenuOpen(false)}
-                style={{
-                  flex: 1,
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: '6px',
-                  borderRadius: '12px',
-                  padding: '9px 12px',
-                  fontSize: '0.8rem',
-                  fontWeight: 700,
-                  background: 'linear-gradient(135deg, rgba(79, 70, 229, 0.15) 0%, rgba(8, 145, 178, 0.15) 100%)',
-                  color: 'var(--accent-primary)',
-                  border: '1px solid rgba(79, 70, 229, 0.3)',
-                  textDecoration: 'none'
-                }}
-              >
-                <Upload size={14} />
-                <span>Upload (+)</span>
-              </a>
-
-              {isAdminAuthenticated ? (
-                <button
-                  onClick={() => { onOpenDashboard(); setMobileMenuOpen(false); }}
-                  style={{
-                    flex: 1,
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    gap: '6px',
-                    borderRadius: '12px',
-                    padding: '9px 12px',
-                    fontSize: '0.8rem',
-                    fontWeight: 700,
-                    background: 'rgba(16, 185, 129, 0.15)',
-                    color: '#10B981',
-                    border: '1px solid rgba(16, 185, 129, 0.4)',
-                    cursor: 'pointer'
-                  }}
-                >
-                  <ShieldCheck size={14} />
-                  <span>Admin Dashboard</span>
-                </button>
-              ) : (
-                <button
-                  onClick={() => { onOpenLogin(); setMobileMenuOpen(false); }}
-                  style={{
-                    flex: 1,
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    gap: '6px',
-                    borderRadius: '12px',
-                    padding: '9px 12px',
-                    fontSize: '0.8rem',
-                    fontWeight: 700,
-                    background: 'var(--bg-secondary)',
-                    color: 'var(--text-primary)',
-                    border: '1px solid var(--border-light)',
-                    cursor: 'pointer'
-                  }}
-                >
-                  <KeyRound size={14} style={{ color: 'var(--accent-primary)' }} />
-                  <span>Admin Login</span>
-                </button>
-              )}
-            </div>
-
-            {/* Navigation items list */}
             {navItems.map((item) => (
               <a
                 key={item.id}
@@ -490,14 +294,13 @@ export default function Navbar({ onOpenTerminal, isAdminAuthenticated, adminEmai
                 }}
                 style={{
                   textDecoration: 'none',
-                  fontSize: '0.85rem',
+                  fontSize: '0.9rem',
                   fontWeight: 600,
                   padding: '10px 14px',
                   borderRadius: '12px',
                   color: activeSection === item.id ? '#4F46E5' : 'var(--text-secondary)',
                   background: activeSection === item.id ? 'rgba(79, 70, 229, 0.08)' : 'transparent',
-                  display: 'block',
-                  whiteSpace: 'nowrap'
+                  display: 'block'
                 }}
               >
                 {item.label}
@@ -508,21 +311,11 @@ export default function Navbar({ onOpenTerminal, isAdminAuthenticated, adminEmai
       </AnimatePresence>
 
       <style>{`
-        @media (min-width: 960px) {
+        @media (min-width: 900px) {
           .desktop-nav {
             display: flex !important;
           }
           .mobile-hamburger {
-            display: none !important;
-          }
-        }
-        @media (max-width: 959px) {
-          .nav-upload-btn, .nav-admin-btn {
-            display: none !important;
-          }
-        }
-        @media (max-width: 540px) {
-          .brand-subtext, .btn-resume-text {
             display: none !important;
           }
         }
