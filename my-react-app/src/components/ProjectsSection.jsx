@@ -28,12 +28,22 @@ export default function ProjectsSection({ onSelectPoC, refreshTrigger }) {
     fetchProjects();
   }, [refreshTrigger, fetchProjects]);
 
-  const defaultCategories = ['All', 'Web Application VAPT', 'Network Vulnerability Assessment', 'Android Application Security Assessment', 'Python Security Project'];
-  const categories = Array.from(new Set(['All', ...defaultCategories.slice(1), ...projectsList.map(p => p.type || p.category).filter(Boolean)]));
+  const filterTabs = [
+    { id: 'All', label: 'All' },
+    { id: 'Web VAPT', label: 'Web VAPT', matches: ['web application vapt', 'web vapt'] },
+    { id: 'Network VAPT', label: 'Network VAPT', matches: ['network vulnerability assessment', 'network vapt'] },
+    { id: 'Android VAPT', label: 'Android VAPT', matches: ['android application security assessment', 'android vapt'] },
+    { id: 'Python', label: 'Python', matches: ['python security project', 'python'] }
+  ];
 
   const filteredProjects = selectedCategory === 'All'
     ? projectsList
-    : projectsList.filter(p => (p.type || p.category) === selectedCategory);
+    : projectsList.filter(p => {
+        const typeStr = (p.type || p.category || '').toLowerCase();
+        const activeTab = filterTabs.find(t => t.id === selectedCategory);
+        if (!activeTab || !activeTab.matches) return true;
+        return activeTab.matches.some(m => typeStr.includes(m));
+      });
 
   return (
     <section id="projects" style={{ padding: '70px 24px', maxWidth: '1280px', margin: '0 auto' }}>
@@ -52,27 +62,39 @@ export default function ProjectsSection({ onSelectPoC, refreshTrigger }) {
         </p>
       </div>
 
-      {/* Filter Tabs */}
-      <div style={{ display: 'flex', justifyContent: 'center', gap: '8px', flexWrap: 'wrap', marginBottom: '32px' }}>
-        {categories.map((cat) => (
+      {/* Short Filter Tabs Bar */}
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'center',
+          gap: '10px',
+          overflowX: 'auto',
+          paddingBottom: '8px',
+          marginBottom: '32px',
+          WebkitOverflowScrolling: 'touch'
+        }}
+      >
+        {filterTabs.map((tab) => (
           <button
-            key={cat}
-            onClick={() => setSelectedCategory(cat)}
+            key={tab.id}
+            onClick={() => setSelectedCategory(tab.id)}
             style={{
-              padding: '8px 16px',
+              padding: '8px 18px',
               borderRadius: '9999px',
               fontSize: '0.85rem',
-              fontWeight: 600,
+              fontWeight: 700,
               fontFamily: 'var(--font-mono)',
-              border: selectedCategory === cat ? 'none' : '1px solid var(--border-light)',
-              background: selectedCategory === cat ? 'linear-gradient(135deg, #4F46E5 0%, #0891B2 100%)' : 'var(--bg-card-solid)',
-              color: selectedCategory === cat ? '#FFFFFF' : 'var(--text-secondary)',
-              boxShadow: selectedCategory === cat ? '0 4px 14px rgba(79, 70, 229, 0.3)' : 'var(--shadow-sm)',
+              border: selectedCategory === tab.id ? '1px solid var(--accent-cyan)' : '1px solid var(--border-light)',
+              background: selectedCategory === tab.id ? 'rgba(56, 189, 248, 0.15)' : 'var(--bg-card-solid)',
+              color: selectedCategory === tab.id ? 'var(--accent-cyan)' : 'var(--text-secondary)',
+              boxShadow: selectedCategory === tab.id ? '0 0 16px rgba(56, 189, 248, 0.25)' : 'var(--shadow-sm)',
               cursor: 'pointer',
+              whiteSpace: 'nowrap',
+              flexShrink: 0,
               transition: 'all 0.2s ease'
             }}
           >
-            {cat}
+            {tab.label}
           </button>
         ))}
       </div>

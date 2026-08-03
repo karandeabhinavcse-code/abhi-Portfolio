@@ -12,7 +12,7 @@ export const resumeData = {
     location: "Pune, Maharashtra, India",
     reportUrl: "/Abhinav_Karande_Resume.pdf",
     githubUrl: "https://github.com/karandeabhinavcse-code",
-    linkedinUrl: "https://www.linkedin.com/in/abhinav-karande-9227b33a2?utm_source=share_via&utm_content=profile&utm_medium=member_android",
+    linkedinUrl: "https://www.linkedin.com/in/abhinav-karande-9227b33a2",
     status: "Open for Cybersecurity & VAPT Internships",
     summary: "BCA student focused on Web, Network, and Android Application Security, with hands-on experience in vulnerability assessment, penetration testing labs, networking, and security tools."
   },
@@ -130,33 +130,68 @@ export const resumeData = {
     {
       id: "web-vapt-audit",
       title: "Web Application VAPT – Controlled Lab Audit",
-      target: "Gin & Juice (OWASP Practice Application)",
+      target: "OWASP Juice Shop",
       period: "2024 - 2025",
       type: "Web Application VAPT",
-      objective: "Performed security testing of a controlled web application environment to identify common vulnerabilities based on the OWASP Top 10.",
-      summary: "Conducted an end-to-end Web Application Vulnerability Assessment in a controlled environment. Discovered critical security misconfigurations, crafted working Proof-of-Concepts (PoCs), and authored actionable remediation recommendations.",
-      highlights: [
-        "Identified Client-Side Template Injection (CSTI) leading to client-side code execution risks.",
-        "Discovered SQL Injection (SQLi) in search endpoints allowing unauthorized database querying.",
-        "Uncovered Reflected & Stored Cross-Site Scripting (XSS) exploiting user sessions.",
-        "Tested Server-Side Request Forgery (SSRF) and XML External Entity (XXE) vectors.",
-        "Documented step-by-step remediation strategies for each identified vulnerability."
+      environmentType: "Controlled Lab Assessment",
+      objective: "Performed security testing of an intentionally vulnerable web application in a controlled environment to evaluate common vulnerabilities based on the OWASP Top 10.",
+      summary: "Performed security testing of an intentionally vulnerable web application in a controlled environment, identified security weaknesses, documented technical evidence, and prepared remediation recommendations.",
+      methodology: "Reconnaissance → Enumeration → Security Testing → Validation → Evidence Collection → Reporting",
+      whatILearned: "Deepened practical understanding of OWASP Top 10 vulnerabilities, input validation logic, HTTP request inspection via Burp Suite, and structured vulnerability documentation.",
+      keyWork: [
+        "Application reconnaissance",
+        "OWASP Top 10 security testing",
+        "Findings & remediation documentation"
       ],
-      tools: ["Burp Suite", "OWASP ZAP", "Burp Collaborator", "SQLmap", "Browser DevTools"],
+      highlights: [
+        "Application reconnaissance and input vector mapping.",
+        "OWASP Top 10 vulnerability assessment in controlled environment.",
+        "Findings & remediation documentation with technical evidence."
+      ],
+      tools: ["Burp Suite", "OWASP ZAP", "Kali Linux", "OWASP Top 10"],
       githubUrl: "https://github.com/karandeabhinavcse-code",
       reportUrl: "/Abhinav_Karande_Resume.pdf",
+      findings: [
+        {
+          name: "Client-Side Template Injection (CSTI)",
+          severity: "CRITICAL",
+          category: "Injection",
+          description: "Unsanitized user input evaluated dynamically within client-side frontend rendering engine.",
+          evidence: "{{constructor.constructor('alert(document.domain)')()}}",
+          impact: "Allows execution of arbitrary JavaScript within the victim browser context.",
+          remediation: "Implement strict context-aware input sanitization and enforce Content Security Policy (CSP)."
+        },
+        {
+          name: "SQL Injection (SQLi) Auth Bypass",
+          severity: "CRITICAL",
+          category: "Database Security",
+          description: "Parameter concatenation in backend SQL query string allowing logic manipulation.",
+          evidence: "' UNION SELECT 1, username, password_hash, 4 FROM users--",
+          impact: "Extraction of sensitive user credentials and authentication bypass.",
+          remediation: "Use parameterized queries (Prepared Statements) for all database operations."
+        },
+        {
+          name: "Reflected Cross-Site Scripting (XSS)",
+          severity: "HIGH",
+          category: "Cross-Site Scripting",
+          description: "Search parameter reflected back into server HTTP response without HTML entity encoding.",
+          evidence: "<script>alert('XSS-Test')</script>",
+          impact: "Session hijacking risk via cookie theft if HttpOnly flag is missing.",
+          remediation: "Apply context-appropriate HTML entity encoding on all reflected user inputs."
+        }
+      ],
       pocs: [
         {
           title: "CSTI Payload Execution",
           vulnerability: "Client-Side Template Injection",
-          severity: "Critical",
+          severity: "CRITICAL",
           code: "{{constructor.constructor('alert(document.domain)')()}}",
           impact: "Unsanitized template evaluation on client-side frontend resulting in script execution."
         },
         {
           title: "SQL Injection Authentication Bypass",
           vulnerability: "SQL Injection",
-          severity: "Critical",
+          severity: "CRITICAL",
           code: "' UNION SELECT 1, username, password_hash, 4 FROM users--",
           impact: "Bypassed filter logic to extract hashed credentials from database table in lab testing."
         }
@@ -168,22 +203,40 @@ export const resumeData = {
       target: "Controlled Subnet / Virtual Machine Topology",
       period: "2024",
       type: "Network Vulnerability Assessment",
-      objective: "Performed network reconnaissance, service enumeration, vulnerability assessment, and traffic analysis in a controlled lab environment.",
-      summary: "Executed active scanning, port enumeration, and packet interception across virtual lab hosts to detect unpatched services and misconfigured network access controls.",
-      highlights: [
-        "Executed Nmap host discovery, OS fingerprinting, and script scanning across lab subnets.",
-        "Analyzed TCP/IP traffic flows, HTTP requests, and DNS lookups using Wireshark.",
-        "Simulated router access control lists (ACLs) to restrict unauthorized subnet traversal.",
-        "Documented service vulnerability findings and recommended network hardening measures."
+      environmentType: "Controlled Lab Assessment",
+      objective: "Performed network reconnaissance, service enumeration, vulnerability assessment, and network traffic analysis across virtual lab hosts in a controlled environment.",
+      summary: "Performed host discovery, port and service enumeration, vulnerability assessment, and network traffic analysis across virtual lab hosts in a controlled environment.",
+      methodology: "Reconnaissance → Host & Service Discovery → Traffic Analysis → Vulnerability Identification → Hardening Recommendations",
+      whatILearned: "Mastered Nmap engine flags for service scanning, Wireshark packet capture analysis, subnet isolation concepts, and network perimeter security controls.",
+      keyWork: [
+        "Host & service discovery",
+        "Vulnerability assessment",
+        "Network traffic analysis"
       ],
-      tools: ["Nmap", "Wireshark", "Kali Linux", "Cisco Packet Tracer", "TCP/IP"],
+      highlights: [
+        "Host & service discovery across virtual lab subnets.",
+        "Vulnerability assessment of running services.",
+        "Network traffic analysis using Wireshark captures."
+      ],
+      tools: ["Nmap", "Wireshark", "Kali Linux", "Networking"],
       githubUrl: "https://github.com/karandeabhinavcse-code",
       reportUrl: null,
+      findings: [
+        {
+          name: "Exposed Legacy Unencrypted Services",
+          severity: "MEDIUM",
+          category: "Network Infrastructure",
+          description: "Lab host running legacy unencrypted Telnet/FTP services transmitting credentials in cleartext.",
+          evidence: "nmap -sV -sC -p- -T4 192.168.1.0/24 -oN network_audit.txt",
+          impact: "Eavesdropping and credential interception by malicious actors on the local network segment.",
+          remediation: "Disable unencrypted protocols; migrate to SSH (Port 22) and SFTP/TLS."
+        }
+      ],
       pocs: [
         {
           title: "Nmap Service Enumeration Command",
           vulnerability: "Exposed Unencrypted Services",
-          severity: "Medium",
+          severity: "MEDIUM",
           code: "nmap -sV -sC -p- -T4 192.168.1.0/24 -oN network_audit.txt",
           impact: "Identified outdated service versions and unencrypted communication ports across lab hosts."
         }
@@ -195,22 +248,40 @@ export const resumeData = {
       target: "Android APK Test Environment",
       period: "2024",
       type: "Android Application Security Assessment",
-      objective: "Performed static and dynamic security analysis of an Android application in a controlled testing environment.",
-      summary: "Decompiled target Android APK files to evaluate manifest permissions, hardcoded secrets, and network communication security using reverse engineering tools.",
-      highlights: [
-        "Decompiled APK binary using JADX to inspect source code and manifest components.",
-        "Analyzed application permissions and potential storage leakage risks.",
-        "Configured Burp Suite HTTP proxy with ADB emulator for HTTPS traffic analysis.",
-        "Tested basic SSL pinning bypass techniques using dynamic hooking concepts."
+      environmentType: "Controlled Lab Assessment",
+      objective: "Performed static APK analysis, manifest and permission reviews, hardcoded secret identification, and network security analysis of an Android application in a controlled environment.",
+      summary: "Performed static APK analysis, manifest and permission reviews, hardcoded secret identification, and network security analysis of an Android application in a controlled environment.",
+      methodology: "Decompilation → Static Manifest Inspection → Secret Identification → Traffic Interception Setup → Security Reporting",
+      whatILearned: "Gained hands-on experience with JADX decompiler inspection, Android manifest backup flag risks, ADB command utilities, and mobile proxy setup.",
+      keyWork: [
+        "Static APK analysis",
+        "Manifest & permission review",
+        "Application/network security analysis"
       ],
-      tools: ["Android VAPT", "ADB", "APK Analysis", "JADX-GUI", "Burp Suite"],
+      highlights: [
+        "Static APK analysis using JADX decompiler.",
+        "Manifest & permission review for security risks.",
+        "Application/network security analysis in testing emulator."
+      ],
+      tools: ["ADB", "Burp Suite", "APK Analysis", "Android Security", "JADX"],
       githubUrl: "https://github.com/karandeabhinavcse-code",
       reportUrl: null,
+      findings: [
+        {
+          name: "Insecure Local Storage & Manifest Misconfiguration",
+          severity: "MEDIUM",
+          category: "Mobile Application Security",
+          description: "Target application allowed backup flag in AndroidManifest.xml and stored unencrypted prefs data.",
+          evidence: "adb shell run-as com.example.app cat /data/data/com.example.app/shared_prefs/user.xml",
+          impact: "Physical or ADB access permits extraction of local application data.",
+          remediation: "Set android:allowBackup='false' and encrypt sensitive data using Android EncryptedSharedPreferences."
+        }
+      ],
       pocs: [
         {
           title: "ADB Application Inspection",
           vulnerability: "Insecure Local Storage",
-          severity: "Medium",
+          severity: "MEDIUM",
           code: "adb shell run-as com.example.app cat /data/data/com.example.app/shared_prefs/user.xml",
           impact: "Audited local storage practices for unencrypted session data."
         }
@@ -222,16 +293,35 @@ export const resumeData = {
       target: "Personal / Academic Scripting Lab",
       period: "2024 - 2025",
       type: "Python Security Project",
-      objective: "Developing custom Python utilities to automate basic network port scanning, header inspection, and log analysis.",
-      summary: "Created Python scripts using socket and requests libraries to perform multi-threaded port scans and check target Web servers for missing security response headers.",
+      environmentType: "Personal Security Lab",
+      objective: "Developed custom Python utilities to automate basic network port scanning, HTTP response header inspection, and command-line log analysis.",
+      summary: "Developed custom Python scripting utilities to automate basic network port scanning, HTTP response header inspection, and command-line log analysis.",
+      methodology: "Script Design → Socket Port Connection → HTTP Header Parsing → Result Formatting → Command-Line Utility Execution",
+      whatILearned: "Strengthened core Python socket programming, HTTP response header verification (HSTS, CSP, X-Frame-Options), and automated security scripting.",
+      keyWork: [
+        "Custom port scanner scripting",
+        "HTTP security header inspection",
+        "Automated log & output parsing"
+      ],
       highlights: [
-        "Built custom port scanner script utilizing Python socket module.",
-        "Implemented HTTP header security checker for missing Security Headers (HSTS, CSP, X-Frame-Options).",
-        "Designed clean command-line outputs for quick security auditing."
+        "Custom port scanner scripting with Python socket module.",
+        "HTTP security header inspection utility.",
+        "Automated log & output parsing in Linux terminal."
       ],
       tools: ["Python", "Sockets", "Requests", "Linux Terminal"],
       githubUrl: "https://github.com/karandeabhinavcse-code",
       reportUrl: null,
+      findings: [
+        {
+          name: "Missing Security Response Headers",
+          severity: "LOW",
+          category: "Web Security Headers",
+          description: "Target web server headers missing HSTS (Strict-Transport-Security) and X-Frame-Options.",
+          evidence: "import requests; r = requests.get('http://target'); print(r.headers)",
+          impact: "Increases risk of clickjacking attacks and unencrypted downgrade connections.",
+          remediation: "Configure web server to emit HSTS, X-Frame-Options, X-Content-Type-Options, and CSP headers."
+        }
+      ],
       pocs: []
     }
   ],

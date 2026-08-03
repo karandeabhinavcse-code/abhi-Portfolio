@@ -61,7 +61,7 @@ export default function Hero({ onOpenTerminal }) {
             <div style={{ display: 'inline-flex', alignItems: 'center', gap: '10px', marginBottom: '20px', flexWrap: 'wrap' }}>
               <span className="soc-status-badge">
                 <span className="status-dot-pulse"></span>
-                SOC ONLINE // VAPT AUDITOR
+                SECURITY PROFILE // ACTIVE
               </span>
               <span className="badge-cyber" style={{ padding: '6px 16px', fontSize: '0.82rem' }}>
                 <Shield size={14} /> BCA Final Year Student • Application Security Focus

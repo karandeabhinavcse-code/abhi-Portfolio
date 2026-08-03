@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion';
-import { ShieldAlert, ExternalLink, CheckCircle2, FileText, Terminal, Cpu, Info } from 'lucide-react';
+import { ShieldCheck, FileText, Cpu, CheckCircle2, Eye, Wrench } from 'lucide-react';
 
-const GithubIcon = ({ size = 15 }) => (
+const GithubIcon = ({ size = 14 }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4" />
     <path d="M9 18c-4.51 2-5-2-7-2" />
@@ -10,166 +10,166 @@ const GithubIcon = ({ size = 15 }) => (
 
 export default function ProjectCard({ project, index, onSelectPoC }) {
   const isGithubAvailable = project.githubUrl && project.githubUrl !== 'https://github.com/' && !project.githubUrl.includes('TODO');
+  const isReportAvailable = Boolean(project.reportUrl);
+
+  // Short Category Badge Mapping
+  const getShortCategory = (type) => {
+    if (!type) return 'SECURITY';
+    const lower = type.toLowerCase();
+    if (lower.includes('web')) return 'WEB VAPT';
+    if (lower.includes('network')) return 'NETWORK VAPT';
+    if (lower.includes('android')) return 'ANDROID VAPT';
+    if (lower.includes('python')) return 'PYTHON';
+    return type.toUpperCase();
+  };
+
+  const shortCategory = getShortCategory(project.type || project.category);
+  const yearDisplay = project.period ? project.period.split('-')[0].trim() : '2025';
 
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
-      transition={{ duration: 0.5, delay: index * 0.08 }}
+      transition={{ duration: 0.4, delay: index * 0.08 }}
       className="glass-card"
       style={{
-        padding: '32px',
-        borderRadius: '24px',
+        padding: '28px',
+        borderRadius: '20px',
         display: 'flex',
         flexDirection: 'column',
-        justify: 'space-between',
-        border: '1px solid var(--border-light)'
+        justifyContent: 'space-between',
+        border: '1px solid var(--border-light)',
+        height: '100%'
       }}
     >
       <div>
-        {/* Category Badge & Period */}
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
-          <span className="badge-cyber" style={{ fontSize: '0.75rem' }}>
-            {project.type}
+        {/* 1. Category Tag & Year */}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '14px' }}>
+          <span className="badge-cyber" style={{ fontSize: '0.72rem', padding: '4px 12px' }}>
+            {shortCategory}
           </span>
-          <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>
-            {project.period}
+          <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)', fontWeight: 600 }}>
+            {yearDisplay}
           </span>
         </div>
 
-        {/* Title */}
-        <h3 style={{ fontSize: '1.35rem', fontWeight: 800, marginBottom: '8px', lineHeight: 1.3, color: 'var(--text-primary)' }}>
+        {/* 2. Project Title */}
+        <h3 style={{ fontSize: '1.28rem', fontWeight: 800, marginBottom: '10px', lineHeight: 1.35, color: 'var(--text-primary)' }}>
           {project.title}
         </h3>
 
-        {/* Target Environment */}
-        <div style={{ fontSize: '0.85rem', color: 'var(--accent-primary)', fontWeight: 600, fontFamily: 'var(--font-mono)', marginBottom: '14px', display: 'flex', alignItems: 'center', gap: '6px' }}>
-          <Cpu size={14} /> Environment: {project.target}
+        {/* 3. Environment & Assessment Badge */}
+        <div style={{
+          background: 'rgba(15, 23, 42, 0.75)',
+          borderRadius: '10px',
+          padding: '8px 12px',
+          marginBottom: '14px',
+          borderLeft: '3px solid var(--accent-cyan)',
+          border: '1px solid rgba(56, 189, 248, 0.15)',
+          fontSize: '0.82rem',
+          color: 'var(--accent-cyan)',
+          fontFamily: 'var(--font-mono)',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '6px'
+        }}>
+          <Cpu size={14} style={{ color: 'var(--accent-cyan)' }} />
+          <span><strong>{project.environmentType || 'Controlled Lab Assessment'}</strong> • {project.target}</span>
         </div>
 
-        {/* Objective */}
-        {project.objective && (
-          <div style={{
-            background: 'var(--bg-secondary)',
-            borderRadius: '10px',
-            padding: '10px 14px',
-            marginBottom: '16px',
-            borderLeft: '3px solid var(--accent-primary)',
-            fontSize: '0.85rem',
-            color: 'var(--text-secondary)'
-          }}>
-            <strong style={{ color: 'var(--text-primary)' }}>Objective: </strong>
-            {project.objective}
-          </div>
-        )}
-
-        {/* Short Summary Description */}
-        <p style={{ fontSize: '0.95rem', color: 'var(--text-secondary)', lineHeight: 1.6, marginBottom: '20px' }}>
+        {/* 4. Short Description */}
+        <p style={{ fontSize: '0.92rem', color: 'var(--text-secondary)', lineHeight: 1.6, marginBottom: '18px' }}>
           {project.summary}
         </p>
 
-        {/* Key Work Performed Highlights */}
-        {project.highlights && project.highlights.length > 0 && (
-          <div style={{ marginBottom: '20px' }}>
-            <div style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--text-primary)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '10px' }}>
-              Key Assessment Work:
+        {/* 5. TOOLS Badges Section */}
+        {project.tools && project.tools.length > 0 && (
+          <div style={{ marginBottom: '18px' }}>
+            <div style={{ fontSize: '0.72rem', fontWeight: 800, color: 'var(--text-muted)', fontFamily: 'var(--font-mono)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '5px' }}>
+              <Wrench size={12} /> TOOLS
             </div>
-            <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '8px' }}>
-              {project.highlights.map((item, idx) => (
-                <li key={idx} style={{ fontSize: '0.88rem', color: 'var(--text-secondary)', display: 'flex', alignItems: 'flex-start', gap: '8px', lineHeight: 1.5 }}>
-                  <CheckCircle2 size={15} style={{ color: '#10B981', flexShrink: 0, marginTop: '3px' }} />
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+              {project.tools.map((tool, idx) => (
+                <span
+                  key={idx}
+                  style={{
+                    fontSize: '0.75rem',
+                    fontFamily: 'var(--font-mono)',
+                    fontWeight: 600,
+                    padding: '3px 10px',
+                    borderRadius: '6px',
+                    background: 'rgba(56, 189, 248, 0.08)',
+                    color: 'var(--text-secondary)',
+                    border: '1px solid rgba(56, 189, 248, 0.2)'
+                  }}
+                >
+                  {tool}
+                </span>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* 6. KEY WORK Highlights */}
+        {(project.keyWork || project.highlights) && (
+          <div style={{ marginBottom: '22px' }}>
+            <div style={{ fontSize: '0.72rem', fontWeight: 800, color: 'var(--text-muted)', fontFamily: 'var(--font-mono)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '8px' }}>
+              KEY WORK
+            </div>
+            <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '6px' }}>
+              {(project.keyWork || project.highlights).slice(0, 3).map((item, idx) => (
+                <li key={idx} style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', display: 'flex', alignItems: 'flex-start', gap: '6px', lineHeight: 1.45, fontFamily: 'var(--font-mono)' }}>
+                  <span style={{ color: 'var(--accent-cyan)', fontWeight: 700 }}>→</span>
                   <span>{item}</span>
                 </li>
               ))}
             </ul>
           </div>
         )}
-
-        {/* Tools / Technologies Tags */}
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginBottom: '24px' }}>
-          {project.tools.map((tool, idx) => (
-            <span
-              key={idx}
-              style={{
-                fontSize: '0.75rem',
-                fontFamily: 'var(--font-mono)',
-                fontWeight: 600,
-                padding: '4px 10px',
-                borderRadius: '6px',
-                background: 'var(--bg-secondary)',
-                color: 'var(--text-secondary)',
-                border: '1px solid var(--border-light)'
-              }}
-            >
-              {tool}
-            </span>
-          ))}
-        </div>
       </div>
 
-      {/* Footer Action Buttons */}
-      <div style={{ paddingTop: '20px', borderTop: '1px solid var(--border-light)', display: 'flex', flexWrap: 'wrap', gap: '10px' }}>
+      {/* 7. Action Buttons */}
+      <div style={{ paddingTop: '16px', borderTop: '1px solid var(--border-light)', display: 'flex', flexWrap: 'wrap', gap: '8px', alignItems: 'center' }}>
         
-        {/* Inspect PoC Payloads Button */}
-        {project.pocs && project.pocs.length > 0 && (
-          <button
-            onClick={() => onSelectPoC(project)}
-            className="btn-secondary"
-            style={{ flex: 1, padding: '9px 14px', fontSize: '0.85rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}
-          >
-            <Terminal size={15} style={{ color: '#4F46E5' }} /> View PoCs ({project.pocs.length})
-          </button>
-        )}
+        {/* View Details Button */}
+        <button
+          onClick={() => onSelectPoC(project)}
+          className="btn-primary"
+          style={{ flex: 1, padding: '8px 14px', fontSize: '0.83rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}
+        >
+          <Eye size={14} /> View Details
+        </button>
 
-        {/* View Report PDF */}
-        {project.reportUrl ? (
-          <a
-            href={project.reportUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="btn-primary"
-            style={{ padding: '9px 14px', fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '6px' }}
-          >
-            <FileText size={15} /> View Report
-          </a>
-        ) : (
-          <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: '4px' }}>
-            <Info size={13} /> Report Available on Request
-          </span>
-        )}
-
-        {/* GitHub Button */}
-        {isGithubAvailable ? (
+        {/* GitHub Button (Rendered only if valid URL exists) */}
+        {isGithubAvailable && (
           <a
             href={project.githubUrl}
             target="_blank"
             rel="noopener noreferrer"
             className="btn-secondary"
-            style={{ padding: '9px 14px', fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '6px' }}
+            style={{ padding: '8px 14px', fontSize: '0.83rem', display: 'flex', alignItems: 'center', gap: '6px' }}
           >
-            <GithubIcon size={15} /> Code
+            <GithubIcon size={14} /> GitHub
           </a>
-        ) : (
-          <span
-            title="GitHub Repository link will be updated soon"
-            style={{
-              fontSize: '0.75rem',
-              color: 'var(--text-muted)',
-              fontFamily: 'var(--font-mono)',
-              padding: '6px 10px',
-              borderRadius: '6px',
-              border: '1px dashed var(--border-light)',
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '4px'
-            }}
-          >
-            <GithubIcon size={13} /> [Repo TODO]
-          </span>
         )}
+
+        {/* Report PDF Button (Rendered only if valid Report URL exists) */}
+        {isReportAvailable && (
+          <a
+            href={project.reportUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="btn-secondary"
+            style={{ padding: '8px 14px', fontSize: '0.83rem', display: 'flex', alignItems: 'center', gap: '6px' }}
+          >
+            <FileText size={14} /> Report
+          </a>
+        )}
+
       </div>
 
     </motion.div>
   );
 }
+
