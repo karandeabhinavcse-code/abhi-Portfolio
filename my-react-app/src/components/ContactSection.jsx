@@ -69,7 +69,7 @@ export default function ContactSection() {
 
   return (
     <section id="contact" style={{ padding: '70px 24px', maxWidth: '1280px', margin: '0 auto' }}>
-      
+
       {/* Header */}
       <div style={{ textAlign: 'center', marginBottom: '36px' }}>
         <div className="section-connector-line" />
@@ -85,17 +85,17 @@ export default function ContactSection() {
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(360px, 1fr))', gap: '40px' }}>
-        
+
         {/* Left Column: Direct Contact Details & Links */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-          
+
           <div className="glass-card" style={{ padding: '28px', borderRadius: '20px' }}>
             <h3 style={{ fontSize: '1.3rem', fontWeight: 800, marginBottom: '20px', color: 'var(--text-primary)' }}>
               Direct Contact Details
             </h3>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-              
+
               {/* Email */}
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px', background: 'var(--bg-secondary)', borderRadius: '12px', border: '1px solid var(--border-light)' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>

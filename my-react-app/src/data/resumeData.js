@@ -185,6 +185,70 @@ export const resumeData = {
       ]
     },
     {
+      id: "reconx-toolkit",
+      featured: true,
+      title: "ReconX – Attack Surface Reconnaissance & Change Detection Toolkit",
+      target: "Kali Linux",
+      period: null,
+      type: "Python Security Tool / Reconnaissance",
+      environmentType: "Personal Security Tool",
+      objective: "A modular, high-performance Python cybersecurity toolkit built for authorized attack surface intelligence, asset inventory mapping, and historical scan change detection.",
+      summary: "A modular Python attack surface intelligence and change-detection toolkit built for Kali Linux, automating target normalization, multi-source DNS/subdomain discovery, port scanning, TLS auditing, and SQLite asset change tracking.",
+      methodology: "Target Normalization → Passive/Active Subdomain Discovery → Port & Service Reconnaissance → TLS Intelligence → SQLite Asset Inventory → Historical Scan Comparison",
+      whatILearned: "Architected a modular Python CLI pipeline using Rich UI, implemented SQLite asset inventory tracking with schema migration support, engineered automated scan diffing algorithms for change detection, and built multi-format reporting (TXT, JSON, HTML).",
+      keyWork: [
+        "Multi-source CT log parsing & active DNS subdomain discovery",
+        "Multi-threaded TCP port scanning & non-invasive HTTP/TLS fingerprinting",
+        "SQLite asset inventory & automated historical scan change detection"
+      ],
+      highlights: [
+        "Multi-source passive CT log parsing and active DNS subdomain brute-forcing with deduplication.",
+        "Safe multi-threaded TCP port discovery with non-invasive HTTP header analysis and TLS certificate auditing.",
+        "Hierarchical SQLite asset inventory and automated scan comparison engine identifying new, altered, or removed assets."
+      ],
+      tools: ["Python", "Kali Linux", "SQLite", "DNS Recon", "Security Automation"],
+      githubUrl: "https://github.com/karandeabhinavcse-code/ReconX",
+      reportUrl: null,
+      findings: [
+        {
+          name: "Multi-Source Passive & Active Subdomain Enumeration",
+          severity: "INFO",
+          category: "Attack Surface Reconnaissance",
+          description: "Performs DNS record resolution (A, AAAA, MX, NS, TXT) and multi-source subdomain discovery combining passive Certificate Transparency logs (crt.sh) with wordlist-based DNS brute-forcing.",
+          evidence: "reconx subdomains target.com --authorized",
+          impact: "Maps all public subdomains and external entry points across the enterprise attack surface.",
+          remediation: "Audit unused DNS entries, decommission abandoned subdomains, and restrict zone transfer access."
+        },
+        {
+          name: "TCP Service Discovery & TLS Certificate Intelligence",
+          severity: "INFO",
+          category: "Service & Transport Audit",
+          description: "Executes multi-threaded TCP port discovery, non-invasive HTTP server header fingerprinting, and TLS certificate parsing (SANs, issuer, expiration tracking).",
+          evidence: "reconx ports 192.168.1.10 -a && reconx tls target.com -a",
+          impact: "Identifies exposed network services, cleartext HTTP endpoints, and expiring or untrusted TLS certificates.",
+          remediation: "Close unnecessary open ports, enforce HTTPS/TLS 1.3, and automate certificate renewal workflows."
+        },
+        {
+          name: "SQLite Asset Inventory & Historical Scan Change Detection",
+          severity: "INFO",
+          category: "Attack Surface Monitoring",
+          description: "Stores scan targets, hosts, ports, and services in a normalized SQLite database (reconx.db), enabling automated diffing between historical scan IDs.",
+          evidence: "reconx history target.com && reconx compare RX-20260801-001 RX-20260802-001",
+          impact: "Detects unauthorized infrastructure changes, newly exposed ports, or unexpected service modifications over time.",
+          remediation: "Integrate change detection into continuous monitoring pipelines and alert on baseline deviations."
+        }
+      ],
+      pocs: [
+        {
+          title: "ReconX Automated Scan & Multi-Format Report Workflow",
+          vulnerability: "Attack Surface Intelligence Pipeline",
+          severity: "INFO",
+          code: "reconx scan example.com --authorized && reconx report RX-20260801-001 --format txt,json,html",
+          impact: "Executes full reconnaissance pipeline, normalizes asset data into SQLite, and exports TXT, JSON, and HTML reports."
+        }
+      ]
+    },
+    {
       id: "web-vapt-audit",
       title: "Web Application VAPT – Controlled Lab Audit",
       target: "OWASP Juice Shop",
