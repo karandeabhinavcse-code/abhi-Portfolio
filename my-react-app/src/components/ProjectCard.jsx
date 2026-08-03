@@ -46,9 +46,31 @@ export default function ProjectCard({ project, index, onSelectPoC }) {
       <div>
         {/* 1. Category Tag & Year */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '14px' }}>
-          <span className="badge-cyber" style={{ fontSize: '0.72rem', padding: '4px 12px' }}>
-            {shortCategory}
-          </span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+            <span className="badge-cyber" style={{ fontSize: '0.72rem', padding: '4px 12px' }}>
+              {shortCategory}
+            </span>
+            {project.featured && (
+              <span
+                style={{
+                  fontSize: '0.7rem',
+                  fontWeight: 700,
+                  fontFamily: 'var(--font-mono)',
+                  color: 'var(--accent-cyan)',
+                  background: 'rgba(56, 189, 248, 0.1)',
+                  border: '1px solid rgba(56, 189, 248, 0.3)',
+                  padding: '3px 10px',
+                  borderRadius: '9999px',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '4px',
+                  boxShadow: '0 0 10px rgba(56, 189, 248, 0.15)'
+                }}
+              >
+                ★ FEATURED PROJECT
+              </span>
+            )}
+          </div>
           {yearDisplay && (
             <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)', fontWeight: 600 }}>
               {yearDisplay}

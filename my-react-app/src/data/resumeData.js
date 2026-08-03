@@ -129,11 +129,12 @@ export const resumeData = {
   projects: [
     {
       id: "vapt-ai-toolkit",
+      featured: true,
       title: "VAPT-AI – AI-Assisted Vulnerability Assessment Toolkit",
-      target: "Kali Linux / Security Testing Environment",
+      target: "Kali Linux",
       period: null,
       type: "Python Security Tool / VAPT Tool",
-      environmentType: "Kali Linux CLI / Security Testing",
+      environmentType: "Personal Security Tool",
       objective: "A Python-based cybersecurity toolkit built for authorized vulnerability assessment and security testing, with automated assessment workflows, risk analysis, and security reporting.",
       summary: "A Python-based cybersecurity toolkit built for authorized vulnerability assessment and security testing, with automated assessment workflows, risk analysis, and security reporting.",
       methodology: "Target Validation → Defensive Reconnaissance → HTTP Security Audit → Deterministic Risk Scoring → Modular AI Analysis → Security Reporting",
