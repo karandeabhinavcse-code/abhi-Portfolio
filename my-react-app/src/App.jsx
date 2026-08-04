@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import CyberCanvas from './components/CyberCanvas';
 import Navbar from './components/Navbar';
+import ScrollMotionController from './components/ScrollMotionController';
 import Hero from './components/Hero';
 import AboutSection from './components/AboutSection';
 import SkillsSection from './components/SkillsSection';
@@ -49,6 +50,9 @@ export default function App() {
       <div style={{ position: 'relative', minHeight: '100vh', background: 'var(--bg-primary)' }}>
         {/* Background Interactive Cyber Canvas */}
         <CyberCanvas />
+
+        {/* Scroll Motion & Parallax Controller */}
+        <ScrollMotionController />
 
         {/* Floating Navbar */}
         <Navbar

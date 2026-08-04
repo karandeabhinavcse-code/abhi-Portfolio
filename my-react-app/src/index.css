@@ -8,22 +8,22 @@
   --bg-card-hover: rgba(20, 30, 52, 0.85);
   --border-light: rgba(56, 189, 248, 0.14);
   --border-accent: rgba(99, 102, 241, 0.35);
-  
+
   --text-primary: #F8FAFC;
   --text-secondary: #CBD5E1;
   --text-muted: #94A3B8;
-  
+
   --accent-primary: #818CF8;
   --accent-cyan: #38BDF8;
   --accent-emerald: #34D399;
   --accent-rose: #FB7185;
   --accent-amber: #FBBF24;
-  
+
   --shadow-sm: 0 2px 8px -2px rgba(0, 0, 0, 0.4);
   --shadow-md: 0 10px 30px -6px rgba(0, 0, 0, 0.5), 0 0 16px rgba(99, 102, 241, 0.08);
   --shadow-lg: 0 20px 40px -10px rgba(0, 0, 0, 0.7), 0 0 24px rgba(56, 189, 248, 0.12);
   --shadow-glow: 0 0 30px rgba(99, 102, 241, 0.2);
-  
+
   --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
   --font-mono: 'JetBrains Mono', 'Share Tech Mono', monospace;
 
@@ -47,17 +47,17 @@
   --bg-card-hover: #FFFFFF;
   --border-light: rgba(148, 163, 184, 0.25);
   --border-accent: rgba(99, 102, 241, 0.4);
-  
+
   --text-primary: #0F172A;
   --text-secondary: #334155;
   --text-muted: #64748B;
-  
+
   --accent-primary: #4F46E5;
   --accent-cyan: #0284C7;
   --accent-emerald: #059669;
   --accent-rose: #E11D48;
   --accent-amber: #D97706;
-  
+
   --shadow-sm: 0 2px 8px -2px rgba(15, 23, 42, 0.06);
   --shadow-md: 0 10px 25px -5px rgba(15, 23, 42, 0.08), 0 0 15px rgba(79, 70, 229, 0.08);
   --shadow-lg: 0 20px 35px -10px rgba(15, 23, 42, 0.12), 0 0 25px rgba(79, 70, 229, 0.12);
@@ -83,17 +83,17 @@
   --bg-card-hover: rgba(20, 30, 52, 0.85);
   --border-light: rgba(56, 189, 248, 0.14);
   --border-accent: rgba(99, 102, 241, 0.35);
-  
+
   --text-primary: #F8FAFC;
   --text-secondary: #CBD5E1;
   --text-muted: #94A3B8;
-  
+
   --accent-primary: #818CF8;
   --accent-cyan: #38BDF8;
   --accent-emerald: #34D399;
   --accent-rose: #FB7185;
   --accent-amber: #FBBF24;
-  
+
   --shadow-sm: 0 2px 8px -2px rgba(0, 0, 0, 0.4);
   --shadow-md: 0 10px 30px -6px rgba(0, 0, 0, 0.5), 0 0 16px rgba(99, 102, 241, 0.08);
   --shadow-lg: 0 20px 40px -10px rgba(0, 0, 0, 0.7), 0 0 24px rgba(56, 189, 248, 0.12);
@@ -243,10 +243,12 @@ h6 {
     transform: scale(0.95);
     box-shadow: 0 0 0 0 rgba(52, 211, 153, 0.7);
   }
+
   70% {
     transform: scale(1.1);
     box-shadow: 0 0 0 8px rgba(52, 211, 153, 0);
   }
+
   100% {
     transform: scale(0.95);
     box-shadow: 0 0 0 0 rgba(52, 211, 153, 0);
@@ -598,30 +600,33 @@ h6 {
 /* Mobile Layout Responsiveness Polish */
 @media (max-width: 768px) {
   body[data-mobile="true"] {
-    padding-bottom: 84px; /* Room for bottom navigation bar */
+    padding-bottom: 84px;
+    /* Room for bottom navigation bar */
   }
 
   .modal-overlay {
     padding: 0;
-    align-items: flex-end; /* Mobile Bottom Sheet presentation */
+    align-items: flex-end;
+    /* Mobile Bottom Sheet presentation */
   }
 
   [data-platform="ios"] .modal-overlay .modal-content-card,
-  [data-platform="ios"] .modal-overlay > div {
+  [data-platform="ios"] .modal-overlay>div {
     border-radius: 28px 28px 0 0 !important;
     max-height: 90vh !important;
     width: 100% !important;
   }
 
   [data-platform="android"] .modal-overlay .modal-content-card,
-  [data-platform="android"] .modal-overlay > div {
+  [data-platform="android"] .modal-overlay>div {
     border-radius: 24px 24px 0 0 !important;
     max-height: 90vh !important;
     width: 100% !important;
   }
 
   /* Universal Mobile Touch Target Minimum Heights */
-  button, a {
+  button,
+  a {
     min-height: 44px;
     touch-action: manipulation;
   }
@@ -629,16 +634,58 @@ h6 {
 
 /* Reduced Motion Accessibility Overrides */
 @media (prefers-reduced-motion: reduce) {
-  *, ::before, ::after {
+
+  *,
+  ::before,
+  ::after {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
+
   .glass-card:hover {
     transform: none !important;
   }
+
   .animate-pulse-slow {
     animation: none !important;
   }
+
+  .hud-reveal {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+}
+
+/* ==========================================
+   SMOOTH SCROLL ENTRANCE & MOTION BLUR
+   ========================================== */
+
+/* Section & Card Entrance Reveal (with subtle scale depth transition) */
+.hud-reveal {
+  opacity: 0;
+  transform: scale(0.98) translateY(24px);
+  transition: opacity 0.75s cubic-bezier(0.16, 1, 0.3, 1), transform 0.75s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, transform;
+}
+
+.hud-reveal.hud-revealed {
+  opacity: 1;
+  transform: scale(1) translateY(0);
+}
+
+/* Staggered Entrance Delays for Cards */
+.hud-reveal.stagger-1 { transition-delay: 0.04s; }
+.hud-reveal.stagger-2 { transition-delay: 0.10s; }
+.hud-reveal.stagger-3 { transition-delay: 0.16s; }
+.hud-reveal.stagger-4 { transition-delay: 0.22s; }
+
+/* Directional Motion Blur ONLY on Background Canvas & Decorative Layers */
+canvas,
+.cyber-canvas-wrapper {
+  filter: blur(var(--hud-bg-blur, 0px));
+  transform: scaleY(var(--hud-bg-stretch, 1)) translateY(calc(var(--hud-parallax-y, 0px) * -0.05));
+  transition: filter 0.12s ease-out, transform 0.12s ease-out;
 }

@@ -1,3 +1,4 @@
+import { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { Shield, ArrowRight, Download, Terminal } from 'lucide-react';
 import { resumeData } from '../data/resumeData';
@@ -18,9 +19,39 @@ const LinkedinIcon = ({ size = 20 }) => (
 );
 
 export default function Hero({ onOpenTerminal }) {
+  const heroRef = useRef(null);
+  const [mousePos, setMousePos] = useState({ x: 0, y: 0, isHovered: false });
+  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+    setPrefersReducedMotion(mediaQuery.matches);
+    const handleChange = (e) => setPrefersReducedMotion(e.matches);
+    if (mediaQuery.addEventListener) mediaQuery.addEventListener('change', handleChange);
+    return () => {
+      if (mediaQuery.removeEventListener) mediaQuery.removeEventListener('change', handleChange);
+    };
+  }, []);
+
+  const handleMouseMove = (e) => {
+    if (prefersReducedMotion || window.innerWidth < 768) return;
+    if (!heroRef.current) return;
+    const rect = heroRef.current.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    setMousePos({ x, y, isHovered: true });
+  };
+
+  const handleMouseLeave = () => {
+    setMousePos((prev) => ({ ...prev, isHovered: false }));
+  };
+
   return (
     <section
       id="hero"
+      ref={heroRef}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
       style={{
         minHeight: '90vh',
         paddingTop: '130px',
@@ -28,26 +59,76 @@ export default function Hero({ onOpenTerminal }) {
         display: 'flex',
         alignItems: 'center',
         position: 'relative',
-        zIndex: 1
+        zIndex: 1,
+        overflow: 'hidden'
       }}
     >
-      {/* Subtle Radial Depth Glow behind Hero Section */}
+      {/* 1. Ultra-Subtle Cyber Grid Background Layer */}
       <div
         aria-hidden="true"
         style={{
           position: 'absolute',
-          top: '40%',
-          left: '50%',
+          inset: 0,
+          backgroundImage: `
+            linear-gradient(to right, rgba(56, 189, 248, 0.035) 1px, transparent 1px),
+            linear-gradient(to bottom, rgba(56, 189, 248, 0.035) 1px, transparent 1px)
+          `,
+          backgroundSize: '40px 40px',
+          maskImage: 'radial-gradient(ellipse 75% 65% at 50% 45%, black 20%, transparent 100%)',
+          WebkitMaskImage: 'radial-gradient(ellipse 75% 65% at 50% 45%, black 20%, transparent 100%)',
+          pointerEvents: 'none',
+          zIndex: -2
+        }}
+      />
+
+      {/* 2. Soft Cyan Radial Glow behind Main Name (Left Column) */}
+      <div
+        aria-hidden="true"
+        style={{
+          position: 'absolute',
+          top: '38%',
+          left: '22%',
           transform: 'translate(-50%, -50%)',
-          width: '80%',
-          maxWidth: '900px',
-          height: '500px',
-          background: 'radial-gradient(circle, rgba(56, 189, 248, 0.12) 0%, rgba(99, 102, 241, 0.05) 45%, transparent 75%)',
-          filter: 'blur(60px)',
+          width: '560px',
+          height: '460px',
+          background: 'radial-gradient(circle, rgba(0, 240, 255, 0.13) 0%, rgba(56, 189, 248, 0.04) 45%, transparent 70%)',
+          filter: 'blur(70px)',
           pointerEvents: 'none',
           zIndex: -1
         }}
       />
+
+      {/* 3. Soft Blue/Purple Ambient Glow behind Terminal Card (Right Column) */}
+      <div
+        aria-hidden="true"
+        style={{
+          position: 'absolute',
+          top: '42%',
+          right: '8%',
+          transform: 'translate(0, -50%)',
+          width: '560px',
+          height: '460px',
+          background: 'radial-gradient(circle, rgba(99, 102, 241, 0.14) 0%, rgba(139, 92, 246, 0.05) 50%, transparent 75%)',
+          filter: 'blur(75px)',
+          pointerEvents: 'none',
+          zIndex: -1
+        }}
+      />
+
+      {/* 4. Extremely Subtle Desktop Mouse-Follow Spotlight / Parallax Glow */}
+      {mousePos.isHovered && !prefersReducedMotion && (
+        <div
+          aria-hidden="true"
+          style={{
+            position: 'absolute',
+            inset: 0,
+            background: `radial-gradient(650px circle at ${mousePos.x}px ${mousePos.y}px, rgba(56, 189, 248, 0.065), rgba(99, 102, 241, 0.02) 40%, transparent 80%)`,
+            pointerEvents: 'none',
+            zIndex: -1,
+            transition: 'background 0.12s ease-out'
+          }}
+        />
+      )}
       <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '0 24px', width: '100%' }}>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '48px', alignItems: 'center' }} className="hero-grid">
           

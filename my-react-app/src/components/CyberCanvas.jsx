@@ -141,7 +141,7 @@ export default function CyberCanvas() {
           }
         }
 
-        // Render network connection lines
+        // Render network connection lines with subtle slow animation
         for (let j = i + 1; j < nodes.length; j++) {
           const other = nodes[j];
           const dx = other.x - node.x;
@@ -149,7 +149,11 @@ export default function CyberCanvas() {
           const dist = Math.sqrt(dx * dx + dy * dy);
 
           if (dist < maxConnectDist) {
-            const alpha = (1 - dist / maxConnectDist) * 0.12;
+            // Slow, organic pulse for connection opacity
+            const pulse = prefersReducedMotion ? 1 : 0.75 + 0.35 * Math.sin((now * 0.0012) + i * 1.5 + j);
+            const baseAlpha = (1 - dist / maxConnectDist) * 0.14;
+            const alpha = Math.max(0.02, Math.min(0.2, baseAlpha * pulse));
+
             ctx.beginPath();
             ctx.moveTo(node.x, node.y);
             ctx.lineTo(other.x, other.y);
